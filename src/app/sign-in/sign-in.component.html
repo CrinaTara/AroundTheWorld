@@ -1,0 +1,49 @@
+<body class="login">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-offset-2 col-sm-8">
+        <!-- <main-menu></main-menu> -->
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="login_wrapper">
+      <div class="animate form login_form">
+        <section class="login_content">
+          <form [formGroup]='userForm'>
+            <h1>Sign in</h1>
+              <div class="alert alert-danger" *ngIf='loginError'>
+                <p>Email or password incorrect!</p>
+              </div>
+              <div *ngIf="invalidEmail" class="alert alert-danger"><b>Error!</b> Invalid email address.</div>
+              <div *ngIf="errorServer" class="alert alert-danger">{{errorMessage}}</div>
+              <div>
+                <input type="text" class="form-control" placeholder="Email" required="" formControlName="email" />
+              </div>
+              <div>
+                <input type="password" class="form-control" placeholder="Password" required="" formControlName="password" />
+              </div>
+              <div class="clearfix"></div>
+
+              <div>
+                <a class="btn btn-primary btn-lg design-button" style="width:100%;" [ngClass]="userForm.status=='INVALID'?'disabled':null"
+                  (click)="emailLogin(userForm.value)">Sign in</a>
+              </div>
+              <div class="clearfix"></div>
+
+              <div class="separator">
+                <p class="change_link">New to site?
+                  <a routerLink="/sign-up" class="to_register"> Sign Up </a>
+                </p>
+                <a class="text-password" (click)="lostPassward()"> Lost your password? </a>
+
+                <div class="clearfix"></div>
+                <br>
+              </div>
+          </form>
+
+        </section>
+      </div>
+    </div>
+  </div>
+</body>

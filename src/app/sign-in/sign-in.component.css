@@ -1,0 +1,21 @@
+.login_content form{
+    margin-bottom: 0!important;
+}
+.text-password{
+    margin: 0 auto;
+    /* font-size: 16px; */
+}
+.text-password:hover{
+    cursor: pointer;
+}
+
+.disable {
+    pointer-events: none;
+    cursor: default;
+ } 
+
+.design-button{
+    color: white!important;
+    background-color: #0881A3!important;
+
+}
