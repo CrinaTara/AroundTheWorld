@@ -19,3 +19,21 @@
     background-color: #0881A3!important;
 
 }
+.google-button{
+    background-color: #db3236!important;
+    color: white!important;
+    border-color: #db3236!important;
+}
+
+.btn-outline-secondary:hover{
+    background-color: white!important;
+}
+
+.password_link{
+    margin-bottom: 0.6rem;
+    margin-top: 0.4rem;
+}
+
+.change_link, .to_register{
+    font-size: medium;
+}

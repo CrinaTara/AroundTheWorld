@@ -7,16 +7,20 @@
     </div>
   </div>
   <div>
-    <div class="login_wrapper">
-      <div class="animate form login_form">
-        <section class="login_content">
-          <form [formGroup]='userForm'>
-            <h1>Sign in</h1>
+    <div *ngIf="!lostPassword" >
+      <div class="login_wrapper">
+        <div class="animate form login_form">
+          <section class="login_content">
+
+            <form [formGroup]='userForm'>
+              <h1>Sign in</h1>
               <div class="alert alert-danger" *ngIf='loginError'>
                 <p>Email or password incorrect!</p>
               </div>
-              <div *ngIf="invalidEmail" class="alert alert-danger"><b>Error!</b> Invalid email address.</div>
+              <div *ngIf="invalidEmail" class="alert alert-danger">
+                <b>Error!</b> Invalid email address.</div>
               <div *ngIf="errorServer" class="alert alert-danger">{{errorMessage}}</div>
+
               <div>
                 <input type="text" class="form-control" placeholder="Email" required="" formControlName="email" />
               </div>
@@ -30,19 +34,60 @@
                   (click)="emailLogin(userForm.value)">Sign in</a>
               </div>
               <div class="clearfix"></div>
+              <div>
+                <a class="btn btn-primary btn-lg google-button" style="width:100%;" (click)="googleLogin()">Sign in with GOOGLE</a>
+              </div>
 
               <div class="separator">
-                <p class="change_link">New to site?
-                  <a routerLink="/sign-up" class="to_register"> Sign Up </a>
+                <p class="password_link">
+                  <a class="text-password " (click)="goToResetPassword()"> Lost your password? </a>
                 </p>
-                <a class="text-password" (click)="lostPassward()"> Lost your password? </a>
-
+                <p class="change_link">New to site?
+                    <a routerLink="/sign-up" class="to_register"> <b>Sign Up</b> </a>
+                  </p>
                 <div class="clearfix"></div>
-                <br>
               </div>
-          </form>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        </section>
+  <!-- forgot password form -->
+  <div *ngIf="lostPassword" class="animate fadeInDown">
+    <div>
+      <div class="login_wrapper">
+        <div class="animate form login_form">
+          <section class="login_content">
+            <form [formGroup]='resetPasswordForm'>
+              <h1>Resset Password</h1>
+              <p>Enter the email address associated with your account, and we’ll email you a link to reset your password.</p>
+              <div *ngIf="!showMessage;  else elseBlock">
+                <div *ngIf="errorPassword" class="alert alert-danger">
+                  <b>Error!</b> {{errorPassword}}</div>
+                <div>
+                  <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Email" formControlName="email" />
+                  </div>
+                </div>
+
+                <div>
+                  <a class="btn btn-primary btn-lg design-button" style="width:100%;" [ngClass]="resetPasswordForm.status=='INVALID'?'disabled':null"
+                    (click)="resetPassword(resetPasswordForm.value)">Send mail</a>
+                </div>
+              </div>
+            </form>
+            <ng-template #elseBlock>
+              <div class="alert alert-success" style="font-size: 17px">Mail successfully sent! Please check your email.</div>
+            </ng-template>
+            <br>
+          </section>
+          <div>
+              <a class="btn btn-outline-secondary " 
+                (click)="backToSingIn()"><i class="fas fa-arrow-left"> </i>  Back to <b>Sing In</b></a>
+            </div>
+        </div>
       </div>
     </div>
   </div>
