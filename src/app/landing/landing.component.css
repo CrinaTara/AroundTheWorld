@@ -1,0 +1,70 @@
+
+.main-container {
+    perspective: 1.1px;
+    transform-style: preserve-3d;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+  
+  .content-container {
+    position: relative;
+    display: block;
+    background-color: white;
+    z-index: 1;
+  }
+  .content-two{
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 75px 0;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    
+  }
+
+  p{
+      font-size: 1.3em;
+      margin-left: 5%;
+      margin-right: 3%;
+  }
+  h3{
+    margin-left: 3%;
+  }
+
+  .content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 75px 0;
+  }
+  
+  
+  .parallax-container {
+    display: flex;
+    flex: 1 0 auto;
+    position: relative;
+    z-index: -1;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    transform: translateZ(-5px) scale(6); 
+    background-color: #ECF3F8;
+  }
+
+  .parallax-container2 {
+    display: flex;
+    flex: 1 0 auto;
+    position: relative;
+    z-index: -5;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    transform: translateZ(-5px) scale(6); 
+    background-color: #ECF3F8;
+  }
+
+  @media screen and (max-width: 550px) {
+    img {
+       width: 350px;
+    }
+}

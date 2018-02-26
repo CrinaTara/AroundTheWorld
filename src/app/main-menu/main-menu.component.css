@@ -1,0 +1,22 @@
+.main-menu-design{
+    background-color: #293241;
+    
+}
+
+.sing-button{
+    color: white!important;
+    
+   }
+
+.buttons{
+     display: flex;
+    align-items: center;
+     justify-content: center;
+
+}
+.logo{
+    /* width:200px; */
+    border-radius:0px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+}

@@ -6,6 +6,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { HomeComponent } from './home/home.component';
 
 
+
 const routes: Routes = [
     {path: '', component: LandingComponent},
     {path: 'sign-in', component: SignInComponent},
@@ -29,6 +30,7 @@ export class AppRoutingModule {
 export const routingComponents = [LandingComponent,
                                   SignInComponent,
                                   SignUpComponent,
-                                  HomeComponent
+                                  HomeComponent,
+                                  
                                   ];
    

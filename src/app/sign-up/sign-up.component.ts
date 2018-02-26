@@ -24,6 +24,7 @@ export class SignUpComponent implements OnInit {
   invalidEmail: boolean = false;
   samePassword: boolean = false;
   wrongPassword: boolean = false;
+  
 
   constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private router:Router) { 
     this.userForm = this.fb.group({
@@ -88,7 +89,8 @@ export class SignUpComponent implements OnInit {
         .then(
           (success) => {
           console.log(success);
-          this.router.navigate(['/home'])
+          this.registerSuccess = true;
+          
         }).catch(
           (err) => {
           console.log(err);

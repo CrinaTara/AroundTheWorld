@@ -9,7 +9,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { routingComponents } from './app-routing.module';
+
 import { MainMenuComponent } from './main-menu/main-menu.component';
+
 
 
 
@@ -18,6 +20,7 @@ import { MainMenuComponent } from './main-menu/main-menu.component';
     AppComponent,
     routingComponents,
     MainMenuComponent
+    
   ],
   imports: [
     BrowserModule,
