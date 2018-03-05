@@ -1,4 +1,7 @@
 
+h1, h3, p{
+  color: white;
+}
 .main-container {
     perspective: 1.1px;
     transform-style: preserve-3d;
@@ -7,10 +10,10 @@
     overflow-y: scroll;
   }
   
-  .content-container {
+  .content-container, .content-container2 {
     position: relative;
     display: block;
-    background-color: white;
+    background-color: rgb(36, 36, 36);
     z-index: 1;
   }
   .content-two{
@@ -23,6 +26,10 @@
     
   }
 
+  img{
+    width: 300px;
+  }
+
   p{
       font-size: 1.3em;
       margin-left: 5%;
@@ -31,13 +38,24 @@
   h3{
     margin-left: 3%;
   }
+ .fas{
+   font-size: 22px;
+   margin-top: 40%;
+
+ }
 
   .content {
     max-width: 800px;
     margin: 0 auto;
     padding: 75px 0;
   }
-  
+    
+  .align-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   
+  }
   
   .parallax-container {
     display: flex;
@@ -48,7 +66,7 @@
     justify-content: center;
     align-items: center;
     transform: translateZ(-5px) scale(6); 
-    background-color: #ECF3F8;
+    background-color: #F7F7F7;
   }
 
   .parallax-container2 {
@@ -60,11 +78,11 @@
     justify-content: center;
     align-items: center;
     transform: translateZ(-5px) scale(6); 
-    background-color: #ECF3F8;
+    background-color: #F7F7F7;
   }
 
   @media screen and (max-width: 550px) {
     img {
-       width: 350px;
+       width: 200px;
     }
 }

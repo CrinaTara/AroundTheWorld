@@ -3,20 +3,22 @@
     <main-menu></main-menu>
     <div class="parallax-container">
         <div class="animate slideInDown">
-            <img src="assets/images/AroundTheWorld.png">
+            <img src="assets/images/AroundTheWorld.png">       
+            <br>
+            <i *ngIf="iconHide" class="fas fa-chevron-down align-container" (click)="scroll(target)"></i>
         </div>
+       
     </div>
-
-    <div class="content-container">
+   
+ 
+    <div  #target class="content-container">
         <div class="content">
-            <h1 class="text-center">UNIQUE EXPERIENCES ALL OVER THE WORD
+            <h1 class="text-center">UNIQUE EXPERIENCES ALL OVER THE WORLD
             </h1>
-
         </div>
     </div>
     <div class="parallax-container2"></div>
-
-    <div class="content-container">
+    <div class="content-container2">
         <div class="content-two row">
             <div class="col-md-4">
                 <h3>START PLANNING YOUR NEXT ADVENTURE</h3>

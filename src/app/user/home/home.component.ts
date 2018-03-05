@@ -6,7 +6,7 @@ import * as firebase from 'firebase';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
 
@@ -21,11 +21,4 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
   }
 
-    //// Sign Out ////
-    signOut(): void {
-      this.afAuth.auth.signOut();
-      console.log("Info: ");
-      console.log(this.authState);
-      this.router.navigate(['/'])
-    }
 }

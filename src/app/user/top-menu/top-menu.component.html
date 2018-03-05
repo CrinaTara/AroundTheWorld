@@ -5,7 +5,7 @@
      
         <div class="logo-container">
           <div class="logo">
-            <a routerLink="/">
+            <a routerLink="../home">
               <img src="assets/images/Circle.png" />
             </a>
           </div>
@@ -13,23 +13,17 @@
       </div>
 
       <div class="col-sm-4">
-          <div class="logo-container">
-            <div class="align-container logo">
-              <a routerLink="/">
-                <img src="assets/images/name.png" />
-              </a>
-            </div>
-          </div>
-        </div>
+        
+      </div>
         
         <div class="col-sm-4 d-flex align-items-center justify-content-end">
           <div class="buttons ">
-            <a class="btn sing-button " routerLink="/sign-up">
-              SIGN UP
+            <a class="btn sing-button " routerLink="/home/user-profile"  routerLinkActive="active-page" >
+              PROFILE
             </a>
 
-            <a class="btn sing-button" routerLink="/sign-in">
-              SIGN IN
+            <a class="btn sing-button" (click)="signOut()" *ngIf="authState.email">
+              LOG OUT
             </a>
           </div>
 
