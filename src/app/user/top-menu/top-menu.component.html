@@ -12,16 +12,20 @@
         </div>
       </div>
 
-      <div class="col-sm-4">
-        
+      <div class="col-sm-4 d-flex align-items-center justify-content-center">
+          <a class="btn sing-button " routerLink="/home"  routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}">
+            HOME
+          </a>
+          <a class="btn sing-button " routerLink="/home/news"  routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}">
+            NEWS
+          </a>
+          <a class="btn sing-button" routerLink="/home/user-profile"  routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}" >
+            PROFILE
+          </a>
       </div>
         
         <div class="col-sm-4 d-flex align-items-center justify-content-end">
           <div class="buttons ">
-            <a class="btn sing-button " routerLink="/home/user-profile"  routerLinkActive="active-page" >
-              PROFILE
-            </a>
-
             <a class="btn sing-button" (click)="signOut()" *ngIf="authState.email">
               LOG OUT
             </a>

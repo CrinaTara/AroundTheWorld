@@ -1,0 +1,36 @@
+<div class="wrapper">
+  <div class="profile-container">
+    <h3>My account</h3>
+    <h6>Edit your personal information</h6>
+  </div>
+  <br>
+  <div class="profile-container">
+      <h6>Edit your profile information:</h6>
+      <br>
+      <form [formGroup]='userForm'>
+          <label>First Name</label>
+          <div>
+              <input type="text" class="form-control" placeholder=""  formControlName="firstName" />
+          </div>
+          <br>
+
+          <label>Last Name</label>
+          <div>
+              <input type="text" class="form-control" placeholder=""  formControlName="lastName" />
+          </div>
+          <br>
+
+          <label>Bio - Short for “Biography”. Tell something about yourself.</label>
+          <div>
+              <input type="text" class="form-control" placeholder=""  formControlName="bio" />
+          </div>
+
+          <br>
+          <label>Home Base - Where you are currently living.(e.g. “Goa, India”)</label>
+          <div>
+              <input type="text" class="form-control" placeholder="Enter a location"  formControlName="homeBase" />
+          </div>
+          
+      </form>
+    </div>
+</div>

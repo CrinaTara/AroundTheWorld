@@ -11,15 +11,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { routingComponents } from './app-routing.module';
 
 
-
-
-
-
-
 @NgModule({
   declarations: [
     AppComponent,
-    routingComponents,  
+    routingComponents,
+    
   ],
   imports: [
     BrowserModule,

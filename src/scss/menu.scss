@@ -1,7 +1,12 @@
 .main-menu-design{
     background-color: rgb(34, 34, 34);
+    overflow-x: hidden;
     /* background-color: #293241; */
     
+}
+
+.active-page{
+    border-bottom: solid white;
 }
 
 .buttons{

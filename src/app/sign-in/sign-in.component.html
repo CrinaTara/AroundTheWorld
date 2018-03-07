@@ -1,13 +1,9 @@
-<body class="login">
- 
-    <div class="row">
-        <div class=" col-sm-12">
-        <main-menu></main-menu>
-      </div>
-    </div>
 
+<main-menu></main-menu>
+
+<div class="login">
   <div>
-    <div *ngIf="!lostPassword" >
+    <div *ngIf="!lostPassword">
       <div class="login_wrapper">
         <div class="animate form login_form">
           <section class="login_content">
@@ -43,8 +39,10 @@
                   <a class="text-password " (click)="goToResetPassword()"> Lost your password? </a>
                 </p>
                 <p class="change_link">New to site?
-                    <a routerLink="/sign-up" class="to_register"> <b>Sign Up</b> </a>
-                  </p>
+                  <a routerLink="/sign-up" class="to_register">
+                    <b>Sign Up</b>
+                  </a>
+                </p>
                 <div class="clearfix"></div>
               </div>
             </form>
@@ -84,11 +82,13 @@
             <br>
           </section>
           <div>
-              <a class="btn btn-outline-secondary " 
-                (click)="backToSingIn()"><i class="fas fa-arrow-left"> </i>  Back to <b>Sing In</b></a>
-            </div>
+            <a class="btn btn-outline-secondary " (click)="backToSingIn()">
+              <i class="fas fa-arrow-left"> </i> Back to
+              <b>Sing In</b>
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</body>
+</div>

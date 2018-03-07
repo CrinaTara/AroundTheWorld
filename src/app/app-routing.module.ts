@@ -8,6 +8,7 @@ import { TopMenuComponent } from './user/top-menu/top-menu.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { UserProfileComponent } from './user/user-profile/user-profile.component';
 import { DashboardComponent } from './user/dashboard/dashboard.component';
+import { EditProfileComponent } from './user/edit-profile/edit-profile.component';
 
 
 const routes: Routes = [
@@ -17,7 +18,8 @@ const routes: Routes = [
     {path: 'home', component: DashboardComponent,
     children: [
         {path: '', component: HomeComponent},
-        {path: 'user-profile', component: UserProfileComponent}
+        {path: 'user-profile', component: UserProfileComponent},
+        {path: 'edit-profile', component: EditProfileComponent}
     ]},
     {path: '**', component: LandingComponent}
 ]
@@ -43,5 +45,6 @@ export const routingComponents = [LandingComponent,
                                   MainMenuComponent,
                                   UserProfileComponent,
                                   DashboardComponent,
+                                  EditProfileComponent,  
                                   ];
    
