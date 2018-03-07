@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from "@angular/router";
 import * as firebase from 'firebase';
@@ -19,6 +19,7 @@ export class UserProfileComponent implements OnInit {
    }
 
   ngOnInit() {
+  
   }
 
 }
