@@ -1,7 +1,11 @@
+.d-flex{
+  justify-content: space-between;
+}
+
 .wrapper{
   right: 0px;
   margin: 0px auto;
-  padding-top: 5%;
+  padding-top: 3%;
   max-width: 500px;
   position: relative;
 }
@@ -9,6 +13,7 @@
 .profile-container{
     border: 1px solid rgb(20, 20, 20);
     padding: 2%;
+    margin-bottom: 2%;
 }
 
 label{
@@ -27,4 +32,5 @@ i{
 
 .btn-arrows{
   background-color: white;
+  margin-top: 8px;
 }

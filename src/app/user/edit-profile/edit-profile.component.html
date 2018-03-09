@@ -69,25 +69,18 @@
 
     <div *ngIf="showChangePass">
         <div class="profile-container">
-            <h6>Change password:</h6>
-            <form [formGroup]='changePasswordForm'>
-                <div class="alert alert-error" *ngIf="messageDisplay">{{messageDisplayed}}</div>
-                <div *ngIf="changePasswordForm.controls['newPassword'].hasError('minlength')" class="alert alert-danger">
-                    Your password must be at least 6 characters.
-                </div>
-                <label>New password</label>
+            <h6>Change you password.  Please make sure to confirm your email before continuing.</h6>
+            <form [formGroup]='changePassForm'>
+                <div class="alert alert-error" *ngIf="changePassForm.controls['newEmail'].hasError('pattern')">Invalid email address</div>
+                <div class="alert alert-success" *ngIf="messageDisplay">{{messageDisplayed}}</div>
+                <label>Email</label>
                 <div>
-                    <input type="password" class="form-control" placeholder="" formControlName="newPassword" />
+                    <input type="text" class="form-control" placeholder="" formControlName="newEmail" />
                 </div>
                 <br>
 
-                <label>Confirmation</label>
                 <div>
-                    <input type="password" class="form-control" placeholder="" formControlName="confirmPassword" />
-                </div>
-                <br>
-                <div>
-                    <a class="btn update-button" style="width:100%;" (click)="updatePassword(changePasswordForm.value)">Change password</a>
+                    <a class="btn update-button" style="width:100%;" [ngClass]="changePassForm.status=='INVALID'?'disabled':null" (click)="updatePassword(changePassForm.value)">Send email</a>
                 </div>
             </form>
             <div class="d-flex ">
@@ -96,17 +89,17 @@
                         <i class="fas fa-angle-left"></i>
                     </button>
                 </div>
-                <div class="justify-content-end pull-right">
+                <!-- <div class="justify-content-end pull-right">
                     <button class="btn btn-arrows" (click)="toChangeEmail()">
                         <i class="fas fa-angle-right"></i>
                     </button>
-                </div>
+                </div> -->
             </div>
         </div>
 
     </div>
 
-    <div *ngIf="showChangeEmail">
+    <!-- <div *ngIf="showChangeEmail">
         <div class="profile-container">
             <h6>Change your email here. Please make sure to confirm your email before continuing.</h6>
             <form [formGroup]='changeEmailForm'>
@@ -128,5 +121,5 @@
             </div>
         </div>
 
-    </div>
+    </div> -->
 </div>
