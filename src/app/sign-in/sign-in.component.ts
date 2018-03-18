@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AngularFireAuth, } from 'angularfire2/auth';
+import { AngularFirestore } from 'angularfire2/firestore';
 import { Router } from "@angular/router";
 import * as firebase from 'firebase';
 
@@ -22,7 +23,7 @@ export class SignInComponent implements OnInit {
   invalidEmail: boolean = false;
   lostPassword: boolean =  false;
 
-  constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private router:Router) { 
+  constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private router:Router, private db: AngularFirestore) { 
     this.userForm = this.fb.group({
       email: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -64,7 +65,9 @@ export class SignInComponent implements OnInit {
       .then((user) => {
         this.authState = user;
         console.log("M-am logat");
-        this.router.navigate(['/home'])
+        console.log(this.authState);
+        localStorage.setItem('Auth', this.authState.refreshToken);
+        this.router.navigate(['/home']);
       })
       .catch(error => {
         console.log(error);

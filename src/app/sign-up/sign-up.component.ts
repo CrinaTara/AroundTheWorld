@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFirestore } from 'angularfire2/firestore';
 import { Router } from "@angular/router";
 import * as firebase from 'firebase';
 
@@ -26,7 +27,7 @@ export class SignUpComponent implements OnInit {
   wrongPassword: boolean = false;
   
 
-  constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private router:Router) { 
+  constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private router:Router,  private db: AngularFirestore) { 
     this.userForm = this.fb.group({
       email: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -88,7 +89,18 @@ export class SignUpComponent implements OnInit {
         this.afAuth.auth.createUserWithEmailAndPassword( email,password)
         .then(
           (success) => {
+            console.log('Aici');
           console.log(success);
+          let data = {
+            email: this.userForm.value.email
+          }
+          this.db.collection("users").doc(success.uid).set(data)
+            .then(function (docRef) {
+              // console.log("Document written with ID: ", docRef.id);
+            })
+            .catch(function (error) {
+              console.error("Error adding document: ", error);
+            });
           this.registerSuccess = true;
           
         }).catch(

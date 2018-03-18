@@ -1,3 +1,6 @@
+
+$button-color: #0B8457;
+
 .d-flex{
   justify-content: space-between;
 }
@@ -23,7 +26,13 @@ a{
   color:white!important;
 }
 .update-button{
-  background-color: #0B8457;
+  background-color: $button-color ;
+}
+
+.save-picture-button{
+  background-color: $button-color ;
+  width:auto;
+  margin-top: 2%;
 }
 
 i{
@@ -33,4 +42,35 @@ i{
 .btn-arrows{
   background-color: white;
   margin-top: 8px;
+}
+
+
+.thumbnail {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  overflow: hidden;
+  margin-top: 5%;
+}
+
+.thumbnail img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
+
+.image-upload > input
+{
+    display: none;
+}
+
+.image-upload img
+{
+    cursor: pointer;
 }

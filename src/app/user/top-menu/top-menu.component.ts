@@ -24,6 +24,10 @@ export class TopMenuComponent implements OnInit {
     //// Sign Out ////
     signOut(): void {
       this.afAuth.auth.signOut();
+      
+      localStorage.removeItem('Auth');
+      delete window.localStorage['Auth'];
+
       console.log("Info: ");
       console.log(this.authState);
       this.router.navigate(['/'])

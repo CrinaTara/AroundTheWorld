@@ -10,16 +10,17 @@ import { UserProfileComponent } from './user/user-profile/user-profile.component
 import { DashboardComponent } from './user/dashboard/dashboard.component';
 import { EditProfileComponent } from './user/edit-profile/edit-profile.component';
 
+import { AuthGuard } from './auth-guard.service';
 
 const routes: Routes = [
     {path: '', component: LandingComponent},
     {path: 'sign-in', component: SignInComponent},
     {path: 'sign-up', component: SignUpComponent},
-    {path: 'home', component: DashboardComponent,
+    {path: 'home', component: DashboardComponent,  canActivate: [AuthGuard],
     children: [
-        {path: '', component: HomeComponent},
-        {path: 'user-profile', component: UserProfileComponent},
-        {path: 'edit-profile', component: EditProfileComponent}
+        {path: '', component: HomeComponent, canActivateChild: [AuthGuard]},
+        {path: 'user-profile', component: UserProfileComponent, canActivateChild: [AuthGuard]},
+        {path: 'edit-profile', component: EditProfileComponent, canActivateChild: [AuthGuard]}
     ]},
     {path: '**', component: LandingComponent}
 ]

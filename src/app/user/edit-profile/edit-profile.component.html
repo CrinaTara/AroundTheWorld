@@ -7,9 +7,18 @@
     <div *ngIf="showPictureProfile">
         <div class="profile-container">
             <h6>Edit your profile picture</h6>
-            <div class="d-flex align-items-center justify-content-center">
-                <img class="avatar-frame " src="assets/images/user.png" alt="Avatar" title="Change the avatar">
+            <div class="image-upload">
+                <label for="file-input">
+                    <div class="thumbnail d-flex align-items-center justify-content-center">
+                        <img [src]="url" class=" profile profile-avatar" title="Change Picture">
+                    </div>
+                </label>
+                <input id="file-input" type="file" (change)="onSelectFile($event)" />
             </div>
+            <div>
+                <a class="btn save-picture-button" (click)="saveUserProfilePicture()">Save Picture</a>
+            </div>
+            <div *ngIf="updateMessageDisplay">ceasdasd{{updateMessageDisplayed}}</div>
             <div class="d-flex align-items-end justify-content-end">
                 <button class="btn btn-arrows " (click)="toInfoProfile()">
                     <i class="fas fa-angle-right"></i>
@@ -43,14 +52,19 @@
                 <br>
 
                 <label>Home Base - Where you are currently living.(e.g. “Goa, India”)</label>
-                <div>
+                <!-- <div>
                     <input type="text" class="form-control" placeholder="Enter a location" formControlName="homeBase" />
+                </div> -->
+                <div class="form-group">
+                    <input placeholder="Enter a location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control"
+                        #search formControlName="homeBase">
                 </div>
                 <br>
                 <div>
                     <a class="btn update-button" style="width:100%;" (click)="saveUserData(userForm.value)">Save</a>
                 </div>
             </form>
+           
             <div class="d-flex ">
                 <div class="justify-content-start">
                     <button class="btn btn-arrows" (click)="backPictureProfile()">
@@ -69,7 +83,7 @@
 
     <div *ngIf="showChangePass">
         <div class="profile-container">
-            <h6>Change you password.  Please make sure to confirm your email before continuing.</h6>
+            <h6>Change you password. Please make sure to confirm your email before continuing.</h6>
             <form [formGroup]='changePassForm'>
                 <div class="alert alert-error" *ngIf="changePassForm.controls['newEmail'].hasError('pattern')">Invalid email address</div>
                 <div class="alert alert-success" *ngIf="messageDisplay">{{messageDisplayed}}</div>
