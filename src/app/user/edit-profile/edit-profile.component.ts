@@ -20,6 +20,10 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   changePassForm: FormGroup;
   authState: any = null;
 
+  public userObject: any;
+  public userObjectRetrived: any;
+  private url : any;
+
   messageDisplayed: string = '';
   messageDisplay: boolean = false;
   private updateMessageDisplayed: string = '';
@@ -29,21 +33,6 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   private showProfileInfo: boolean = false;
 
   constructor(private mapsAPILoader: MapsAPILoader, private ngZone: NgZone, public fb: FormBuilder, private db: AngularFirestore, private afAuth: AngularFireAuth) {
-    this.userForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      bio: ['', Validators.required],
-      homeBase: ['', Validators.required],
-    })
-
-    // this.changePasswordForm = this.fb.group({
-    //   newPassword: ['', [Validators.required, , Validators.minLength(6)]],
-    //   confirmPassword: ['', Validators.required],
-    // })
-
-    this.changePassForm = this.fb.group({
-      newEmail: ['', [Validators.required, Validators.pattern('^[_a-zA-Z0-9]+(\.[_a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$')]]
-    }),
 
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth
@@ -71,6 +60,28 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     console.log(this.authState);
+    
+
+    this.userObjectRetrived = localStorage.getItem('User');
+    this.userObject = JSON.parse(this.userObjectRetrived);
+
+     this.url = (this.userObject.profilePicture == '')?'assets/images/user.png': this.userObject.profilePicture;
+
+    this.userForm = this.fb.group({
+      firstName: [this.userObject.firstName, Validators.required],
+      lastName: [this.userObject.lastName, Validators.required],
+      bio: [this.userObject.bio, Validators.required],
+      homeBase: [this.userObject.homeBase, Validators.required],
+    })
+
+    // this.changePasswordForm = this.fb.group({
+    //   newPassword: ['', [Validators.required, , Validators.minLength(6)]],
+    //   confirmPassword: ['', Validators.required],
+    // })
+
+    this.changePassForm = this.fb.group({
+      newEmail: [this.userObject.email, [Validators.required, Validators.pattern('^[_a-zA-Z0-9]+(\.[_a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$')]]
+    })
   }
 
   saveUserData(dataUser) {
@@ -166,7 +177,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     
   }
 
-  url = 'assets/images/user.png';
+  // url = 'assets/images/user.png';
   onSelectFile(event) {
     if (event.target.files && event.target.files[0]) {
       var reader = new FileReader();

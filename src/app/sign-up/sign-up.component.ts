@@ -92,7 +92,13 @@ export class SignUpComponent implements OnInit {
             console.log('Aici');
           console.log(success);
           let data = {
-            email: this.userForm.value.email
+            email: this.userForm.value.email,
+            role: 'user',
+            firstName: '',
+            lastName: '',
+            bio: '',
+            homeBase: '',
+            profilePicture: ''
           }
           this.db.collection("users").doc(success.uid).set(data)
             .then(function (docRef) {

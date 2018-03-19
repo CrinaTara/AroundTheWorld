@@ -17,13 +17,13 @@ export class SignInComponent implements OnInit {
   authState: any = null;
 
   showMessage: boolean = false;
-  errorPassword : any = false;
+  errorPassword: any = false;
   errorServer: boolean = false;
   errorMessage: string;
   invalidEmail: boolean = false;
-  lostPassword: boolean =  false;
+  lostPassword: boolean = false;
 
-  constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private router:Router, private db: AngularFirestore) { 
+  constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private router: Router, private db: AngularFirestore) {
     this.userForm = this.fb.group({
       email: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -57,50 +57,65 @@ export class SignInComponent implements OnInit {
       }
     }
 
-    
-    let email =  data.email;
+
+    let email = data.email;
     let password = data.password;
     if (valid) {
-    this.afAuth.auth.signInWithEmailAndPassword(email, password)
-      .then((user) => {
-        this.authState = user;
+      this.afAuth.auth.signInWithEmailAndPassword(email, password)
+        .then((user) => {
+          this.authState = user;
+          console.log("M-am logat");
+
+          console.log(this.authState);
+          localStorage.setItem('Auth', this.authState.refreshToken);
+
+          this.db.collection("users").doc(this.authState.uid).ref.get().then(function (doc) {
+            if (doc.exists) {
+              console.log("Document data:", doc.data());
+              localStorage.setItem('User',  JSON.stringify(doc.data()));
+        
+            } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
+            }
+          }).catch(function (error) {
+            console.log("Error getting document:", error);
+          });
+
+          this.router.navigate(['/home']);
+        })
+        .catch(error => {
+          console.log(error);
+          this.errorServer = true;
+          this.errorMessage = error;
+        }
+        );
+
+    }
+  }
+
+  googleLogin() {
+    const provider = new firebase.auth.GoogleAuthProvider()
+    return this.socialSignIn(provider);
+  }
+
+  private socialSignIn(provider) {
+    return this.afAuth.auth.signInWithPopup(provider)
+      .then((credential) => {
+        this.authState = credential.user;
         console.log("M-am logat");
-        console.log(this.authState);
-        localStorage.setItem('Auth', this.authState.refreshToken);
-        this.router.navigate(['/home']);
+        this.router.navigate(['/home'])
       })
       .catch(error => {
         console.log(error);
         this.errorServer = true;
         this.errorMessage = error;
-      }
-    );
-    
+      });
   }
- }
 
- googleLogin() {
-  const provider = new firebase.auth.GoogleAuthProvider()
-  return this.socialSignIn(provider);
-}
-
-private socialSignIn(provider) {
-  return this.afAuth.auth.signInWithPopup(provider)
-    .then((credential) =>  {
-        this.authState = credential.user;
-        console.log("M-am logat");
-        this.router.navigate(['/home'])
-    })
-    .catch(error => {
-      console.log(error);
-      this.errorServer = true;
-      this.errorMessage = error;
-    });
-}
-
-// Sends email allowing user to reset password
-resetPassword(data) {
-  var valid = true;
+  // Sends email allowing user to reset password
+  resetPassword(data) {
+    var valid = true;
 
     if (this.resetPasswordForm.value.email) {
       if (this.validateEmail(this.resetPasswordForm.value.email)) {
@@ -111,23 +126,23 @@ resetPassword(data) {
       }
     }
 
-    if(valid){
-       var auth = firebase.auth();
-       let email =  data.email;
+    if (valid) {
+      var auth = firebase.auth();
+      let email = data.email;
       return auth.sendPasswordResetEmail(email)
-       .then(() => this.showMessage = true)
-       .catch((error) =>{ 
-           console.log(error)
+        .then(() => this.showMessage = true)
+        .catch((error) => {
+          console.log(error)
         })
     }
- 
-}
 
-goToResetPassword(){
-  this.lostPassword = true;
-}
-backToSingIn(){
-  this.lostPassword = false;
-}
+  }
+
+  goToResetPassword() {
+    this.lostPassword = true;
+  }
+  backToSingIn() {
+    this.lostPassword = false;
+  }
 
 }

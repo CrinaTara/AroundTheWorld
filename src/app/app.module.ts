@@ -25,7 +25,7 @@ import { AuthGuard } from './auth-guard.service';
       apiKey: "AIzaSyB8ClDdzgUg2gJ3KXaUEexQF5KvqRhLBgE",
       libraries: ["places"]
     }),
-    AngularFirestoreModule,
+    AngularFirestoreModule.enablePersistence(),
     AngularFireAuthModule,
     AppRoutingModule,
     FormsModule,

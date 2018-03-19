@@ -28,6 +28,10 @@ export class TopMenuComponent implements OnInit {
       localStorage.removeItem('Auth');
       delete window.localStorage['Auth'];
 
+      localStorage.removeItem('User');
+      delete window.localStorage['User'];
+
+
       console.log("Info: ");
       console.log(this.authState);
       this.router.navigate(['/'])
