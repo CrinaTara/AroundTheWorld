@@ -5,6 +5,7 @@ import { AngularFireAuth, } from 'angularfire2/auth';
 import * as firebase from 'firebase';
 import { AgmCoreModule, MapsAPILoader } from '@agm/core';
 import { } from '@types/googlemaps';
+import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-edit-profile',
@@ -22,7 +23,8 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
 
   public userObject: any;
   public userObjectRetrived: any;
-  private url : any;
+  private url: any;
+  public urlDummy: any;
 
   messageDisplayed: string = '';
   messageDisplay: boolean = false;
@@ -32,7 +34,12 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   private showChangePass: boolean = false;
   private showProfileInfo: boolean = false;
 
-  constructor(private mapsAPILoader: MapsAPILoader, private ngZone: NgZone, public fb: FormBuilder, private db: AngularFirestore, private afAuth: AngularFireAuth) {
+  constructor(private sanitizer: DomSanitizer,
+    private mapsAPILoader: MapsAPILoader,
+    private ngZone: NgZone,
+    public fb: FormBuilder,
+    private db: AngularFirestore,
+    private afAuth: AngularFireAuth) {
 
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth
@@ -60,12 +67,12 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     console.log(this.authState);
-    
+
 
     this.userObjectRetrived = localStorage.getItem('User');
     this.userObject = JSON.parse(this.userObjectRetrived);
 
-     this.url = (this.userObject.profilePicture == '')?'assets/images/user.png': this.userObject.profilePicture;
+    this.url = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
 
     this.userForm = this.fb.group({
       firstName: [this.userObject.firstName, Validators.required],
@@ -84,6 +91,17 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     })
   }
 
+  updateLocalStorage(){
+    this.db.collection("users").doc(this.authState.uid).ref
+    .onSnapshot(function (doc) {
+      // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+      console.log(" data: ", doc.data());
+      localStorage.setItem('User', JSON.stringify(doc.data()));
+    }, function (error) {
+      console.log("Eroor");
+    });
+  }
+
   saveUserData(dataUser) {
     let data = {
       firstName: dataUser.firstName,
@@ -92,14 +110,15 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
       homeBase: dataUser.homeBase,
     }
     console.log(this.authState);
+    var that = this;
     this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
       .then(function () {
         // console.log("Document written with ID: ", docRef.id);
-      
+        //???????
+        that.updateLocalStorage();
       })
-      .catch(function (error) {
+      .catch( (error) => {
         console.error("Error adding document: ", error);
-       
         this.userForm.patchValue({
           firstName: '',
           lastName: '',
@@ -107,9 +126,10 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
           homeBase: ''
         });
       });
+
   }
 
-  
+
   updatePassword(data) {
     var auth = firebase.auth();
     let email = data.newEmail;
@@ -159,22 +179,22 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   toInfoProfile() {
     this.showPictureProfile = false;
     this.showProfileInfo = true;
- 
+
   }
   backPictureProfile() {
     this.showProfileInfo = false;
     this.showPictureProfile = true;
-    
+
   }
   toChangePass() {
     this.showChangePass = true;
     this.showProfileInfo = false;
-  
+
   }
   backProfileInfo() {
     this.showProfileInfo = true;
     this.showChangePass = false;
-    
+
   }
 
   // url = 'assets/images/user.png';
@@ -185,31 +205,82 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
       reader.readAsDataURL(event.target.files[0]); // read file as data url
 
       reader.onload = (event: any) => { // called once readAsDataURL is completed
-        this.url = event.target.result;
+        this.urlDummy = event.target.result;
       }
+      this.resizeAuthomatical(event);
     }
-    console.log(this.url);
+
+    // console.log(this.url);
+  }
+
+  resizeAuthomatical(event) {
+    var file = event.target.files[0];
+    console.log(file);
+    // Create a file reader
+    var reader = new FileReader();
+    // reader.readAsDataURL(event.target.files[0]); // read file as data url
+    // reader.readAsDataURL(file);
+
+    reader.onload = (event: any) => { // called once readAsDataURL is completed
+      // this.url = event.target.result;
+      var img = new Image();
+      img.src = event.target.result;
+      console.log(img);
+      var canvas = document.createElement('canvas');
+      //var canvas = $("<canvas>", {"id":"testing"})[0];
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      console.log(canvas);
+      console.log(ctx);
+      var MAX_WIDTH = 400;
+      var MAX_HEIGHT = 400;
+      var width = img.width;
+      var height = img.height;
+
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width;
+          width = MAX_WIDTH;
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height;
+          height = MAX_HEIGHT;
+        }
+      }
+      console.log(canvas);
+      canvas.width = width;
+      canvas.height = height;
+      console.log(canvas);
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+      console.log("AIICICIIDIIDIDI");
+
+      var dataurl = canvas.toDataURL(file.type);
+      console.log(dataurl);
+      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(dataurl);
+    }
+    reader.readAsDataURL(file);
   }
 
   saveUserProfilePicture() {
     console.log("button save picture");
     console.log(this.url);
     let data = {
-      profilePicture: this.url
+      profilePicture: this.url.changingThisBreaksApplicationSecurity
     }
+    var that = this;
     this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
       .then(function (docRef) {
-      console.log("Document written ok");
-      this.updateMessageDisplay = true;
-      this.updateMessageDisplayed = "Your information was successfully updated."
-      
-    })
-      .catch(function (error) {
-        // console.error("Error adding document: ", error);
-        this.updateMessageDisplayed = "There is an error. Try again."
-        this.updateMessageDisplay = true;
-      });
-  }
+        console.log("Document written ok");
+        // this.updateMessageDisplay = true;
+        // this.updateMessageDisplayed = "Your information was successfully updated."
+        that.updateLocalStorage();
 
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  }
 
 }
