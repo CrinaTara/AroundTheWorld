@@ -1,66 +1,82 @@
 <body class="login">
- 
-      <div class="row">
+
+    <div class="row">
         <div class=" col-sm-12">
-          <main-menu></main-menu>
+            <main-menu></main-menu>
         </div>
-      </div>
+    </div>
 
     <div>
-      <div class="login_wrapper">
-        <div class="animate form login_form">
-          <section class="login_content">
-              <form [formGroup]='userForm'>
-              <h1>Sign up</h1>
-              <div class="clearfix"></div>
-              <div *ngIf="registerSuccess" class="alert alert-success" style="font-size: 17px" ><span >Success!</span> You can now 
-                  <u >
-                      <a routerLink="/sign-in" style="color:white; font-size: 17px">sign in</a>
-                     </u>
-        
-              </div>
-              <div [hidden] = "registerSuccess">
-                  <div *ngIf="error" class="alert alert-danger"><b>Error!</b>
-                      All fields are required!</div>
-                  <div *ngIf="errorServer" class="alert alert-danger">{{errorMessage}}</div>
-                  <div *ngIf="samePassword" class="alert alert-danger"><b>Error!</b> Passwords do not match.</div>
-                  <div *ngIf="userForm.controls['password'].hasError('minlength')" class="alert alert-danger">
-                          <b>Error!</b> Your password must be at least 6 characters.
-                      </div>
-                  <div *ngIf="invalidEmail" class="alert alert-danger"><b>Error!</b> Invalid email address.</div>
-                  <div *ngIf="emailExists" class="alert alert-danger"><b>Error!</b> Email is already being used!</div>
+        <div class="login_wrapper">
+            <div class="animate form login_form">
+                <section class="login_content">
+                    <form [formGroup]='userForm'>
+                        <h1>Sign up</h1>
+                        <div class="clearfix"></div>
+                        <div *ngIf="registerSuccess" class="alert alert-success" style="font-size: 17px">
+                            <span>Success!</span> You can now
+                            <u>
+                                <a routerLink="/sign-in" style="color:white; font-size: 17px">sign in</a>
+                            </u>
 
-  
-                  <div>
-                      <div class="form-group">
-  
-                          <input type="email" class="form-control" placeholder="Email" formControlName="email" />
-                      </div>
-                  </div>
-                 
-                      <div>
-                          <div class="form-group">
-  
-                              <input type="password" class="form-control" placeholder="Password" formControlName="password" />
-                          </div>
-                      </div>
-                      <div>
-                          <div class="form-group">
-  
-                              <input type="password" class="form-control" placeholder="Confirm Password" formControlName="confirmation" />
-                          </div>
-                      </div>
-                     
-                  <div >
-                      <div>
-                          <a class="btn btn-primary btn-lg design-button submit" style="width:100%;" [class.disable]= "userForm.controls['password'].hasError('minlength')"  (click)="registeruserForm()">REGISTER</a>
-                      </div>
-                  </div>
-                  </div>
-              </form>
-          </section>
+                        </div>
+                        <div [hidden]="registerSuccess">
+                            <div *ngIf="error" class="alert alert-danger">
+                                <b>Error!</b>
+                                All fields are required!</div>
+                            <div *ngIf="errorServer" class="alert alert-danger">{{errorMessage}}</div>
+                            <div *ngIf="samePassword" class="alert alert-danger">
+                                <b>Error!</b> Passwords do not match.</div>
+                            <div *ngIf="userForm.controls['password'].hasError('minlength')" class="alert alert-danger">
+                                <b>Error!</b> Your password must be at least 6 characters.
+                            </div>
+                            <div *ngIf="invalidEmail" class="alert alert-danger">
+                                <b>Error!</b> Invalid email address.</div>
+                            <div *ngIf="emailExists" class="alert alert-danger">
+                                <b>Error!</b> Email is already being used!</div>
+
+                            <div>
+                                <div class="form-group">
+
+                                    <input type="email" class="form-control" placeholder="First Name" formControlName="firstName" />
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+
+                                    <input type="email" class="form-control" placeholder="Last Name" formControlName="lastName" />
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+
+                                    <input type="email" class="form-control" placeholder="Email" formControlName="email" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="form-group">
+
+                                    <input type="password" class="form-control" placeholder="Password" formControlName="password" />
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+
+                                    <input type="password" class="form-control" placeholder="Confirm Password" formControlName="confirmation" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <div>
+                                    <a class="btn btn-primary btn-lg design-button submit" style="width:100%;" [class.disable]="userForm.controls['password'].hasError('minlength')"
+                                        (click)="registeruserForm()">REGISTER</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
         </div>
-      </div>
     </div>
-  </body>
-  
+</body>

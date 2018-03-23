@@ -12,6 +12,7 @@
   },
   "private": true,
   "dependencies": {
+    "@amcharts/amcharts3-angular": "^2.1.0",
     "@angular/animations": "^5.2.0",
     "@angular/common": "^5.2.0",
     "@angular/compiler": "^5.2.0",
@@ -21,12 +22,13 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
+    "ammap3": "^3.21.12",
     "angularfire2": "^5.0.0-rc.6",
     "bootstrap": "^4.0.0-beta.3",
     "core-js": "^2.4.1",
     "firebase": "^4.11.0",
     "ng2-imageupload": "^1.4.2",
-    "ngx-bootstrap": "^2.0.2",
+    "ngx-bootstrap": "^2.0.3",
     "rxjs": "^5.5.6",
     "zone.js": "^0.8.19"
   },

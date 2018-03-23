@@ -11,6 +11,8 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { routingComponents } from './app-routing.module';
 import { AuthGuard } from './auth-guard.service';
+import { BsDropdownModule } from 'ngx-bootstrap';
+import { AmChartsModule } from "@amcharts/amcharts3-angular";
 
 @NgModule({
   declarations: [
@@ -29,7 +31,9 @@ import { AuthGuard } from './auth-guard.service';
     AngularFireAuthModule,
     AppRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    BsDropdownModule.forRoot(),
+    AmChartsModule
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent]

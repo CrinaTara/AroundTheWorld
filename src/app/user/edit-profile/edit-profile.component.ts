@@ -98,7 +98,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
       console.log(" data: ", doc.data());
       localStorage.setItem('User', JSON.stringify(doc.data()));
     }, function (error) {
-      console.log("Eroor");
+      console.log("Eroor local storage");
     });
   }
 
@@ -115,10 +115,14 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
       .then(function () {
         // console.log("Document written with ID: ", docRef.id);
         //???????
+        that.updateMessageDisplay = true;
+        that.updateMessageDisplayed = "Your information was successfully updated."
         that.updateLocalStorage();
       })
       .catch( (error) => {
         console.error("Error adding document: ", error);
+        that.updateMessageDisplay = true;
+        that.updateMessageDisplayed = "Something went wrong";
         this.userForm.patchValue({
           firstName: '',
           lastName: '',
@@ -140,6 +144,8 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
       })
       .catch((error) => {
         console.log(error);
+        this.messageDisplay = true;
+        this.messageDisplayed =  "Something went wrong";
       })
   }
 
@@ -179,21 +185,25 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   toInfoProfile() {
     this.showPictureProfile = false;
     this.showProfileInfo = true;
+    this.updateMessageDisplay = false;
 
   }
   backPictureProfile() {
     this.showProfileInfo = false;
     this.showPictureProfile = true;
+    this.updateMessageDisplay = false;
 
   }
   toChangePass() {
     this.showChangePass = true;
     this.showProfileInfo = false;
+    this.updateMessageDisplay = false;
 
   }
   backProfileInfo() {
     this.showProfileInfo = true;
     this.showChangePass = false;
+    this.updateMessageDisplay = false;
 
   }
 
@@ -273,13 +283,15 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
       .then(function (docRef) {
         console.log("Document written ok");
-        // this.updateMessageDisplay = true;
-        // this.updateMessageDisplayed = "Your information was successfully updated."
+        that.updateMessageDisplay = true;
+        that.updateMessageDisplayed = "Your information was successfully updated."
         that.updateLocalStorage();
 
       })
       .catch((error) => {
         console.log(error);
+        that.updateMessageDisplay = true;
+        that.updateMessageDisplayed = "Something went wrong";
       })
   }
 

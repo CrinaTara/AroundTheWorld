@@ -29,6 +29,8 @@ export class SignUpComponent implements OnInit {
 
   constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private router:Router,  private db: AngularFirestore) { 
     this.userForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       email: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmation: ['', Validators.required]
@@ -94,8 +96,8 @@ export class SignUpComponent implements OnInit {
           let data = {
             email: this.userForm.value.email,
             role: 'user',
-            firstName: '',
-            lastName: '',
+            firstName: this.userForm.value.firstName,
+            lastName: this.userForm.value.lastName,
             bio: '',
             homeBase: '',
             profilePicture: ''
