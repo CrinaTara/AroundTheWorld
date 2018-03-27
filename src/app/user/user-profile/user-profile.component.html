@@ -5,45 +5,42 @@
 </div>
 
 <div class="wrapper">
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
-  <div class="profile-container sticky">
-      <h3>My accoassssssssssssssunt</h3>
-  </div>
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
-  <div class="profile-container">
-      <h3>My account</h3>
-  </div>
+    <div class="profile-container row d-flex justify-content-center">
+        <div class="thumbnail-me  d-flex justify-content-center ">
+            <img [src]="this.url" class=" profile profile-avatar">
+        </div>
+        <div *ngIf="userObject.bio; else messageInfo" class="info col-sm-6 ">
+            <div class="d-flex justify-content-end">
+                <b>Something about me</b>
+            </div>
+            <div class="text-description">
+                <div>{{userObject.bio}}</div>
 
+                <div *ngIf="userObject.homeBase" class="">My Home Base: {{userObject.homeBase}} </div>
+            </div>
+        </div>
+        <ng-template #messageInfo>
+            <div class="info col-sm-6 ">
+                <div class="text-description">
+                    Tell us something about you.
+                </div>
+            </div>
 
-<a class="btn btn-succes" routerLink="/home/edit-profile"  >
-  EDIT PROFILE
-</a>
+        </ng-template>
+        <a class="edit-profile-button d-flex justify-content-end align-items-end" routerLink="/home/edit-profile" title="Edit Profile">
+            <i class="fas fa-pencil-alt"></i>
+        </a>
+    </div>
+
+</div>
+
+<div class="wrapper">
+    <div class="profile-container ">
+       
+        <a class="btn d-flex justify-content-center">
+            MAKE A POST
+        </a>
+        <div class="d-flex justify-content-center"> Here will be my posts!</div>
+    </div>
+    
 </div>

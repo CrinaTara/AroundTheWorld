@@ -13,16 +13,20 @@ export class UserProfileComponent implements OnInit {
   authState: any = null;
   public userObject: any;
   public userObjectRetrived: any;
+  private url: any;
 
   constructor(private afAuth: AngularFireAuth, private router:Router) {
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth
     });
+    
    }
 
   ngOnInit() {
     this.userObjectRetrived = localStorage.getItem('User');
     this.userObject = JSON.parse(this.userObjectRetrived);
+
+    this.url = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
 
   }
 
