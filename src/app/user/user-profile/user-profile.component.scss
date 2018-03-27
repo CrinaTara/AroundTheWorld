@@ -1,0 +1,26 @@
+.d-flex{
+    justify-content: space-between;
+  }
+  .name-wrapper{
+    width: 100%;
+    // margin-top: 3%;
+    position: fixed;
+    top: 0;
+    overflow: hidden;
+    background-color: white;
+    z-index: 100;
+  }
+
+  .wrapper{
+    right: 0px;
+    margin: 0px auto;
+    padding-top: 3%;
+    max-width: 500px;
+    position: relative;
+  }
+  
+  .profile-container{
+      border: 1px solid rgb(20, 20, 20);
+      padding: 2%;
+      margin-bottom: 2%;
+  }

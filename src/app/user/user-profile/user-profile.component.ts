@@ -11,6 +11,8 @@ import * as firebase from 'firebase';
 export class UserProfileComponent implements OnInit {
 
   authState: any = null;
+  public userObject: any;
+  public userObjectRetrived: any;
 
   constructor(private afAuth: AngularFireAuth, private router:Router) {
     this.afAuth.authState.subscribe((auth) => {
@@ -19,7 +21,9 @@ export class UserProfileComponent implements OnInit {
    }
 
   ngOnInit() {
-  
+    this.userObjectRetrived = localStorage.getItem('User');
+    this.userObject = JSON.parse(this.userObjectRetrived);
+
   }
 
 }

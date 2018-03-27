@@ -28,11 +28,11 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
 
   messageDisplayed: string = '';
   messageDisplay: boolean = false;
-  private updateMessageDisplayed: string = '';
-  private updateMessageDisplay: boolean = false;
-  private showPictureProfile: boolean = true;
-  private showChangePass: boolean = false;
-  private showProfileInfo: boolean = false;
+   updateMessageDisplayed: string = '';
+   updateMessageDisplay: boolean = false;
+   showPictureProfile: boolean = true;
+   showChangePass: boolean = false;
+   showProfileInfo: boolean = false;
 
   constructor(private sanitizer: DomSanitizer,
     private mapsAPILoader: MapsAPILoader,

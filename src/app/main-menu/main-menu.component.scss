@@ -1,1 +1,9 @@
-@import '~scss/menu'
+@import '~scss/menu';
+
+$break-small: 426px;
+
+@media screen and (max-width: $break-small) {
+    .small-device{
+        display: none;
+    }
+}
