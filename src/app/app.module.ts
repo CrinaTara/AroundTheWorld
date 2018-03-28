@@ -13,12 +13,16 @@ import { routingComponents } from './app-routing.module';
 import { AuthGuard } from './auth-guard.service';
 import { BsDropdownModule } from 'ngx-bootstrap';
 import { AmChartsModule } from "@amcharts/amcharts3-angular";
+import { ModalModule } from 'ngx-bootstrap/modal';
+
+
+import { PostComponent } from './user/post/post.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     routingComponents,
-    
+    PostComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,9 +37,13 @@ import { AmChartsModule } from "@amcharts/amcharts3-angular";
     FormsModule,
     ReactiveFormsModule,
     BsDropdownModule.forRoot(),
-    AmChartsModule
+    AmChartsModule,
+    ModalModule.forRoot()
   ],
   providers: [AuthGuard],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    PostComponent
+]
 })
 export class AppModule { }

@@ -2,6 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from "@angular/router";
 import * as firebase from 'firebase';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { PostComponent } from '../post/post.component';
 
 @Component({
   selector: 'user-profile',
@@ -10,12 +13,16 @@ import * as firebase from 'firebase';
 })
 export class UserProfileComponent implements OnInit {
 
+  @ViewChild(PostComponent)  postComponent: PostComponent;
+
+  postModal : BsModalRef;
+
   authState: any = null;
   public userObject: any;
   public userObjectRetrived: any;
   private url: any;
 
-  constructor(private afAuth: AngularFireAuth, private router:Router) {
+  constructor(private modalService: BsModalService, private afAuth: AngularFireAuth, private router:Router) {
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth
     });
@@ -28,6 +35,15 @@ export class UserProfileComponent implements OnInit {
 
     this.url = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
 
+  }
+
+  openModalWithComponent(){
+    this.postModal = this.modalService.show(PostComponent,  {
+      class: 'modal-lg modal-dialog-centered',
+      backdrop: 'static'
+    });
+
+    // this.postComponent.openModal();
   }
 
 }
