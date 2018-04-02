@@ -1,12 +1,90 @@
 <div class="modal-header">
-  <h4 class="modal-title pull-left">sdg</h4>
-  <button type="button" class="close pull-right" aria-label="Close" (click)="postModal.hide()">
-    <span aria-hidden="true">&times;</span>
-  </button>
+    <div>
+        <h4 class="modal-title colored-header">New post</h4>
+    </div>
+
+    <button type="button" class="close  pull-right" aria-label="Close" (click)="postModal.hide()">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 <div class="modal-body">
-  sadfsdfsdfs
+    <!-- Create trip -->
+    <div *ngIf="showNewTrip">
+        <div>
+            <h2>New trip</h2>
+            <h6>Name your trip: </h6>
+        </div>
+        <div class="alert alert-warning alert-morning-modified" *ngIf="tripMessageDisplay">{{tripMessageDisplayed}}</div>
+        <form [formGroup]='tripForm'>
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="My trip to England, Hiking Trails, Scoutish ..." formControlName="tripName"
+                />
+            </div>
+
+            <div class="form-group">
+                <textarea type="text" rows="2" class="form-control" placeholder="Write something about your trip (optional)" formControlName="tripDetails"></textarea>
+            </div>
+        </form>
+    </div>
+
+    <!-- Create post -->
+    <div *ngIf="showNewPost" class="animated fadeInRight">
+        <div class="d-flex justify-content-end choose">
+            <div class="dropdown show">
+                    <a class=" btn btn-default mr-auto p-2 dropdown-toggle" id="dropdownMenuLink"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Related trip:
+                            <b>Ceva</b>
+                            <!-- <i class="fas fa-angle-down"></i> -->
+                        </a>
+                        <!-- <a class="btn btn-secondary dropdown-toggle"
+                         role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Dropdown link
+                        </a> -->
+                      
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                          <a class="dropdown-item">Action</a>
+                          <a class="dropdown-item">Another action</a>
+                          <a class="dropdown-item">Something else here</a>
+                        </div>
+            </div>
+           
+            <a class="ml-auto p-2 plus choose" (click)="newTrip()">
+                <i class="fas fa-plus"></i> New trip
+            </a>
+        </div>
+        <div class="about-post">
+            <form [formGroup]='postForm'>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Choose your location" formControlName="location" />
+                </div>
+                <br>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Name your post" formControlName="postName" />
+                </div>
+
+                <div class="form-group">
+                    <textarea type="text" rows="4" class="form-control" placeholder="What's going on here?" formControlName="postDetails"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="d-flex justify-content-start about-post">
+            <a class="p-2 choose">
+                <i class="fas fa-plus"></i> Add attachment
+            </a>
+            <a class="p-2 choose">
+                <i class="fas fa-unlock-alt"></i> Privacy
+            </a>
+        </div>
+    </div>
+
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-default" (click)="postModal.hide()">Close</button>
+    <div *ngIf="showNewTrip">
+        <button type="button" class="btn btn-default" (click)="postModal.hide()">Close</button>
+        <button type="button" class="btn btn-default create-button" (click)="createTrip()">Create</button>
+    </div>
+
+    <div *ngIf="showNewPost">
+      
+        <button type="button" class="btn btn-default create-button" (click)="createPost()">Post</button>
+    </div>
 </div>

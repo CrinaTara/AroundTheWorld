@@ -34,16 +34,14 @@ export class UserProfileComponent implements OnInit {
     this.userObject = JSON.parse(this.userObjectRetrived);
 
     this.url = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
-
   }
 
   openModalWithComponent(){
-    this.postModal = this.modalService.show(PostComponent,  {
-      class: 'modal-lg modal-dialog-centered',
+    this.postModal = this.modalService.show(PostComponent, {
+      class: 'modal-style modal-md modal-dialog-centered',
       backdrop: 'static'
     });
 
-    // this.postComponent.openModal();
   }
 
 }

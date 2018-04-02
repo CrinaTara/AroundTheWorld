@@ -1,0 +1,25 @@
+$button-color: #0B8457;
+$primary-color: #AB535A;
+$second-color:  rgb(44, 39, 40);
+
+.colored-header{
+    color: $primary-color;
+}
+
+.create-button{
+    background-color: $button-color;
+    color: white;
+}
+
+.choose{
+    color: $second-color;
+}
+
+.choose:hover{
+   cursor: pointer;
+}
+
+.about-post{
+    margin-top: 5%;
+}
+
