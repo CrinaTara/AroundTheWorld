@@ -100,7 +100,8 @@ export class SignUpComponent implements OnInit {
             lastName: this.userForm.value.lastName,
             bio: '',
             homeBase: '',
-            profilePicture: ''
+            profilePicture: '',
+            nrTrips: 0
           }
           this.db.collection("users").doc(success.uid).set(data)
             .then(function (docRef) {
