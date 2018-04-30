@@ -28,7 +28,7 @@ import { PostComponent } from './user/post/post.component';
     BrowserModule,
     AngularFireModule.initializeApp(environment.firebase),
     AgmCoreModule.forRoot({
-      apiKey: "AIzaSyB8ClDdzgUg2gJ3KXaUEexQF5KvqRhLBgE",
+      apiKey: "AIzaSyBREOM7Dc_EXXURYNYg1zQ4xg3TWoJK-QI",
       libraries: ["places"]
     }),
     AngularFirestoreModule.enablePersistence(),

@@ -1,11 +1,13 @@
-import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, ElementRef, NgZone } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ModalDirective } from 'ngx-bootstrap';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import { AngularFirestore } from 'angularfire2/firestore';
 import * as firebase from 'firebase';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as moment from 'moment';
+import { BsDropdownModule } from 'ngx-bootstrap';
+import { MapsAPILoader } from '@agm/core';
 
 @Component({
   selector: 'app-post',
@@ -16,7 +18,18 @@ export class PostComponent implements OnInit, AfterViewInit {
   tripForm: FormGroup;
   postForm: FormGroup;
 
+  // public searchControl: FormControl;
+  // @ViewChild("search")
+  // public searchElementRef: ElementRef;
+
   authState: any = null;
+
+  // My list of trips. It will be a  request!
+  relatedTrips: string[] = [
+    'The first choice!',
+    'And another choice for you.',
+    'but wait! A third!'
+  ];
 
   public userObject: any;
   public userObjectRetrived: any;
@@ -27,7 +40,11 @@ export class PostComponent implements OnInit, AfterViewInit {
   tripMessageDisplayed: string = '';
   tripMessageDisplay: boolean = false;
 
-  constructor(public postModal: BsModalRef, private afAuth: AngularFireAuth, public fb: FormBuilder, private db: AngularFirestore) {
+  constructor(public postModal: BsModalRef, private afAuth: AngularFireAuth, 
+              public fb: FormBuilder, private db: AngularFirestore,
+              private mapsAPILoader: MapsAPILoader,
+              private ngZone: NgZone
+            ) {
   }
 
   ngOnInit() {
@@ -55,11 +72,34 @@ export class PostComponent implements OnInit, AfterViewInit {
         postDetails: ['', Validators.required],
         privacy: ['', Validators.required]
       })
+
+      // this.mapsAPILoader.load().then(() => {
+      //   let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
+      //     types: ["address"]
+      //   });
+      //   autocomplete.addListener("place_changed", () => {
+      //     this.ngZone.run(() => {
+      //       //get the place result
+      //       let place: google.maps.places.PlaceResult = autocomplete.getPlace();
+            
+  
+      //       //verify result
+      //       if (place.geometry === undefined || place.geometry === null) {
+      //         return;
+      //       }
+
+      //     });
+      //   });
+      // });
   }
 
   ngAfterViewInit() {
 
 
+  }
+
+  setPrivacy(choose){
+    console.log(choose);
   }
 
   updateLocalStorage(){
@@ -101,6 +141,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         console.log("Document successfully written!");
         that.getTripsData();
         that.clearTripData();
+        that.updateUserProfile();
         that.showNewPost = true;
         that.showNewTrip = false;
       })

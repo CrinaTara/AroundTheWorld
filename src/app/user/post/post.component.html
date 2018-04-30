@@ -30,31 +30,31 @@
     <!-- Create post -->
     <div *ngIf="showNewPost" class="animated fadeInRight">
         <div class="d-flex justify-content-end choose">
-            <div class="dropdown show">
-                    <a class=" btn btn-default mr-auto p-2 dropdown-toggle" id="dropdownMenuLink"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Related trip:
-                            <b>Ceva</b>
-                            <!-- <i class="fas fa-angle-down"></i> -->
-                        </a>
-                        <!-- <a class="btn btn-secondary dropdown-toggle"
-                         role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Dropdown link
-                        </a> -->
-                      
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                          <a class="dropdown-item">Action</a>
-                          <a class="dropdown-item">Another action</a>
-                          <a class="dropdown-item">Something else here</a>
-                        </div>
+            <div class="btn-group" dropdown>
+                <a dropdownToggle class="btn btn-default mr-auto p-2 dropdown-toggle">
+                    Related trip:
+                    <b>Ceva</b>
+                    <span class="caret"></span>
+                </a>
+                <ul *dropdownMenu class="dropdown-menu" role="menu">
+                    <li *ngFor="let choice of relatedTrips">
+                        <a class="dropdown-item" href="#">{{choice}}</a>
+                    </li>
+                </ul>
             </div>
-           
+
             <a class="ml-auto p-2 plus choose" (click)="newTrip()">
                 <i class="fas fa-plus"></i> New trip
             </a>
         </div>
+        <!-- <div class="form-group">
+            <input placeholder="search for location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control" #search=""  size="100">
+        </div> -->
+
         <div class="about-post">
             <form [formGroup]='postForm'>
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Choose your location" formControlName="location" />
+                    <input type="text" class="form-control" placeholder="Search for location" formControlName="location" />
                 </div>
                 <br>
                 <div class="form-group">
@@ -66,13 +66,33 @@
                 </div>
             </form>
         </div>
-        <div class="d-flex justify-content-start about-post">
-            <a class="p-2 choose">
+        <div class="d-flex justify-content-start about-post row">
+            <a class="p-2 choose col-md-4">
                 <i class="fas fa-plus"></i> Add attachment
             </a>
-            <a class="p-2 choose">
-                <i class="fas fa-unlock-alt"></i> Privacy
-            </a>
+            <!-- <div class="btn-group" dropdown [dropup]="true">
+                <a dropdownToggle class="p-2 choose dropdown-toggle">
+                    <i class="fas fa-unlock-alt"></i> Privacy
+                    <span class="caret"></span>
+                </a>
+                <ul *dropdownMenu class="dropdown-menu" role="menu">
+                    <li role="menuitem">
+                        <a class="dropdown-item">Public</a>
+                    </li>
+                    <li role="menuitem">
+                        <a class="dropdown-item">Private</a>
+                    </li>
+                </ul>
+            </div> -->
+
+            <!-- <i class="fas fa-unlock-alt"></i> Privacy -->
+            <select class="selectpicker show-tick p-2 choose col-md-4" #selectElem (change)="setPrivacy(selectElem.value)">
+                <option selected>Privacy</option>
+                <option value="public"> PUBLIC </option>
+                <option value="private"> PRIVATE </option>
+            </select>
+
+
         </div>
     </div>
 
@@ -84,7 +104,7 @@
     </div>
 
     <div *ngIf="showNewPost">
-      
+
         <button type="button" class="btn btn-default create-button" (click)="createPost()">Post</button>
     </div>
 </div>
