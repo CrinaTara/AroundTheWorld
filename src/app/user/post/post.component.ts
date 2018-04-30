@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit, ElementRef, NgZone } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, ElementRef, NgZone, HostListener } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ModalDirective } from 'ngx-bootstrap';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
@@ -9,6 +9,11 @@ import * as moment from 'moment';
 import { BsDropdownModule } from 'ngx-bootstrap';
 import { MapsAPILoader } from '@agm/core';
 
+import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/observable/combineLatest';
+
 @Component({
   selector: 'app-post',
   templateUrl: './post.component.html',
@@ -18,6 +23,8 @@ export class PostComponent implements OnInit, AfterViewInit {
   tripForm: FormGroup;
   postForm: FormGroup;
 
+  items: Observable<any[]>;
+
   // public searchControl: FormControl;
   // @ViewChild("search")
   // public searchElementRef: ElementRef;
@@ -25,20 +32,21 @@ export class PostComponent implements OnInit, AfterViewInit {
   authState: any = null;
 
   // My list of trips. It will be a  request!
-  relatedTrips: string[] = [
-    'The first choice!',
-    'And another choice for you.',
-    'but wait! A third!'
-  ];
-
+  relatedTrips: Observable<any[]>;
   public userObject: any;
   public userObjectRetrived: any;
 
   public showNewTrip: boolean = true;
   public showNewPost: boolean = false;
 
+  public isPrivatePrivacy: boolean = false;
+
   tripMessageDisplayed: string = '';
   tripMessageDisplay: boolean = false;
+
+  postMessageDisplayed: string = '';
+  postMessageDisplay: boolean = false;
+
 
   constructor(public postModal: BsModalRef, private afAuth: AngularFireAuth, 
               public fb: FormBuilder, private db: AngularFirestore,
@@ -58,6 +66,8 @@ export class PostComponent implements OnInit, AfterViewInit {
 
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth;
+      this.getTripsData();
+
     }),
 
       this.tripForm = this.fb.group({
@@ -91,6 +101,7 @@ export class PostComponent implements OnInit, AfterViewInit {
       //     });
       //   });
       // });
+     
   }
 
   ngAfterViewInit() {
@@ -100,6 +111,11 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   setPrivacy(choose){
     console.log(choose);
+    if(choose == "public"){
+      this.isPrivatePrivacy = false;
+    } else{
+      this.isPrivatePrivacy = true;
+    }
   }
 
   updateLocalStorage(){
@@ -155,17 +171,17 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   }
 
-  clearTripData(){
-    this.tripForm.patchValue({
+  clearPostData(){
+    this.postForm.patchValue({
       location:'',
       postName: '',
       postDetails: '',
       privacy: ''
     });
   }
-
-  clearPostData(){
-    this.postForm.patchValue({
+  
+  clearTripData(){
+    this.tripForm.patchValue({
       tripName: '',
       tripDetails: ''
     });
@@ -173,6 +189,25 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   createPost(){
     console.log('Create post!');
+    // var that = this;
+    // let now = moment();
+    // this.db.collection("posts").add({
+      // location: this.postForm.value.location,
+      // postName: this.tripForm.value.postName,
+      // idUser: this.authState.uid,
+      // creationDate: now.format('L'),
+      // postDetails:
+    // })
+    //   .then(function (docRef) {
+    //     console.log("Document successfully written!");
+       
+    //   })
+    //   .catch(function (error) {
+    //     console.error("Error adding document: ", error);
+    //     this.postMessageDisplayed = 'Something went wrong. Try again!';
+    //     this.postMessageDisplay = true;
+    //     that.clearPostData();
+    //   });
   }
 
   // Does't work. Maybe with valuesChanged.
@@ -180,7 +215,8 @@ export class PostComponent implements OnInit, AfterViewInit {
     // !!!!!!!!!!Get id trips
     console.log('Here is uuid');
     console.log(this.authState.uid);
-    this.db.collection("trips", ref => ref.where('tripName', '==', 'b'))
+
+    this.db.collection('trips', ref => ref.where('idUser', '==', this.authState.uid) )
     .ref.get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
@@ -191,6 +227,15 @@ export class PostComponent implements OnInit, AfterViewInit {
       .catch(function (error) {
         console.log("Error getting documents: ", error);
       });
+
+
+    this.relatedTrips = this.items = this.db.collection('trips', ref => ref.where('idUser', '==', this.authState.uid)).valueChanges();
+
+  }
+
+  chooseATrip(choise){
+    console.log("This is the trip i chose");
+    console.log(choise);
   }
 
   newTrip() {

@@ -15,7 +15,6 @@ import { BsDropdownModule } from 'ngx-bootstrap';
 import { AmChartsModule } from "@amcharts/amcharts3-angular";
 import { ModalModule } from 'ngx-bootstrap/modal';
 
-
 import { PostComponent } from './user/post/post.component';
 
 @NgModule({

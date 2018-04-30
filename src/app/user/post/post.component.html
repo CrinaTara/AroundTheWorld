@@ -27,6 +27,7 @@
         </form>
     </div>
 
+
     <!-- Create post -->
     <div *ngIf="showNewPost" class="animated fadeInRight">
         <div class="d-flex justify-content-end choose">
@@ -37,8 +38,8 @@
                     <span class="caret"></span>
                 </a>
                 <ul *dropdownMenu class="dropdown-menu" role="menu">
-                    <li *ngFor="let choice of relatedTrips">
-                        <a class="dropdown-item" href="#">{{choice}}</a>
+                    <li *ngFor="let choice of relatedTrips | async" (click)="chooseATrip(choise)">
+                        <a class="dropdown-item">{{choice.tripName}}</a>
                     </li>
                 </ul>
             </div>
@@ -64,8 +65,26 @@
                 <div class="form-group">
                     <textarea type="text" rows="4" class="form-control" placeholder="What's going on here?" formControlName="postDetails"></textarea>
                 </div>
+
+                <div *ngIf = "isPrivatePrivacy">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Buget" formControlName="buget" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Other thoughts" formControlName="otherToughts" />
+                    </div>
+                </div>
             </form>
         </div>
+
+        <div class="col-xs-12 col-12 col-md-4 form-group">
+            <input type="text"
+                   placeholder="Datepicker"
+                   class="form-control"
+                   bsDatepicker>
+          </div>
+
+
         <div class="d-flex justify-content-start about-post row">
             <a class="p-2 choose col-md-4">
                 <i class="fas fa-plus"></i> Add attachment
