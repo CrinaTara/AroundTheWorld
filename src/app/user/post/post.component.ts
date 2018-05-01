@@ -1,7 +1,7 @@
 import { Component, ViewChild, OnInit, AfterViewInit, ElementRef, NgZone, HostListener } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ModalDirective } from 'ngx-bootstrap';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AngularFirestore } from 'angularfire2/firestore';
 import * as firebase from 'firebase';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -32,7 +32,7 @@ export class PostComponent implements OnInit, AfterViewInit {
   authState: any = null;
 
   // My list of trips. It will be a  request!
-  relatedTrips: Observable<any[]>;
+  relatedTrips: any;
   public userObject: any;
   public userObjectRetrived: any;
 
@@ -48,18 +48,18 @@ export class PostComponent implements OnInit, AfterViewInit {
   postMessageDisplay: boolean = false;
 
 
-  constructor(public postModal: BsModalRef, private afAuth: AngularFireAuth, 
-              public fb: FormBuilder, private db: AngularFirestore,
-              private mapsAPILoader: MapsAPILoader,
-              private ngZone: NgZone
-            ) {
+  constructor(public postModal: BsModalRef, private afAuth: AngularFireAuth,
+    public fb: FormBuilder, private db: AngularFirestore,
+    private mapsAPILoader: MapsAPILoader,
+    private ngZone: NgZone
+  ) {
   }
 
   ngOnInit() {
 
     this.userObjectRetrived = localStorage.getItem('User');
     this.userObject = JSON.parse(this.userObjectRetrived);
-    if(this.userObject.nrTrips !=0){
+    if (this.userObject.nrTrips != 0) {
       this.showNewPost = true;
       this.showNewTrip = false;
     }
@@ -83,25 +83,25 @@ export class PostComponent implements OnInit, AfterViewInit {
         privacy: ['', Validators.required]
       })
 
-      // this.mapsAPILoader.load().then(() => {
-      //   let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
-      //     types: ["address"]
-      //   });
-      //   autocomplete.addListener("place_changed", () => {
-      //     this.ngZone.run(() => {
-      //       //get the place result
-      //       let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-            
-  
-      //       //verify result
-      //       if (place.geometry === undefined || place.geometry === null) {
-      //         return;
-      //       }
+    // this.mapsAPILoader.load().then(() => {
+    //   let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
+    //     types: ["address"]
+    //   });
+    //   autocomplete.addListener("place_changed", () => {
+    //     this.ngZone.run(() => {
+    //       //get the place result
+    //       let place: google.maps.places.PlaceResult = autocomplete.getPlace();
 
-      //     });
-      //   });
-      // });
-     
+
+    //       //verify result
+    //       if (place.geometry === undefined || place.geometry === null) {
+    //         return;
+    //       }
+
+    //     });
+    //   });
+    // });
+
   }
 
   ngAfterViewInit() {
@@ -109,27 +109,30 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   }
 
-  setPrivacy(choose){
+  setPrivacy(choose) {
     console.log(choose);
-    if(choose == "public"){
+    if (choose == "public") {
       this.isPrivatePrivacy = false;
-    } else{
+    } else if (choose == "private") {
       this.isPrivatePrivacy = true;
+    }
+    else {
+      this.isPrivatePrivacy = false;
     }
   }
 
-  updateLocalStorage(){
+  updateLocalStorage() {
     this.db.collection("users").doc(this.authState.uid).ref
-    .onSnapshot(function (doc) {
-      // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-      console.log(" data: ", doc.data());
-      localStorage.setItem('User', JSON.stringify(doc.data()));
-    }, function (error) {
-      console.log("Eroor local storage");
-    });
+      .onSnapshot(function (doc) {
+        // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+        console.log(" data: ", doc.data());
+        localStorage.setItem('User', JSON.stringify(doc.data()));
+      }, function (error) {
+        console.log("Eroor local storage");
+      });
   }
 
-  updateUserProfile(){
+  updateUserProfile() {
     let data = {
       nrTrips: 1
     }
@@ -139,7 +142,7 @@ export class PostComponent implements OnInit, AfterViewInit {
       .then(function () {
         that.updateLocalStorage();
       })
-      .catch( (error) => {
+      .catch((error) => {
         console.error("Error adding document: ", error);
       });
   }
@@ -171,36 +174,36 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   }
 
-  clearPostData(){
+  clearPostData() {
     this.postForm.patchValue({
-      location:'',
+      location: '',
       postName: '',
       postDetails: '',
       privacy: ''
     });
   }
-  
-  clearTripData(){
+
+  clearTripData() {
     this.tripForm.patchValue({
       tripName: '',
       tripDetails: ''
     });
   }
 
-  createPost(){
+  createPost() {
     console.log('Create post!');
     // var that = this;
     // let now = moment();
     // this.db.collection("posts").add({
-      // location: this.postForm.value.location,
-      // postName: this.tripForm.value.postName,
-      // idUser: this.authState.uid,
-      // creationDate: now.format('L'),
-      // postDetails:
+    // location: this.postForm.value.location,
+    // postName: this.tripForm.value.postName,
+    // idUser: this.authState.uid,
+    // creationDate: now.format('L'),
+    // postDetails:
     // })
     //   .then(function (docRef) {
     //     console.log("Document successfully written!");
-       
+
     //   })
     //   .catch(function (error) {
     //     console.error("Error adding document: ", error);
@@ -211,30 +214,56 @@ export class PostComponent implements OnInit, AfterViewInit {
   }
 
   // Does't work. Maybe with valuesChanged.
-  getTripsData(){
+  getTripsData() {
     // !!!!!!!!!!Get id trips
     console.log('Here is uuid');
     console.log(this.authState.uid);
 
-    this.db.collection('trips', ref => ref.where('idUser', '==', this.authState.uid) )
-    .ref.get()
+    // this.db.collection('trips', ref => ref.where('idUser', '==', this.authState.uid) )
+    // .ref.get()
+    //   .then(function (querySnapshot) {
+    //     querySnapshot.forEach(function (doc) {
+    //       // doc.data() is never undefined for query doc snapshots
+    //       console.log(doc.id, " => ", doc.data());
+    //     });
+    //   })
+    //   .catch(function (error) {
+    //     console.log("Error getting documents: ", error);
+    //   });
+
+    var arr = [];
+    var that = this;
+    this.db.collection('trips').ref.get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
           // doc.data() is never undefined for query doc snapshots
-          console.log(doc.id, " => ", doc.data());
+          // console.log(doc.id, " => ", doc.data().tripName);
+          arr.push({
+            name: doc.data().tripName,
+            IDUSER: doc.data().idUser,
+            idTRIP: doc.id
+          })
+
         });
+
+
+        that.relatedTrips = arr.filter(function (trip) {
+          return trip.IDUSER == that.authState.uid;
+        })
+
+        console.log("AICI:");
+        console.log(that.relatedTrips);
       })
       .catch(function (error) {
         console.log("Error getting documents: ", error);
       });
 
-
-    this.relatedTrips = this.items = this.db.collection('trips', ref => ref.where('idUser', '==', this.authState.uid)).valueChanges();
+    // this.relatedTrips = this.items = this.db.collection('trips', ref => ref.where('idUser', '==', this.authState.uid)).valueChanges();
 
   }
 
-  chooseATrip(choise){
-    console.log("This is the trip i chose");
+  chooseATrip(choise) {
+    console.log("This is the trip i choose");
     console.log(choise);
   }
 

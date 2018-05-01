@@ -38,8 +38,8 @@
                     <span class="caret"></span>
                 </a>
                 <ul *dropdownMenu class="dropdown-menu" role="menu">
-                    <li *ngFor="let choice of relatedTrips | async" (click)="chooseATrip(choise)">
-                        <a class="dropdown-item">{{choice.tripName}}</a>
+                    <li *ngFor="let choice of relatedTrips" (click)="chooseATrip(choice)">
+                        <a class="dropdown-item">{{choice.name}}</a>
                     </li>
                 </ul>
             </div>
@@ -76,13 +76,6 @@
                 </div>
             </form>
         </div>
-
-        <div class="col-xs-12 col-12 col-md-4 form-group">
-            <input type="text"
-                   placeholder="Datepicker"
-                   class="form-control"
-                   bsDatepicker>
-          </div>
 
 
         <div class="d-flex justify-content-start about-post row">
