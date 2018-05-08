@@ -28,11 +28,11 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
 
   messageDisplayed: string = '';
   messageDisplay: boolean = false;
-   updateMessageDisplayed: string = '';
-   updateMessageDisplay: boolean = false;
-   showPictureProfile: boolean = true;
-   showChangePass: boolean = false;
-   showProfileInfo: boolean = false;
+  updateMessageDisplayed: string = '';
+  updateMessageDisplay: boolean = false;
+  showPictureProfile: boolean = true;
+  showChangePass: boolean = false;
+  showProfileInfo: boolean = false;
 
   constructor(private sanitizer: DomSanitizer,
     private mapsAPILoader: MapsAPILoader,
@@ -48,20 +48,20 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.mapsAPILoader.load().then(
-      () => {
-        let autocomplete = new google.maps.places.Autocomplete(this.search.nativeElement.value, { types: ["address"] });
-        autocomplete.addListener("place_changed", () => {
-          this.ngZone.run(() => {
-            let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-            //verify result
-            if (place.geometry === undefined || place.geometry === null) {
-              return;
-            }
-          });
-        })
-      }
-    );
+    // this.mapsAPILoader.load().then(
+    //   () => {
+    //     let autocomplete = new google.maps.places.Autocomplete(this.search.nativeElement.value, { types: ["address"] });
+    //     autocomplete.addListener("place_changed", () => {
+    //       this.ngZone.run(() => {
+    //         let place: google.maps.places.PlaceResult = autocomplete.getPlace();
+    //         //verify result
+    //         if (place.geometry === undefined || place.geometry === null) {
+    //           return;
+    //         }
+    //       });
+    //     })
+    //   }
+    // );
 
   }
 
@@ -72,7 +72,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     this.userObjectRetrived = localStorage.getItem('User');
     this.userObject = JSON.parse(this.userObjectRetrived);
 
-    this.url = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
+    this.url = this.urlDummy = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
 
     this.userForm = this.fb.group({
       firstName: [this.userObject.firstName, Validators.required],
@@ -91,15 +91,15 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     })
   }
 
-  updateLocalStorage(){
+  updateLocalStorage() {
     this.db.collection("users").doc(this.authState.uid).ref
-    .onSnapshot(function (doc) {
-      // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-      console.log(" data: ", doc.data());
-      localStorage.setItem('User', JSON.stringify(doc.data()));
-    }, function (error) {
-      console.log("Eroor local storage");
-    });
+      .onSnapshot(function (doc) {
+        // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+        console.log(" data: ", doc.data());
+        localStorage.setItem('User', JSON.stringify(doc.data()));
+      }, function (error) {
+        console.log("Eroor local storage");
+      });
   }
 
   saveUserData(dataUser) {
@@ -119,7 +119,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
         that.updateMessageDisplayed = "Your information was successfully updated."
         that.updateLocalStorage();
       })
-      .catch( (error) => {
+      .catch((error) => {
         console.error("Error adding document: ", error);
         that.updateMessageDisplay = true;
         that.updateMessageDisplayed = "Something went wrong";
@@ -145,7 +145,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
       .catch((error) => {
         console.log(error);
         this.messageDisplay = true;
-        this.messageDisplayed =  "Something went wrong";
+        this.messageDisplayed = "Something went wrong";
       })
   }
 
@@ -216,6 +216,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
 
       reader.onload = (event: any) => { // called once readAsDataURL is completed
         this.urlDummy = event.target.result;
+
       }
       this.resizeAuthomatical(event);
     }
@@ -276,23 +277,30 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   saveUserProfilePicture() {
     console.log("button save picture");
     console.log(this.url);
-    let data = {
-      profilePicture: this.url.changingThisBreaksApplicationSecurity
-    }
-    var that = this;
-    this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
-      .then(function (docRef) {
-        console.log("Document written ok");
-        that.updateMessageDisplay = true;
-        that.updateMessageDisplayed = "Your information was successfully updated."
-        that.updateLocalStorage();
+    let imageURL =  this.url.changingThisBreaksApplicationSecurity
+    if (imageURL !=  "data:,") {
+      let data = {
+        profilePicture: imageURL
+      }
+      var that = this;
+      this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
+        .then(function (docRef) {
+          console.log("Document written ok");
+          that.updateMessageDisplay = true;
+          that.updateMessageDisplayed = "Your information was successfully updated."
+          that.updateLocalStorage();
 
-      })
-      .catch((error) => {
-        console.log(error);
-        that.updateMessageDisplay = true;
-        that.updateMessageDisplayed = "Something went wrong";
-      })
+        })
+        .catch((error) => {
+          console.log(error);
+          that.updateMessageDisplay = true;
+          that.updateMessageDisplayed = "Something went wrong";
+        })
+    }
+    else{
+          this.updateMessageDisplay = true;
+          this.updateMessageDisplayed = "Something went wrong";
+    }
   }
 
 }

@@ -27,6 +27,10 @@
         </form>
     </div>
 
+    <!-- 
+    <div class="form-group">
+        <input placeholder="search for location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control" #search   size="100">
+    </div> -->
 
     <!-- Create post -->
     <div *ngIf="showNewPost" class="animated fadeInRight">
@@ -34,7 +38,7 @@
             <div class="btn-group" dropdown>
                 <a dropdownToggle class="btn btn-default mr-auto p-2 dropdown-toggle">
                     Related trip:
-                    <b>Ceva</b>
+                    <b>{{this.selectedTrip}}</b>
                     <span class="caret"></span>
                 </a>
                 <ul *dropdownMenu class="dropdown-menu" role="menu">
@@ -48,16 +52,20 @@
                 <i class="fas fa-plus"></i> New trip
             </a>
         </div>
-        <!-- <div class="form-group">
-            <input placeholder="search for location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control" #search=""  size="100">
-        </div> -->
+
+        <div>
+            Location:
+        </div>
+        <agm-map [latitude]="lat" [longitude]="lng" style="height: 260px;" (mapClick)="onChoseLocation($event)">
+            <agm-marker [latitude]="lat" [longitude]="lng" *ngIf="locationChosen">
+            </agm-marker>
+        </agm-map>
 
         <div class="about-post">
             <form [formGroup]='postForm'>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <input type="text" class="form-control" placeholder="Search for location" formControlName="location" />
-                </div>
-                <br>
+                </div> -->
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="Name your post" formControlName="postName" />
                 </div>
@@ -66,7 +74,7 @@
                     <textarea type="text" rows="4" class="form-control" placeholder="What's going on here?" formControlName="postDetails"></textarea>
                 </div>
 
-                <div *ngIf = "isPrivatePrivacy">
+                <div *ngIf="isPrivatePrivacy">
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Buget" formControlName="buget" />
                     </div>
@@ -77,11 +85,22 @@
             </form>
         </div>
 
+        <div *ngFor="let itemUrl of urlArray ; let i = index">
+            <div class="container">
+                <i class="far fa-times-circle deletePicture" (click)="removePhoto(i)" title="Delete"></i>
+                <div class="thumbnail d-flex align-items-center justify-content-center arrayOfImage">
+                    <img [src]=itemUrl class="photo">
+                </div>
+            </div>
 
+        </div>
+        <input id="file-input" class="inputPhotos" type="file" (change)="onSelectFile($event)" />
         <div class="d-flex justify-content-start about-post row">
-            <a class="p-2 choose col-md-4">
-                <i class="fas fa-plus"></i> Add attachment
-            </a>
+            <label for="file-input">
+                <a class="p-2 choose">
+                    <i class="fas fa-plus"></i> Add photos (max. 4)
+                </a>
+            </label>
             <!-- <div class="btn-group" dropdown [dropup]="true">
                 <a dropdownToggle class="p-2 choose dropdown-toggle">
                     <i class="fas fa-unlock-alt"></i> Privacy
