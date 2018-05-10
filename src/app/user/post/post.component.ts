@@ -13,7 +13,7 @@ import { } from 'geocoder';
 
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 
-
+declare var require: any
 
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -26,12 +26,19 @@ import 'rxjs/add/observable/combineLatest';
   styleUrls: ['./post.component.scss']
 })
 export class PostComponent implements OnInit, AfterViewInit {
+
   tripForm: FormGroup;
   postForm: FormGroup;
 
   lat: number = 51.678418;
   lng: number = 7.809007;
   locationChosen = false;
+  aboutLocation = {
+    city: '',
+    address: '',
+    countryLong: '',
+    countryShort: ''
+  };
 
   items: Observable<any[]>;
 
@@ -42,6 +49,7 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   // My list of trips. It will be a  request!
   relatedTrips: any;
+  privacyPost: string = 'public';
   public userObject: any;
   public userObjectRetrived: any;
 
@@ -52,16 +60,18 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   tripMessageDisplayed: string = '';
   tripMessageDisplay: boolean = false;
+  errorTripMessageDisplay: boolean = false;
 
   postMessageDisplayed: string = '';
   postMessageDisplay: boolean = false;
+  errorPostMessageDisplay: boolean = false;
 
-  selectedTrip: string = 'Choose One';
+  selectedTrip: any = '';
 
   private url: any;
   public urlDummy: any;
 
-  urlArray:any = [];
+  urlArray: any = [];
   resizedUrlArray: any = [];
 
 
@@ -95,10 +105,12 @@ export class PostComponent implements OnInit, AfterViewInit {
       }),
       this.postForm = this.fb.group({
         //trip id, id user, post id, date
-        location: ['', Validators.required],
+        location: [''],
         postName: ['', Validators.required],
         postDetails: ['', Validators.required],
-        privacy: ['', Validators.required]
+        privacy: ['', Validators.required],
+        buget: [''],
+        otherToughts: ['']
       })
 
     //Asta este pentru autocompletul de search.
@@ -131,6 +143,7 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   setPrivacy(choose) {
     console.log(choose);
+    this.privacyPost = choose;
     if (choose == "public") {
       this.isPrivatePrivacy = false;
     } else if (choose == "private") {
@@ -167,30 +180,39 @@ export class PostComponent implements OnInit, AfterViewInit {
       });
   }
 
+  //Create TRIP!
   createTrip() {
-    var that = this;
-    let now = moment();
-    this.db.collection("trips").add({
-      tripName: this.tripForm.value.tripName,
-      tripDetails: this.tripForm.value.tripDetails,
-      idUser: this.authState.uid,
-      creationDate: now.format('L'),
-    })
-      .then(function (docRef) {
-        console.log("Document successfully written!");
-        that.getTripsData();
-        that.clearTripData();
-        that.updateUserProfile();
-        that.showNewPost = true;
-        that.showNewTrip = false;
-      })
-      .catch(function (error) {
-        console.error("Error adding document: ", error);
-        this.tripMessageDisplayed = 'Something went wrong. Try again!';
-        this.tripMessageDisplay = true;
-        that.clearTripData();
-      });
 
+    if (this.tripForm.value.tripName === '') {
+      this.tripMessageDisplayed = 'Please complete the required field.';
+      this.errorTripMessageDisplay = true;
+    }
+    else {
+      var that = this;
+      let now = moment();
+      this.db.collection("trips").add({
+        tripName: this.tripForm.value.tripName,
+        tripDetails: this.tripForm.value.tripDetails,
+        idUser: this.authState.uid,
+        creationDate: now.format('L'),
+      })
+        .then(function (docRef) {
+          console.log("Document successfully written!");
+          that.getTripsData();
+          that.clearTripData();
+          that.updateUserProfile();
+          that.showNewPost = true;
+          that.showNewTrip = false;
+          that.errorTripMessageDisplay = false;
+        })
+        .catch(function (error) {
+          console.error("Error adding document: ", error);
+          that.tripMessageDisplayed = 'Something went wrong. Try again!';
+          that.errorTripMessageDisplay = true;
+          that.clearTripData();
+        });
+
+    }
 
   }
 
@@ -199,8 +221,15 @@ export class PostComponent implements OnInit, AfterViewInit {
       location: '',
       postName: '',
       postDetails: '',
-      privacy: ''
+      privacy: '',
+      buget: '',
+      otherToughts: ''
     });
+
+    this.urlArray = null;
+    this.resizedUrlArray = null;
+    this.privacyPost = 'public';
+    this.isPrivatePrivacy = false;
   }
 
   clearTripData() {
@@ -210,27 +239,56 @@ export class PostComponent implements OnInit, AfterViewInit {
     });
   }
 
-  createPost() {
-    console.log('Create post!');
-    // var that = this;
-    // let now = moment();
-    // this.db.collection("posts").add({
-    // location: this.postForm.value.location,
-    // postName: this.tripForm.value.postName,
-    // idUser: this.authState.uid,
-    // creationDate: now.format('L'),
-    // postDetails:
-    // })
-    //   .then(function (docRef) {
-    //     console.log("Document successfully written!");
 
-    //   })
-    //   .catch(function (error) {
-    //     console.error("Error adding document: ", error);
-    //     this.postMessageDisplayed = 'Something went wrong. Try again!';
-    //     this.postMessageDisplay = true;
-    //     that.clearPostData();
-    //   });
+  //Create POST!
+  createPost() {
+
+    if (this.selectedTrip === '') {
+      this.postMessageDisplayed = 'Please select a related Trip for this post.';
+      this.errorPostMessageDisplay = true;
+    }
+    else if (this.postForm.value.postName === '' || this.postForm.value.postDetails === '') {
+      this.postMessageDisplayed = 'Please complete the required fields. ';
+      this.errorPostMessageDisplay = true;
+    }
+    else {
+
+      var that = this;
+      let now = moment();
+
+      this.db.collection("posts").add({
+        postName: this.postForm.value.postName,
+        tripName: this.selectedTrip.name,
+        idTrip: this.selectedTrip.idTRIP,
+        idUser: this.authState.uid,
+        creationDate: now.format('L'),
+        creationHour: now.format('LT'),
+        postDetails: this.postForm.value.postDetails,
+        privacy: this.privacyPost,
+        buget: this.postForm.value.buget,
+        otherToughts: this.postForm.value.otherToughts,
+        lat: this.lat,
+        long: this.lng,
+        // city: '',
+        // country: '',
+        aboutLocatin: this.aboutLocation,
+        photos: this.resizedUrlArray
+
+      })
+        .then(function (docRef) {
+          that.postMessageDisplayed = 'Posted succesfully!';
+          that.postMessageDisplay = true;
+          that.errorPostMessageDisplay = false;
+          that.clearPostData();
+        })
+        .catch(function (error) {
+          console.error("Error adding document: ", error);
+          that.postMessageDisplayed = 'Something went wrong. Try again!';
+          that.errorPostMessageDisplay = true;
+          that.clearPostData();
+        });
+    }
+
   }
 
   // Does't work. Maybe with valuesChanged.
@@ -253,7 +311,7 @@ export class PostComponent implements OnInit, AfterViewInit {
 
     var arr = [];
     var that = this;
-    this.db.collection('trips').ref.get()
+    this.db.collection('trips').ref.orderBy("creationDate", "desc").limit(11).get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
           // doc.data() is never undefined for query doc snapshots
@@ -261,7 +319,8 @@ export class PostComponent implements OnInit, AfterViewInit {
           arr.push({
             name: doc.data().tripName,
             IDUSER: doc.data().idUser,
-            idTRIP: doc.id
+            idTRIP: doc.id,
+            crDate: doc.data().creationDate
           })
 
         });
@@ -285,7 +344,7 @@ export class PostComponent implements OnInit, AfterViewInit {
   chooseATrip(choise) {
     console.log("This is the trip i choose");
     console.log(choise);
-    this.selectedTrip = choise.name;
+    this.selectedTrip = choise;
   }
 
   newTrip() {
@@ -293,20 +352,54 @@ export class PostComponent implements OnInit, AfterViewInit {
     this.showNewTrip = true;
   }
 
-  // geocoder = require('geocoder');
-  
+  //For the reverse Geocoder
+  geocoder = require('geocoder');
 
-  onChoseLocation(event){
+  onChoseLocation(event) {
+
     console.log(event);
     this.lat = event.coords.lat;
     this.lng = event.coords.lng;
-    this. locationChosen = true;
+    this.locationChosen = true;
 
-  //  this.geocoder.reverseGeocode( 33.7489, -84.3789, function ( err, data ) {
-  //   // do something with data
-  //   console.log(data);
-  //  });
+    let that = this;
+
+    this.geocoder.reverseGeocode(this.lat, this.lng, function (err, data) {
+      // do something with data
+      console.log(data);
+      if (data.status === 'OK') {
+
+        if (data.results[0]) {
+          that.postForm.patchValue({
+            location: data.results[0].formatted_address
+          })
+          console.log(data.results[0].formatted_address);
+          // let city = addressResult.address_components[addressResult.address_components.length-2].short_name;
+          // let country = data.results[data.results.length - 1].formatted_address;
+          // console.log(city);
+          // address_components[2].short_name
+
+
+          //Varianta mai buna din punct de vedere al reultatului
+          for (let i = 0; i < data.results.length; i++) {
+            if (data.results[i].types[0] === "country") {
+
+              let country_short = data.results[i].address_components[0].short_name;
+              let country_long = data.results[i].address_components[0].long_name;
+              that.aboutLocation = {
+                city: '',
+                address: data.results[0].formatted_address,
+                countryLong: country_long,
+                countryShort: country_short
+              }
+            }
+          }
+          console.log(that.aboutLocation);
+        }
+      }
+    }, { sensor: true });
   }
+
 
   onSelectFile(event) {
     if (event.target.files && event.target.files[0]) {
@@ -324,7 +417,7 @@ export class PostComponent implements OnInit, AfterViewInit {
     // console.log(this.url);
   }
 
-  removePhoto(index){
+  removePhoto(index) {
     this.urlArray.splice(index, 1);
     this.resizedUrlArray.splice(index, 1);
   }
@@ -375,10 +468,11 @@ export class PostComponent implements OnInit, AfterViewInit {
       var dataurl = canvas.toDataURL(file.type);
       console.log(dataurl);
       this.url = this.sanitizer.bypassSecurityTrustResourceUrl(dataurl);
-      this.resizedUrlArray.push(this.url);
+
+      this.resizedUrlArray.push(this.url.changingThisBreaksApplicationSecurity);
     }
     reader.readAsDataURL(file);
   }
 
-  
+
 }

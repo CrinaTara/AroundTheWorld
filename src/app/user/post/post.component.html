@@ -8,6 +8,7 @@
     </button>
 </div>
 <div class="modal-body">
+
     <!-- Create trip -->
     <div *ngIf="showNewTrip">
         <div>
@@ -15,9 +16,11 @@
             <h6>Name your trip: </h6>
         </div>
         <div class="alert alert-warning alert-morning-modified" *ngIf="tripMessageDisplay">{{tripMessageDisplayed}}</div>
+        <div class="alert alert-danger alert-morning-modified" *ngIf="errorTripMessageDisplay">{{tripMessageDisplayed}}</div>
+        
         <form [formGroup]='tripForm'>
             <div class="form-group">
-                <input type="text" class="form-control" placeholder="My trip to England, Hiking Trails, Scoutish ..." formControlName="tripName"
+                <input type="text" class="form-control" placeholder="* My trip to England, Hiking Trails, Scoutish ..." formControlName="tripName"
                 />
             </div>
 
@@ -34,11 +37,14 @@
 
     <!-- Create post -->
     <div *ngIf="showNewPost" class="animated fadeInRight">
+        <div class="alert alert-warning alert-morning-modified" *ngIf="postMessageDisplay">{{postMessageDisplayed}}</div>
+        <div class="alert alert-danger alert-morning-modified" *ngIf="errorPostMessageDisplay">{{postMessageDisplayed}}</div>
+        
         <div class="d-flex justify-content-end choose">
             <div class="btn-group" dropdown>
                 <a dropdownToggle class="btn btn-default mr-auto p-2 dropdown-toggle">
-                    Related trip:
-                    <b>{{this.selectedTrip}}</b>
+                   * Related trip:
+                    <b>{{this.selectedTrip.name}}</b>
                     <span class="caret"></span>
                 </a>
                 <ul *dropdownMenu class="dropdown-menu" role="menu">
@@ -63,15 +69,15 @@
 
         <div class="about-post">
             <form [formGroup]='postForm'>
-                <!-- <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search for location" formControlName="location" />
-                </div> -->
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Name your post" formControlName="postName" />
+                    <input type="text" class="form-control" placeholder="Your location" formControlName="location" />
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="* Name your post" formControlName="postName" />
                 </div>
 
                 <div class="form-group">
-                    <textarea type="text" rows="4" class="form-control" placeholder="What's going on here?" formControlName="postDetails"></textarea>
+                    <textarea type="text" rows="4" class="form-control" placeholder="* What's going on here?" formControlName="postDetails"></textarea>
                 </div>
 
                 <div *ngIf="isPrivatePrivacy">
@@ -79,7 +85,7 @@
                         <input type="text" class="form-control" placeholder="Buget" formControlName="buget" />
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Other thoughts" formControlName="otherToughts" />
+                        <textarea type="text" rows="2" class="form-control" placeholder="Other thoughts" formControlName="otherToughts"></textarea>
                     </div>
                 </div>
             </form>
@@ -131,7 +137,7 @@
 <div class="modal-footer">
     <div *ngIf="showNewTrip">
         <button type="button" class="btn btn-default" (click)="postModal.hide()">Close</button>
-        <button type="button" class="btn btn-default create-button" (click)="createTrip()">Create</button>
+        <button type="button" class="btn btn-default create-button"  [ngClass]="tripForm.status=='INVALID'?'disabled':null" (click)="createTrip()">Create</button>
     </div>
 
     <div *ngIf="showNewPost">
