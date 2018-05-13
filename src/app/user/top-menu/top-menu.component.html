@@ -28,6 +28,11 @@
       </div>
         
         <div class="col-sm-4 d-flex align-items-center justify-content-end">
+            <div class="buttons ">
+                <a class="btn yellow-button" (click)="openPostModalWithComponent()">
+                  NEW POST
+                </a>
+              </div>
           <div class="buttons ">
             <a class="btn sing-button" (click)="signOut()" *ngIf="authState.email">
               LOG OUT

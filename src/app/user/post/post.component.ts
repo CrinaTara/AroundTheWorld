@@ -37,7 +37,9 @@ export class PostComponent implements OnInit, AfterViewInit {
     city: '',
     address: '',
     countryLong: '',
-    countryShort: ''
+    countryShort: '',
+    latitude: 0,
+    longitude: 0
   };
 
   items: Observable<any[]>;
@@ -267,11 +269,11 @@ export class PostComponent implements OnInit, AfterViewInit {
         privacy: this.privacyPost,
         buget: this.postForm.value.buget,
         otherToughts: this.postForm.value.otherToughts,
-        lat: this.lat,
-        long: this.lng,
+        // lat: this.lat,
+        // long: this.lng,
         // city: '',
         // country: '',
-        aboutLocatin: this.aboutLocation,
+        aboutLocation: this.aboutLocation,
         photos: this.resizedUrlArray
 
       })
@@ -390,7 +392,10 @@ export class PostComponent implements OnInit, AfterViewInit {
                 city: '',
                 address: data.results[0].formatted_address,
                 countryLong: country_long,
-                countryShort: country_short
+                countryShort: country_short,
+                latitude: that.lat,
+                longitude: that.lng
+
               }
             }
           }

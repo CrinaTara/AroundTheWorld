@@ -28,6 +28,12 @@
       // margin-bottom: 2%;
   }
 
+.post-container{
+  border: 1px solid rgb(20, 20, 20);
+  padding: 1%;
+  margin-bottom: 2%;
+}
+
 .info{
   padding: 7%;
 }
@@ -43,4 +49,9 @@
 
 .modal-style{
   border-radius: 0px !important; 
+}
+
+.yellow-button{
+  color: #febd4a!important;
+  margin-bottom: 0px!important;
 }

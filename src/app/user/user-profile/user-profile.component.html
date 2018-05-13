@@ -37,10 +37,17 @@
 
 <div class="wrapper">
     <div class="profile-container ">
-        <a class="btn d-flex justify-content-center" (click)="openModalWithComponent()">
+        <a class="btn yellow-button d-flex justify-content-center" (click)="openPostModalWithComponent()">
             MAKE A POST
         </a>
-        <div class="d-flex justify-content-center"> Here will be my posts!</div>
+        <div *ngIf="!allMyPosts" class="d-flex justify-content-center"> Here will be my posts!</div>
     </div>
-    
+
+    <br>
+    <div>
+        <div *ngFor="let post of allMyPosts" class="post-container" >
+            <h3>{{post.postName}}</h3>
+        </div>
+    </div>
+
 </div>
