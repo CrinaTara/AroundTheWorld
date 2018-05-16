@@ -1,38 +1,51 @@
+%shared-thumbnail{
+  position: relative;
+  overflow: hidden;
+}
+
+%shared-thumbnail-img{
+  position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    -webkit-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+            transform: translate(-50%,-50%);
+}
+
+
 .thumbnail {
-    position: relative;
     width: 250px;
     height: 250px;
-    overflow: hidden;
     margin-top: 5%;
+    @extend %shared-thumbnail;
   }
   
   .thumbnail img {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    height: 100%;
-    width: auto;
-    -webkit-transform: translate(-50%,-50%);
-        -ms-transform: translate(-50%,-50%);
-            transform: translate(-50%,-50%);
+    @extend %shared-thumbnail-img;
+  }
+
+.thumbnail-me {
+  width: 200px;
+  height: 200px;
+  @extend %shared-thumbnail;
+}
+
+.thumbnail-me img {
+  @extend %shared-thumbnail-img;
+  }
+
+  .thumbnail-search {
+    display: flex;
+    width: 100%;
+    height: 180px;
+    margin-top: 5%;
+    @extend %shared-thumbnail;
   }
   
-
-  .thumbnail-me {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    overflow: hidden;
-    // margin-top: 5%;
+  .thumbnail-search img {
+    @extend %shared-thumbnail-img;
   }
 
-  .thumbnail-me img {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    height: 100%;
-    width: auto;
-    -webkit-transform: translate(-50%,-50%);
-        -ms-transform: translate(-50%,-50%);
-            transform: translate(-50%,-50%);
-  }
+  

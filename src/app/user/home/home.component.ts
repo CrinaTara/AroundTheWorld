@@ -136,7 +136,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
             var city = arrayItem;
             
             city.svgPath = that.targetSVG;
-            city.zoomLevel = 3;
+            city.zoomLevel = 5;
             city.scale = 1;
             city.color = "black";
           

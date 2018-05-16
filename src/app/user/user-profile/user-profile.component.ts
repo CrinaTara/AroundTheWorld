@@ -6,6 +6,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { PostComponent } from '../post/post.component';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { } from 'angular-modal-gallery';
 
 @Component({
   selector: 'user-profile',
@@ -18,6 +19,7 @@ export class UserProfileComponent implements OnInit {
   @ViewChild(PostComponent)  postComponent: PostComponent;
 
   postModal : BsModalRef;
+  weHavePosts= false;
 
   authState: any = null;
   public userObject: any;
@@ -69,6 +71,7 @@ export class UserProfileComponent implements OnInit {
         if (doc) {
           console.log(doc);
           that.allMyPosts.push(doc);
+          that.weHavePosts = true;
         }
       
       });

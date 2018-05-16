@@ -1,38 +1,5 @@
 @import '~scss/profile';
-
-
-.d-flex{
-    justify-content: space-between;
-  }
-  .name-wrapper{
-    width: 100%;
-    padding-top: 2%;
-    // position: fixed;
-    top: 0;
-    overflow: hidden;
-    background-color: white;
-    z-index: 100;
-  }
-
-  .wrapper{
-    right: 0px;
-    margin: 0px auto;
-    padding-top: 2%;
-    max-width: 800px;
-    position: relative;
-  }
-  
-  .profile-container{
-      border: 1px solid rgb(20, 20, 20);
-      padding: 1%;
-      // margin-bottom: 2%;
-  }
-
-.post-container{
-  border: 1px solid rgb(20, 20, 20);
-  padding: 1%;
-  margin-bottom: 2%;
-}
+@import '~scss/posts';
 
 .info{
   padding: 7%;
@@ -54,4 +21,15 @@
 .yellow-button{
   color: #febd4a!important;
   margin-bottom: 0px!important;
+}
+
+
+.post-photo-display{
+  display: inline-block!important;
+  margin: 10px;
+}
+
+.style-photo{
+  height: 150px;
+  width: 150px;
 }

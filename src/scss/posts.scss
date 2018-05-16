@@ -1,0 +1,42 @@
+%shared-wrapper{
+    right: 0px;
+    margin: 0px auto;
+    padding-top: 2%;
+    position: relative;
+}
+  
+  .d-flex{
+      justify-content: space-between;
+    }
+  .name-wrapper{
+      width: 100%;
+      padding-top: 2%;
+      // position: fixed;
+      top: 0;
+      overflow: hidden;
+      background-color: white;
+      z-index: 100;
+  }
+  
+  .wrapper-profile{
+    @extend %shared-wrapper;
+      max-width: 800px;
+  }
+  
+  .wrapper-post{
+    @extend %shared-wrapper;
+      max-width: 650px;
+  }
+    
+    .profile-container{
+        border: 1px solid rgb(20, 20, 20);
+        padding: 1%;
+        // margin-bottom: 2%;
+    }
+  
+  .post-container{
+    border: 1px solid rgb(20, 20, 20);
+    padding: 2%;
+    margin-bottom: 2%;
+    background-color: #FBFFFE;
+  }

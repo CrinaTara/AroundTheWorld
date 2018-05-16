@@ -9,6 +9,8 @@ import { MainMenuComponent } from './main-menu/main-menu.component';
 import { UserProfileComponent } from './user/user-profile/user-profile.component';
 import { DashboardComponent } from './user/dashboard/dashboard.component';
 import { EditProfileComponent } from './user/edit-profile/edit-profile.component';
+import { FindFriendsComponent } from './user/find-friends/find-friends.component';
+import { SearchDestinationsComponent } from './user/search-destinations/search-destinations.component';
 
 import { AuthGuard } from './auth-guard.service';
 
@@ -20,7 +22,9 @@ const routes: Routes = [
     children: [
         {path: '', component: HomeComponent, canActivateChild: [AuthGuard]},
         {path: 'user-profile', component: UserProfileComponent, canActivateChild: [AuthGuard]},
-        {path: 'edit-profile', component: EditProfileComponent, canActivateChild: [AuthGuard]}
+        {path: 'edit-profile', component: EditProfileComponent, canActivateChild: [AuthGuard]},
+        {path: 'find-friends', component: FindFriendsComponent, canActivateChild: [AuthGuard]},
+        {path: 'search-destinations', component: SearchDestinationsComponent, canActivateChild: [AuthGuard]},
     ]},
     {path: '**', component: LandingComponent}
 ]
@@ -47,5 +51,7 @@ export const routingComponents = [LandingComponent,
                                   UserProfileComponent,
                                   DashboardComponent,
                                   EditProfileComponent,  
+                                  FindFriendsComponent,
+                                  SearchDestinationsComponent,
                                   ];
    

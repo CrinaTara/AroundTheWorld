@@ -1,3 +1,5 @@
+$main-yellow-color: #febd4a;
+
 .main-menu-design{
     background-color: rgb(34, 34, 34);
     overflow-x: hidden;
@@ -7,6 +9,10 @@
 
 .active-page{
     border-bottom: solid white;
+}
+
+.active-option{
+    border-left: solid 3px $main-yellow-color;
 }
 
 .buttons{
@@ -35,5 +41,5 @@
   }
 
   .yellow-button{
-    color: #febd4a!important;
+    color: $main-yellow-color!important;
 }

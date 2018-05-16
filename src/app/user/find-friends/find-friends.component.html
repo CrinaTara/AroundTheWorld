@@ -1,0 +1,34 @@
+<div class="container">
+  <div class="header profile-wrapper">
+    <h2 >Find Friends</h2>
+    <p class="text">It's always better to share the experiences you have with other people. And because following new friends you discover new adventures, new places.</p>
+  </div>
+  <form [formGroup]='searchFriendsForm'>
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Search a friend" formControlName="search" />
+    </div>
+    <button type="button" class="btn btn-default create-button" (click)="getFriends(searchFriendsForm.value)">Search</button>
+  </form>
+  
+  <div class="alert alert-danger alert-style" *ngIf="errorSearchMessageDisplay">{{searchMessageDisplayed}}</div>
+  <div *ngFor="let person of searcFriendsResuls">
+    <div class="col-12 col-sm-10 col-md-6 col-lg-3 col-xl-3 mt-4">
+
+      <div class="card ">
+        <div class="thumbnail-search">
+          <img *ngIf="person.profilePicture" class="card-img-top" [src]="person.profilePicture" alt="Profile image">
+          <img *ngIf="!person.profilePicture" class="card-img-top" src="assets/images/user.png" alt="Profile image">
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{person.firstName}} {{person.lastName}}</h5>
+          <a class="btn btn-warning">Follow</a>
+        </div>
+
+        <div class="card-footer">
+          <small class="text-muted">Visited 3 countries</small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

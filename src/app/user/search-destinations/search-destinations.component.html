@@ -1,0 +1,31 @@
+<div class="container">
+    <div class="header profile-wrapper">
+      <h2 >DISCOVER NEW DESTINATIONS</h2>
+      <p class="text">Do not you know where to go? What's your next travel destination? See where other people were!</p>
+    </div>
+    <form [formGroup]='searchPlaceForm'>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search new destination" formControlName="search" />
+      </div>
+      <button type="button" class="btn btn-default create-button" (click)="getPlaces(searchPlaceForm.value)">Search</button>
+    </form>
+    
+    <div class="alert alert-danger alert-style" *ngIf="errorSearchMessageDisplay">{{searchMessageDisplayed}}</div>
+
+    <div *ngFor="let place of searchPlaces">
+      <div class="col-12 col-sm-10 col-md-6 col-lg-6 col-xl-6 mt-4">
+  
+        <div class="card ">
+          <div class="thumbnail-search">
+            <img *ngIf="place.profilePicture" class="card-img-top" [src]="place.profilePicture" alt="Profile image">
+            <img *ngIf="!place.profilePicture" class="card-img-top" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqdxJbj2KAfhS0eExRnfaW_DvgbQO9pdT0LzJEIPV6ttqULVD7" alt="Profile image">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title header">{{place.aboutLocation.countryLong}}</h5>
+          </div>
+  
+        </div>
+  
+      </div>
+    </div>
+  </div>

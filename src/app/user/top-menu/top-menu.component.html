@@ -22,9 +22,22 @@
           <a class="btn sing-button" routerLink="/home/user-profile"  routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}" >
             PROFILE
           </a>
-          <a class="btn sing-button "   routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}" >
+          <!-- <a class="btn sing-button "   routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}" >
             MORE
-          </a>
+          </a> -->
+          
+          <div  dropdown container="body">
+            <a  dropdownToggle class="btn sing-button "  >
+              MORE
+            </a>
+            <ul  *dropdownMenu class="dropdown-menu wrapper-drop"
+                role="menu" >
+              <li role="menuitem"><a class="menuItems dropdown-item" routerLink="/home/find-friends" routerLinkActive="active-option" [routerLinkActiveOptions]="{exact: true}">Search FRIENDS</a></li>
+              <li role="menuitem"><a class=" menuItems dropdown-item" routerLink="/home/search-destinations" routerLinkActive="active-option" [routerLinkActiveOptions]="{exact: true}" >Discover new DESTIATIONS</a></li>
+              <!-- <li role="menuitem"><a class="menuItems dropdown-item">Something else here</a></li> -->
+            </ul>
+          </div>
+
       </div>
         
         <div class="col-sm-4 d-flex align-items-center justify-content-end">
@@ -33,6 +46,7 @@
                   NEW POST
                 </a>
               </div>
+              
           <div class="buttons ">
             <a class="btn sing-button" (click)="signOut()" *ngIf="authState.email">
               LOG OUT

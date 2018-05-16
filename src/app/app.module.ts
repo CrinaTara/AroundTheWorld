@@ -14,8 +14,15 @@ import { AuthGuard } from './auth-guard.service';
 import { BsDropdownModule } from 'ngx-bootstrap';
 import { AmChartsModule } from "@amcharts/amcharts3-angular";
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { CarouselModule } from 'ngx-bootstrap';
+
+import 'hammerjs';
+import 'mousetrap';
+import { ModalGalleryModule } from 'angular-modal-gallery';
 
 import { PostComponent } from './user/post/post.component';
+
+
 
 @NgModule({
   declarations: [
@@ -37,7 +44,9 @@ import { PostComponent } from './user/post/post.component';
     ReactiveFormsModule,
     BsDropdownModule.forRoot(),
     AmChartsModule,
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    CarouselModule.forRoot(),
+    ModalGalleryModule.forRoot()
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent],

@@ -4,7 +4,7 @@
     </div>
 </div>
 
-<div class="wrapper">
+<div class="wrapper-profile">
     <div class="profile-container row d-flex justify-content-center">
         <div class="thumbnail-me  d-flex justify-content-center ">
             <img [src]="this.url" class=" profile profile-avatar">
@@ -35,18 +35,33 @@
 
 </div>
 
-<div class="wrapper">
+<div class="wrapper-post">
     <div class="profile-container ">
         <a class="btn yellow-button d-flex justify-content-center" (click)="openPostModalWithComponent()">
             MAKE A POST
         </a>
-        <div *ngIf="!allMyPosts" class="d-flex justify-content-center"> Here will be my posts!</div>
+        <div *ngIf="!weHavePosts" class="d-flex justify-content-center"> Here will be my posts!</div>
     </div>
 
     <br>
     <div>
-        <div *ngFor="let post of allMyPosts" class="post-container" >
+        <div *ngFor="let post of allMyPosts" class="post-container">
             <h3>{{post.postName}}</h3>
+            <h5>{{post.tripName}}</h5>
+            <div>{{ post.creationDate | date }} </div>
+            <div>{{post.aboutLocation.countryLong}}</div>
+            <div>{{post.postDetails}}</div>
+            <!-- <carousel interval= "false">
+                <slide *ngFor = "let photo of post.photos">
+                  <img [src]="photo" alt="slide" style="display: block; width: 100%;">
+                </slide>
+            </carousel> -->
+                <div *ngFor="let photo of post.photos" class="post-photo-display ">
+                    <img [src]="photo" alt="slide" class="style-photo" >
+                </div>
+<!-- 
+                <ks-modal-gallery [id]="5" [modalImages]="post.photos"
+                ></ks-modal-gallery> -->
         </div>
     </div>
 
