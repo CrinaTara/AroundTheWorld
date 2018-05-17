@@ -31,25 +31,22 @@ export class SearchDestinationsComponent implements OnInit {
   ngOnInit() {
     this.searchPlaceForm = this.fb.group({
       search: ['', Validators.required],
-    }),
-
-    this.getInitPlaces();
+    })
   }
 
-  getInitPlaces(){
+  
 
-  }
 
 
   getPlaces(dataSearch){
     this.searchPlaces= [];
     let that = this;
     let valueToCompare = dataSearch.search.toUpperCase();
-    this.db.collection("posts").snapshotChanges().map(actions => {
+    this.db.collection("countries").snapshotChanges().map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data();
         const id = a.payload.doc.id;
-          if (data.aboutLocation.countryLong.toUpperCase().includes(valueToCompare)) {
+          if (data.long.toUpperCase().includes(valueToCompare)) {
             return { id, ...data };
           }
         // string.includes(substring);
@@ -66,8 +63,6 @@ export class SearchDestinationsComponent implements OnInit {
       
       });
 
-      let fruits_without_duplicates =  Array.from(new Set( that.searchPlaces ));
-      console.log(fruits_without_duplicates);
 
       if(that.searchPlaces.length == 0) {
         that.errorSearchMessageDisplay = true;

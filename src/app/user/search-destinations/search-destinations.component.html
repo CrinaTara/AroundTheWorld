@@ -17,11 +17,14 @@
   
         <div class="card ">
           <div class="thumbnail-search">
-            <img *ngIf="place.profilePicture" class="card-img-top" [src]="place.profilePicture" alt="Profile image">
+            <img *ngIf="place.profilePicture" class="card-img-top" [src]="place.picture" alt="Profile image">
             <img *ngIf="!place.profilePicture" class="card-img-top" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqdxJbj2KAfhS0eExRnfaW_DvgbQO9pdT0LzJEIPV6ttqULVD7" alt="Profile image">
           </div>
           <div class="card-body">
-            <h5 class="card-title header">{{place.aboutLocation.countryLong}}</h5>
+            <h5 class="card-title header">{{place.long}}</h5>
+            <div>
+              {{place.nrPeople}}
+            </div>
           </div>
   
         </div>

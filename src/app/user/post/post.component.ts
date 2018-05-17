@@ -30,6 +30,8 @@ export class PostComponent implements OnInit, AfterViewInit {
   tripForm: FormGroup;
   postForm: FormGroup;
 
+  nrPeople = 0;
+
   lat: number = 51.678418;
   lng: number = 7.809007;
   locationChosen = false;
@@ -83,6 +85,15 @@ export class PostComponent implements OnInit, AfterViewInit {
     private ngZone: NgZone,
     private sanitizer: DomSanitizer,
   ) {
+
+    if (navigator)
+    {
+    navigator.geolocation.getCurrentPosition( pos => {
+        this.lng = +pos.coords.longitude;
+        this.lat = +pos.coords.latitude;
+      });
+    }
+
   }
 
   ngOnInit() {
@@ -282,6 +293,7 @@ export class PostComponent implements OnInit, AfterViewInit {
           that.postMessageDisplay = true;
           that.errorPostMessageDisplay = false;
           that.clearPostData();
+          that.countPosts();
         })
         .catch(function (error) {
           console.error("Error adding document: ", error);
@@ -291,6 +303,48 @@ export class PostComponent implements OnInit, AfterViewInit {
         });
     }
 
+  }
+
+  countPosts(){
+    let that = this;
+    this.db.collection("posts").snapshotChanges().map(actions => {
+      return actions.map(a => {
+        const data = a.payload.doc.data();
+        const id = a.payload.doc.id;
+          if (data.aboutLocation.countryLong === that.aboutLocation.countryLong) {
+            return { id };
+          }
+        // string.includes(substring);
+      });
+    }).subscribe((querySnapshot) => {
+      // console.log(querySnapshot)
+      querySnapshot.forEach((doc) => {
+        if (doc) {
+         that.nrPeople = that.nrPeople + 1;
+        }
+      });
+      that.addCountryToDatabase();
+      that.nrPeople = 0;
+    });
+
+  }
+  addCountryToDatabase(){
+    let that = this;
+    let data = {
+      short: this.aboutLocation.countryShort,
+      long: this.aboutLocation.countryLong,
+      nrPeople: this.nrPeople ,
+    };
+
+    this.db.collection("countries").doc(this.aboutLocation.countryShort).set(data, { merge: true })
+    .then(function () {
+      that.nrPeople = 0;
+    })
+    .catch((error) => {
+      console.error("Error adding document: ", error);
+    });
+   
+    
   }
 
   // Does't work. Maybe with valuesChanged.
