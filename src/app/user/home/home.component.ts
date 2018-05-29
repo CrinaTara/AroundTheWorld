@@ -101,7 +101,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         event: 'init',
         method: function (event) {
           var map = event.chart;
-          console.log("aasdasda");
           console.log(that.relevantCities);
           // populate the city dropdown when the page loads
           // for (let i = 0; i < that.relevantcities.length; i++) { 
@@ -151,7 +150,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     //   });
 
 
-    this.db.collection("posts").snapshotChanges().map(actions => {
+    const locationsSubscription =  this.db.collection("posts").snapshotChanges().map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data();
         const id = a.payload.doc.id;
@@ -186,6 +185,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
       });
+      locationsSubscription.unsubscribe();
       that.another();
     });
     

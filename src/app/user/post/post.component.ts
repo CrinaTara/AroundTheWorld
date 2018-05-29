@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit, ElementRef, NgZone, HostListener } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, ElementRef, NgZone, HostListener, forwardRef } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ModalDirective } from 'ngx-bootstrap';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -20,12 +20,16 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/observable/combineLatest';
 
+import { UserProfileComponent } from '../user-profile/user-profile.component';
+
 @Component({
   selector: 'app-post',
   templateUrl: './post.component.html',
   styleUrls: ['./post.component.scss']
 })
 export class PostComponent implements OnInit, AfterViewInit {
+
+  // @ViewChild(forwardRef(() => UserProfileComponent)) user : UserProfileComponent;
 
   tripForm: FormGroup;
   postForm: FormGroup;
@@ -239,6 +243,7 @@ export class PostComponent implements OnInit, AfterViewInit {
       otherToughts: ''
     });
 
+    // this.user.getMyPosts();
     this.urlArray = null;
     this.resizedUrlArray = null;
     this.privacyPost = 'public';
@@ -289,10 +294,10 @@ export class PostComponent implements OnInit, AfterViewInit {
 
       })
         .then(function (docRef) {
+          that.clearPostData();
           that.postMessageDisplayed = 'Posted succesfully!';
           that.postMessageDisplay = true;
           that.errorPostMessageDisplay = false;
-          that.clearPostData();
           that.countPosts();
         })
         .catch(function (error) {
@@ -307,7 +312,7 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   countPosts(){
     let that = this;
-    this.db.collection("posts").snapshotChanges().map(actions => {
+    const locationsSubscription = this.db.collection("posts").snapshotChanges().map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data();
         const id = a.payload.doc.id;
@@ -326,6 +331,8 @@ export class PostComponent implements OnInit, AfterViewInit {
       that.addCountryToDatabase();
       that.nrPeople = 0;
     });
+
+    locationsSubscription.unsubscribe();
 
   }
   addCountryToDatabase(){

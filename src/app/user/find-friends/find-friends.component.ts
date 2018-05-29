@@ -44,7 +44,7 @@ export class FindFriendsComponent implements OnInit {
     let that = this;
 
     let valueToCompare = dataSearch.search.toUpperCase();
-    this.db.collection("users").snapshotChanges().map(actions => {
+    const locationsSubscription = this.db.collection("users").snapshotChanges().map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data();
         const id = a.payload.doc.id;
@@ -52,7 +52,7 @@ export class FindFriendsComponent implements OnInit {
           if (data.firstName.toUpperCase().includes(valueToCompare) || data.lastName.toUpperCase().includes(valueToCompare)) {
             return { id, ...data };
           }
-        }
+        } 
         // string.includes(substring);
       });
     }).subscribe((querySnapshot) => {
@@ -67,7 +67,6 @@ export class FindFriendsComponent implements OnInit {
           }
         
         }
-       
       
       });
 
@@ -79,6 +78,7 @@ export class FindFriendsComponent implements OnInit {
         that.errorSearchMessageDisplay = false;
 
       }
+      locationsSubscription.unsubscribe();
 
     });
   }

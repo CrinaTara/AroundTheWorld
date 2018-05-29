@@ -42,7 +42,7 @@ export class SearchDestinationsComponent implements OnInit {
     this.searchPlaces= [];
     let that = this;
     let valueToCompare = dataSearch.search.toUpperCase();
-    this.db.collection("countries").snapshotChanges().map(actions => {
+    const  locationsSubscription = this.db.collection("countries").snapshotChanges().map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data();
         const id = a.payload.doc.id;
@@ -72,6 +72,10 @@ export class SearchDestinationsComponent implements OnInit {
 
 
     });
+
+    locationsSubscription.unsubscribe();
+
+    
   }
 
 

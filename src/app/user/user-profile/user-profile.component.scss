@@ -1,5 +1,6 @@
 @import '~scss/profile';
 @import '~scss/posts';
+@import '~scss/colors';
 
 .info{
   padding: 7%;
@@ -19,7 +20,7 @@
 }
 
 .yellow-button{
-  color: #febd4a!important;
+  color: $main-yellow-color!important;
   margin-bottom: 0px!important;
 }
 
@@ -32,4 +33,23 @@
 .style-photo{
   height: 150px;
   width: 150px;
+}
+
+.edit-post{
+  color: $main-yellow-color!important;
+  border: solid 1px white;
+  margin-right: 1%;
+}
+
+.edit-post:hover{
+  cursor: pointer;
+}
+
+.delete-post{
+  color: red!important;
+  border: solid 1px white;
+}
+
+.delete-post:hover{
+  cursor: pointer;
 }
