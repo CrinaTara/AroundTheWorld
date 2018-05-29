@@ -347,7 +347,6 @@ export class PostComponent implements OnInit, AfterViewInit {
     
   }
 
-  // Does't work. Maybe with valuesChanged.
   getTripsData() {
     // !!!!!!!!!!Get id trips
     console.log('Here is uuid');
@@ -363,6 +362,15 @@ export class PostComponent implements OnInit, AfterViewInit {
     //   })
     //   .catch(function (error) {
     //     console.log("Error getting documents: ", error);
+    //   });
+
+
+    //This code is working! Down below!!
+    // this.db.collection("posts").ref.where("idUser", "==", this.authState.uid).orderBy("creationDate", "desc").orderBy("creationHour", "desc").limit(3)
+    // .onSnapshot(function(querySnapshot) {
+    //     querySnapshot.forEach(function(doc) {
+    //       console.log(doc.id, " => ", doc.data());
+    //     })
     //   });
 
     var arr = [];
@@ -393,8 +401,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         console.log("Error getting documents: ", error);
       });
 
-    // this.relatedTrips = this.items = this.db.collection('trips', ref => ref.where('idUser', '==', this.authState.uid)).valueChanges();
-
+    
   }
 
   chooseATrip(choise) {
@@ -436,7 +443,7 @@ export class PostComponent implements OnInit, AfterViewInit {
           // address_components[2].short_name
 
 
-          //Varianta mai buna din punct de vedere al reultatului
+          //Varianta mai buna din punct de vedere al rezultatului
           for (let i = 0; i < data.results.length; i++) {
             if (data.results[i].types[0] === "country") {
 

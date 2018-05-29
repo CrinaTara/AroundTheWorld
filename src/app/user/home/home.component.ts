@@ -21,9 +21,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   coloredVisitedCountries = [];
 
-   relevantcities = [
-   ]
-
   constructor(private db: AngularFirestore, private afAuth: AngularFireAuth, private router: Router, private AmCharts: AmChartsService) {
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth
@@ -33,25 +30,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
    ngOnInit() {
     console.log(this.authState.uid);
     this.getAllPlaces();
-   
-
-    this.relevantcities.push( {
-      title: "Berlin",
-      latitude: 52.5235,
-      longitude: 13.4115,
-      svgPath : '',
-      zoomLevel : 0,
-      scale : 0,
-      color : ""
-    },{
-      title: "Monaco",
-      latitude: 43.7325,
-      longitude: 7.4189,
-      svgPath : '',
-      zoomLevel : 0,
-      scale : 0,
-      color : ""
-    })
    
   }
 
@@ -125,7 +103,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
           var map = event.chart;
           console.log("aasdasda");
           console.log(that.relevantCities);
-          console.log(that.relevantcities);
           // populate the city dropdown when the page loads
           // for (let i = 0; i < that.relevantcities.length; i++) { 
           //   console.log(that.relevantcities[i])

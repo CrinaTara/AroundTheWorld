@@ -13,6 +13,8 @@ export class FindFriendsComponent implements OnInit {
 
   authState: any = null;
 
+  accesPersonPageID: any = "";
+
   searchResponse: boolean = false;
   searcFriendsResuls = [];
 
@@ -20,6 +22,8 @@ export class FindFriendsComponent implements OnInit {
 
   searchMessageDisplayed: string = '';
   errorSearchMessageDisplay: boolean = false;
+
+  currentFollowing = [];
 
   constructor(private db: AngularFirestore,  public fb: FormBuilder, private afAuth: AngularFireAuth) { 
     this.afAuth.authState.subscribe((auth) => {
@@ -38,6 +42,7 @@ export class FindFriendsComponent implements OnInit {
   getFriends(dataSearch){
     this.searcFriendsResuls = [];
     let that = this;
+
     let valueToCompare = dataSearch.search.toUpperCase();
     this.db.collection("users").snapshotChanges().map(actions => {
       return actions.map(a => {
@@ -56,9 +61,13 @@ export class FindFriendsComponent implements OnInit {
         
         if (doc) {
           console.log(doc);
-          that.searcFriendsResuls.push(doc);
-          that.searchResponse = true;
+          {
+             that.searcFriendsResuls.push(doc);
+             that.searchResponse = true;
+          }
+        
         }
+       
       
       });
 
@@ -66,10 +75,93 @@ export class FindFriendsComponent implements OnInit {
         that.errorSearchMessageDisplay = true;
         that.searchMessageDisplayed = "No results found!"
       }
-      else  that.errorSearchMessageDisplay = false;
+      else  {
+        that.errorSearchMessageDisplay = false;
 
+      }
 
     });
+  }
+
+  viewPersonPage(idPerson){
+    console.log(idPerson);
+    this.accesPersonPageID = idPerson;
+  }
+
+
+  followAPerson(idPerson){
+    console.log(idPerson);
+    console.log(this.authState);
+
+    this.setFollowInDB(idPerson);
+
+  }
+
+  setFollowInDB(idPerson){
+    
+    var that = this;
+
+    // this.db.collection("users").doc(this.authState.uid).ref
+    //   .onSnapshot(function (doc) {
+    //     console.log(" data: ", doc.data());
+    //     that.currentFollowing = doc.data().following;
+    //     console.log(that.currentFollowing);
+    //   }, function (error) {
+    //     console.log("Error receiving data");
+    // });
+
+    //See why !
+
+    this.db.collection("users").doc(this.authState.uid).ref.get().then(function(doc) {
+      if (doc.exists) {
+          console.log("Document data:", doc.data());
+          that.currentFollowing = doc.data().following;
+
+          that.currentFollowing.push(idPerson);
+          let data = {
+            following: that.currentFollowing
+          }
+
+        that.db.collection("users").doc(that.authState.uid).set(data, { merge: true })
+            .then(function (docRef) {
+              console.log("Document written ok");
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+
+      } else {
+          console.log("No such document!");
+      }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+
+    // this.db.collection("users").doc(this.authState.uid).ref
+    // .get()
+    //   .then(function (querySnapshot) {
+    //     that.currentFollowing = querySnapshot.data().following;
+    //     console.log(that.currentFollowing);
+
+        
+    //     that.currentFollowing.push(idPerson);
+    //     let data = {
+    //       following: that.currentFollowing
+    //     }
+
+    //     that.db.collection("users").doc(that.authState.uid).set(data, { merge: true })
+    //         .then(function (docRef) {
+    //           console.log("Document written ok");
+    //         })
+    //         .catch((error) => {
+    //           console.log(error);
+    //         })
+
+    //   })
+    //   .catch(function (error) {
+    //     console.log("Error getting documents: ", error);
+    //   });
+
   }
 
 }

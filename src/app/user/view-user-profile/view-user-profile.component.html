@@ -1,0 +1,57 @@
+<top-menu></top-menu>
+<div class="name-wrapper d-flex justify-content-center">
+  <div class="">
+      <h3> {{this.userPersonalInformation.firstName}} {{this.userPersonalInformation.lastName}}</h3>
+  </div>
+</div>
+
+<div class="wrapper-profile">
+  <div class="profile-container row d-flex justify-content-center">
+      <div class="thumbnail-me  d-flex justify-content-center ">
+          <img [src]="this.url" class=" profile profile-avatar">
+      </div>
+      <div *ngIf="this.userPersonalInformation.bio; else messageInfo" class="info col-sm-6 ">
+          <div class="d-flex justify-content-end">
+              <b>Something about me</b>
+          </div>
+          <div class="text-description">
+              <div>{{this.userPersonalInformation.bio}}</div>
+
+              <div *ngIf="this.userPersonalInformation.homeBase" class="">My Home Base: {{this.userPersonalInformation.homeBase}} </div>
+          </div>
+      </div>
+      <ng-template #messageInfo>
+          <div class="info col-sm-6 ">
+              <div class="text-description">
+                  Tell us something about you.
+                  <div *ngIf="this.userPersonalInformation.homeBase" class="">My Home Base: {{this.userPersonalInformation.homeBase}} </div>
+              </div>
+          </div>
+
+      </ng-template>
+  </div>
+
+</div>
+
+
+<div class="wrapper-post">
+    <div *ngIf="!weHavePosts" class="profile-container " >
+        <div class="d-flex justify-content-center"> Sorry! There are no posts.</div>
+    </div>
+
+    <br>
+    <div>
+        <div *ngFor="let post of userListPosts" class="post-container">
+            <h3>{{post.postName}}</h3>
+            <h5>{{post.tripName}}</h5>
+            <div>{{ post.creationDate | date }} </div>
+            <div>{{post.aboutLocation.countryLong}}</div>
+            <div>{{post.postDetails}}</div>
+               
+            <div *ngFor="let photo of post.photos" class="post-photo-display ">
+                <img [src]="photo" alt="slide" class="style-photo" >
+            </div>
+        </div>
+    </div>
+
+</div>

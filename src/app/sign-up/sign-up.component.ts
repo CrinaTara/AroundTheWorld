@@ -101,7 +101,9 @@ export class SignUpComponent implements OnInit {
             bio: '',
             homeBase: '',
             profilePicture: '',
-            nrTrips: 0
+            nrTrips: 0,
+            following: [],
+            followers: []
           }
           this.db.collection("users").doc(success.uid).set(data)
             .then(function (docRef) {

@@ -16,12 +16,12 @@
 
       <div class="card ">
         <div class="thumbnail-search">
-          <img *ngIf="person.profilePicture" class="card-img-top" [src]="person.profilePicture" alt="Profile image">
-          <img *ngIf="!person.profilePicture" class="card-img-top" src="assets/images/user.png" alt="Profile image">
+          <img *ngIf="person.profilePicture" class="card-img-top" [src]="person.profilePicture" alt="Profile image" (click)="viewPersonPage(person.id)"  routerLink="/view-user-profile/{{person.id}}">
+          <img *ngIf="!person.profilePicture" class="card-img-top" src="assets/images/user.png" alt="Profile image" (click)="viewPersonPage(person.id)"  routerLink="/view-user-profile/{{person.id}}">
         </div>
         <div class="card-body">
-          <h5 class="card-title">{{person.firstName}} {{person.lastName}}</h5>
-          <a class="btn btn-warning">Follow</a>
+          <h5 class="card-title" (click)="viewPersonPage(person.id)" routerLink="/view-user-profile/{{person.id}}" >{{person.firstName}} {{person.lastName}}</h5>
+          <a class="btn btn-warning" (click)="followAPerson(person.id)">Follow</a>
         </div>
 
         <div class="card-footer">

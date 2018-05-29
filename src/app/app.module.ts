@@ -29,6 +29,7 @@ import { PostComponent } from './user/post/post.component';
     AppComponent,
     routingComponents,
     PostComponent,
+
   ],
   imports: [
     BrowserModule,

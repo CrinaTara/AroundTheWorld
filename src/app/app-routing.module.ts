@@ -11,6 +11,10 @@ import { DashboardComponent } from './user/dashboard/dashboard.component';
 import { EditProfileComponent } from './user/edit-profile/edit-profile.component';
 import { FindFriendsComponent } from './user/find-friends/find-friends.component';
 import { SearchDestinationsComponent } from './user/search-destinations/search-destinations.component';
+import { NewsComponent } from './user/news/news.component';
+import { ViewUserProfileComponent } from './user/view-user-profile/view-user-profile.component';
+
+
 
 import { AuthGuard } from './auth-guard.service';
 
@@ -21,11 +25,13 @@ const routes: Routes = [
     {path: 'home', component: DashboardComponent,  canActivate: [AuthGuard],
     children: [
         {path: '', component: HomeComponent, canActivateChild: [AuthGuard]},
+        {path: 'news', component: NewsComponent, canActivateChild: [AuthGuard]},
         {path: 'user-profile', component: UserProfileComponent, canActivateChild: [AuthGuard]},
         {path: 'edit-profile', component: EditProfileComponent, canActivateChild: [AuthGuard]},
         {path: 'find-friends', component: FindFriendsComponent, canActivateChild: [AuthGuard]},
         {path: 'search-destinations', component: SearchDestinationsComponent, canActivateChild: [AuthGuard]},
     ]},
+    {path: 'view-user-profile/:id', component: ViewUserProfileComponent,  canActivate: [AuthGuard]},
     {path: '**', component: LandingComponent}
 ]
 
@@ -53,5 +59,7 @@ export const routingComponents = [LandingComponent,
                                   EditProfileComponent,  
                                   FindFriendsComponent,
                                   SearchDestinationsComponent,
+                                  NewsComponent,
+                                  ViewUserProfileComponent,
                                   ];
    
