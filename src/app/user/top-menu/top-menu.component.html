@@ -48,7 +48,7 @@
               </div>
               
           <div class="buttons ">
-            <a class="btn sing-button" (click)="signOut()" *ngIf="authState.email">
+            <a class="btn sing-button" (click)="signOut()" *ngIf="authState?.email">
               LOG OUT
             </a>
           </div>

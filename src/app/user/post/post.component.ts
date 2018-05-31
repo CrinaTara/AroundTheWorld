@@ -312,10 +312,26 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   countPosts(){
     let that = this;
+    console.log("Count post!");
+
+    // const unsubscribe = this.db.collection("posts").ref.where("aboutLocation.countryLong", "==", this.aboutLocation.countryLong)
+    // .onSnapshot(function(querySnapshot) {
+    //     querySnapshot.forEach(function(doc) {
+    //       console.log(doc.id, " => ", doc.data());
+    //       that.nrPeople = that.nrPeople + 1;
+    //     })
+    //     console.log(that.nrPeople);
+    //     that.addCountryToDatabase();
+    //   that.nrPeople = 0;
+    //     unsubscribe();
+    //   });
+
     const locationsSubscription = this.db.collection("posts").snapshotChanges().map(actions => {
       return actions.map(a => {
         const data = a.payload.doc.data();
         const id = a.payload.doc.id;
+        console.log(data.aboutLocation);
+        console.log(that.aboutLocation);
           if (data.aboutLocation.countryLong === that.aboutLocation.countryLong) {
             return { id };
           }
@@ -328,20 +344,25 @@ export class PostComponent implements OnInit, AfterViewInit {
          that.nrPeople = that.nrPeople + 1;
         }
       });
+      console.log(that.nrPeople);
       that.addCountryToDatabase();
       that.nrPeople = 0;
+      locationsSubscription.unsubscribe();
     });
 
-    locationsSubscription.unsubscribe();
-
+  
   }
+
+  
   addCountryToDatabase(){
+    console.log("Country to database!");
     let that = this;
     let data = {
       short: this.aboutLocation.countryShort,
       long: this.aboutLocation.countryLong,
       nrPeople: this.nrPeople ,
     };
+    console.log(data);
 
     this.db.collection("countries").doc(this.aboutLocation.countryShort).set(data, { merge: true })
     .then(function () {

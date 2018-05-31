@@ -1,7 +1,7 @@
 <div class="container">
   <div class="header profile-wrapper">
     <h2 >Find Friends</h2>
-    <p class="text">It's always better to share the experiences you have with other people. And because following new friends you discover new adventures, new places.</p>
+    <p class="text">It's always better to share the experiences you have with other people. Following new friends you discover new adventures, new places.</p>
   </div>
   <form [formGroup]='searchFriendsForm'>
     <div class="form-group">
@@ -21,7 +21,8 @@
         </div>
         <div class="card-body">
           <h5 class="card-title" (click)="viewPersonPage(person.id)" routerLink="/view-user-profile/{{person.id}}" >{{person.firstName}} {{person.lastName}}</h5>
-          <a class="btn btn-warning" (click)="followAPerson(person.id)">Follow</a>
+          <a  *ngIf="!this.currentFollowing.includes(person.id)" class="btn btn-warning" (click)="followAPerson(person.id)">Follow</a>
+          <button  *ngIf="this.currentFollowing.includes(person.id)" class="btn btn-warning" [disabled]="true" >Following</button>
         </div>
 
         <div class="card-footer">

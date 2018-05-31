@@ -39,12 +39,15 @@ export class SearchDestinationsComponent implements OnInit {
 
 
   getPlaces(dataSearch){
+    console.log("asdasda");
     this.searchPlaces= [];
     let that = this;
     let valueToCompare = dataSearch.search.toUpperCase();
-    const  locationsSubscription = this.db.collection("countries").snapshotChanges().map(actions => {
+    console.log(valueToCompare);
+    this.db.collection("countries").snapshotChanges().map(actions => {
       return actions.map(a => {
-        const data = a.payload.doc.data();
+        const data = a.payload.doc.data()
+        console.log(data);
         const id = a.payload.doc.id;
           if (data.long.toUpperCase().includes(valueToCompare)) {
             return { id, ...data };
@@ -54,7 +57,7 @@ export class SearchDestinationsComponent implements OnInit {
     }).subscribe((querySnapshot) => {
       // console.log(querySnapshot)
       querySnapshot.forEach((doc) => {
-        
+        console.log("Here");
         if (doc) {
           console.log(doc);
           that.searchPlaces.push(doc);
@@ -73,7 +76,7 @@ export class SearchDestinationsComponent implements OnInit {
 
     });
 
-    locationsSubscription.unsubscribe();
+    // locationsSubscription.unsubscribe();
 
     
   }

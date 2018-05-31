@@ -1,7 +1,7 @@
 <top-menu></top-menu>
 <div class="name-wrapper d-flex justify-content-center">
   <div class="">
-      <h3> {{this.userPersonalInformation.firstName}} {{this.userPersonalInformation.lastName}}</h3>
+      <h3> {{this.userPersonalInformation?.firstName}} {{this.userPersonalInformation?.lastName}}</h3>
   </div>
 </div>
 
@@ -10,21 +10,21 @@
       <div class="thumbnail-me  d-flex justify-content-center ">
           <img [src]="this.url" class=" profile profile-avatar">
       </div>
-      <div *ngIf="this.userPersonalInformation.bio; else messageInfo" class="info col-sm-6 ">
+      <div *ngIf="this.userPersonalInformation?.bio; else messageInfo" class="info col-sm-6 ">
           <div class="d-flex justify-content-end">
               <b>Something about me</b>
           </div>
           <div class="text-description">
-              <div>{{this.userPersonalInformation.bio}}</div>
+              <div>{{this.userPersonalInformation?.bio}}</div>
 
-              <div *ngIf="this.userPersonalInformation.homeBase" class="">My Home Base: {{this.userPersonalInformation.homeBase}} </div>
+              <div *ngIf="this.userPersonalInformation?.homeBase" class="">My Home Base: {{this.userPersonalInformation?.homeBase}} </div>
           </div>
       </div>
       <ng-template #messageInfo>
           <div class="info col-sm-6 ">
               <div class="text-description">
                   Tell us something about you.
-                  <div *ngIf="this.userPersonalInformation.homeBase" class="">My Home Base: {{this.userPersonalInformation.homeBase}} </div>
+                  <div *ngIf="this.userPersonalInformation?.homeBase" class="">My Home Base: {{this.userPersonalInformation?.homeBase}} </div>
               </div>
           </div>
 
@@ -35,6 +35,8 @@
 
 
 <div class="wrapper-post">
+    <a  *ngIf="isFollowing" class="btn btn-outline-dark" (click)="unfollowAPerson()">Unfollow</a>
+    <a  *ngIf="!isFollowing" class="btn btn-outline-dark" (click)="followPerson()">Follow</a>
     <div *ngIf="!weHavePosts" class="profile-container " >
         <div class="d-flex justify-content-center"> Sorry! There are no posts.</div>
     </div>
