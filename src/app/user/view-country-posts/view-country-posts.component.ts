@@ -3,6 +3,8 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AngularFireAuth } from 'angularfire2/auth';
+
 
 @Component({
   selector: 'app-view-country-posts',
@@ -11,10 +13,15 @@ import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Valida
 })
 export class ViewCountryPostsComponent implements OnInit {
 
+  authState: any = null;
+
   public params: any;
   public searchedItem: any;
   weHavePosts : boolean = false;
   noResult = false;
+  
+  postsILiked = [];
+  dublicate = [];
 
   countryData: any;
   countryListPosts = [];
@@ -23,10 +30,15 @@ export class ViewCountryPostsComponent implements OnInit {
   searchCityForm: FormGroup;
 
   constructor(private route: ActivatedRoute, private router: Router,
-              private db: AngularFirestore,  public fb: FormBuilder
+              private db: AngularFirestore,  public fb: FormBuilder,
+              private afAuth: AngularFireAuth
             ) { 
     this.params = this.route.params;
     this.searchedItem = this.params._value.name;
+
+    this.afAuth.authState.subscribe((auth) => {
+      this.authState = auth
+    });
   }
 
   ngOnInit() {
@@ -64,7 +76,11 @@ export class ViewCountryPostsComponent implements OnInit {
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
 
-          that.countryListPosts.push(doc.data());
+          that.countryListPosts.push({id: doc.id, ...doc.data()});
+
+          that.postsILiked = doc.data().likedByUsers;
+          that.dublicate = doc.data().likedByUsers;
+
           that.weHavePosts = true;
           unsubscribe();
         })
@@ -72,6 +88,22 @@ export class ViewCountryPostsComponent implements OnInit {
 
       });
   }
+
+  getLikedPosts(){
+    let that = this;
+    const unsubscribe = this.db.collection("posts").ref.where("aboutLocation.countryShort", "==", this.searchedItem).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
+      .onSnapshot(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+      
+          that.postsILiked = doc.data().likedByUsers;
+          that.dublicate = doc.data().likedByUsers;
+
+          unsubscribe();
+        })
+        console.log(that.countryListPosts);
+      });
+  }
+
 
   searchCity(data){
     console.log(data);
@@ -91,5 +123,53 @@ export class ViewCountryPostsComponent implements OnInit {
 
       });
   }
+
+
+  likeAPost(idPost){
+    console.log(idPost);
+    console.log(this.postsILiked);
+    this.postsILiked.push(this.authState.uid);
+
+    let data = {
+      likedByUsers:  this.postsILiked
+    }
+
+    let that = this;
+    
+
+    const unsubscribe = this.db.collection("posts").doc(idPost).set(data, { merge: true })
+      .then(function (docRef) {
+        console.log("Document following ok");
+        that.getLikedPosts();
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  }
+
+
+  dislikeAPost(idPost){
+
+    const index2: number = this.postsILiked.indexOf(this.authState.uid);
+    if (index2 !== -1) {
+      this.postsILiked.splice(index2, 1);
+    }
+
+    let data = {
+      likedByUsers:  this.postsILiked
+    }
+
+    let that = this;
+
+    const unsubscribe = this.db.collection("posts").doc(idPost).set(data, { merge: true })
+      .then(function (docRef) {
+        console.log("Document following ok");
+        that.getLikedPosts();
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  }
+
 
 }

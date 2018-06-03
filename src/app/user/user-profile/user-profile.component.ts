@@ -55,6 +55,17 @@ export class UserProfileComponent implements OnInit {
 
   }
 
+  openEditModal(idPost){
+
+    const initialState = { isSelectedPost: idPost};
+    console.log(idPost);
+    this.postModal = this.modalService.show(PostComponent, {
+      class: 'modal-style modal-md modal-dialog-centered',
+      backdrop: 'static',
+      initialState 
+    });
+
+  }
 
   getMyPosts = function () {
     let that = this;
@@ -70,32 +81,6 @@ export class UserProfileComponent implements OnInit {
         unsubscribe();
       });
 
-
-
-    // this.db.collection("posts").snapshotChanges().map(actions => {
-    //   return actions.map(a => {
-    //     const data = a.payload.doc.data();
-    //     const id = a.payload.doc.id;
-    //     console.log(data.idUser);
-    //     if (data.idUser == this.authState.uid) {
-    //       return { id, ...data };
-    //     }
-
-    //   });
-    // }).subscribe((querySnapshot) => {
-    //   // that.allMyPosts = querySnapshot;
-    //   // console.log(that.allMyPosts)
-    //   querySnapshot.forEach((doc) => {
-
-    //     if (doc) {
-    //       console.log(doc);
-    //       that.allMyPosts.push(doc);
-    //       that.weHavePosts = true;
-    //     }
-
-    //   });
-
-    // });
   }
 
   deleteAPost() {

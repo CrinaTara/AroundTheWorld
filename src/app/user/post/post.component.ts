@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit, ElementRef, NgZone, HostListener, forwardRef } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, ElementRef, NgZone, HostListener, forwardRef, Input } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ModalDirective } from 'ngx-bootstrap';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -31,6 +31,7 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   // @ViewChild(forwardRef(() => UserProfileComponent)) user : UserProfileComponent;
 
+
   tripForm: FormGroup;
   postForm: FormGroup;
 
@@ -50,9 +51,6 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   citiesInCountry = [];
   items: Observable<any[]>;
-
-  // public searchControl: FormControl;
-  // @ViewChild("search") public searchElementRef: ElementRef;
 
   authState: any = null;
 
@@ -75,13 +73,18 @@ export class PostComponent implements OnInit, AfterViewInit {
   postMessageDisplay: boolean = false;
   errorPostMessageDisplay: boolean = false;
 
-  selectedTrip: any = '';
+  selectedTrip: any = { name: '', idTRIP: '' };
 
   private url: any;
   public urlDummy: any;
 
   urlArray: any = [];
   resizedUrlArray: any = [];
+
+  postData: any;
+  object = "privacy";
+
+  @Input() isSelectedPost: any; // we can set the default value also
 
 
   constructor(public postModal: BsModalRef, private afAuth: AngularFireAuth,
@@ -91,13 +94,11 @@ export class PostComponent implements OnInit, AfterViewInit {
     private sanitizer: DomSanitizer,
   ) {
 
-    if (navigator)
-    {
-    navigator.geolocation.getCurrentPosition( pos => {
+    if (navigator) {
+      navigator.geolocation.getCurrentPosition(pos => {
         this.lng = +pos.coords.longitude;
         this.lat = +pos.coords.latitude;
         this.locationChosen = true;
-        
       });
     }
 
@@ -134,26 +135,10 @@ export class PostComponent implements OnInit, AfterViewInit {
         otherToughts: ['']
       })
 
-    //Asta este pentru autocompletul de search.
+    if (this.isSelectedPost) {
+      this.getPostData(this.isSelectedPost);
+    }
 
-    // this.mapsAPILoader.load().then(() => {
-    //   let autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
-    //     types: ["address"]
-    //   });
-    //   autocomplete.addListener("place_changed", () => {
-    //     this.ngZone.run(() => {
-    //       //get the place result
-    //       let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-
-
-    //       //verify result
-    //       if (place.geometry === undefined || place.geometry === null) {
-    //         return;
-    //       }
-
-    //     });
-    //   });
-    // });
 
   }
 
@@ -162,11 +147,128 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   }
 
+  getPostData(idPost) {
+
+    let that = this;
+
+    const unsubscribe = this.db.collection("posts").doc(idPost).ref
+      .onSnapshot(function (doc) {
+
+        that.postData = doc.data();
+        console.log(" post data: ", that.postData);
+        that.patchEditData();
+        unsubscribe();
+      }, function (error) {
+        console.log("Eroor local storage");
+      });
+  }
+
+  patchEditData() {
+    this.postForm.patchValue({
+      city: this.postData.aboutLocation.city,
+      location: this.postData.aboutLocation.countryLong,
+      postName: this.postData.postName,
+      postDetails: this.postData.postDetails,
+      privacy: this.postData.privacy,
+      buget: this.postData.buget,
+      otherToughts: this.postData.otherToughts
+    });
+
+    this.lng = this.postData.aboutLocation.longitude;
+    this.lat = this.postData.aboutLocation.latitude;
+    this.locationChosen = true;
+
+    this.setPrivacy(this.postData.privacy);
+    // this.chooseATrip(this.postData.idTrip);
+    this.selectedTrip.idTRIP = this.postData.idTrip;
+    this.selectedTrip.name = this.postData.tripName;
+
+    if (this.postData.photos.length != 0 ) {
+      this.urlArray = this.postData.photos;
+      this.resizedUrlArray = this.postData.photos;
+    } else {
+      this.urlArray = [];
+      this.resizedUrlArray = [];
+    }
+
+
+    this.object = this.postData.privacy;
+
+    this.aboutLocation = {
+      city: this.postData.aboutLocation.city,
+      address: this.postData.aboutLocation.address,
+      countryLong: this.postData.aboutLocation.countryLong,
+      countryShort: this.postData.aboutLocation.countryShort,
+      latitude: this.postData.aboutLocation.latitude,
+      longitude: this.postData.aboutLocation.longitude
+
+    }
+
+
+  }
+
+  updatePost() {
+    if (this.selectedTrip.name === '' || this.selectedTrip.idTRIP === '') {
+      this.postMessageDisplayed = 'Please select a related Trip for this post.';
+      this.errorPostMessageDisplay = true;
+    }
+    else if (this.postForm.value.postName === '' || this.postForm.value.postDetails === '') {
+      this.postMessageDisplayed = 'Please complete the required fields. ';
+      this.errorPostMessageDisplay = true;
+    }
+    else {
+
+      var that = this;
+      let now = moment();
+
+      this.aboutLocation.city = this.postForm.value.city;
+
+
+      let data = {
+        postName: this.postForm.value.postName,
+        tripName: this.selectedTrip.name,
+        idTrip: this.selectedTrip.idTRIP,
+        idUser: this.authState.uid,
+        creationDate: now.format('L'),
+        creationHour: now.format('LT'),
+        postDetails: this.postForm.value.postDetails,
+        privacy: this.privacyPost,
+        buget: this.postForm.value.buget,
+        otherToughts: this.postForm.value.otherToughts,
+        likedByUsers: [],
+
+        aboutLocation: this.aboutLocation,
+        photos: this.resizedUrlArray
+      }
+
+      const unsubscribe = that.db.collection("posts").doc(that.isSelectedPost).set(data, { merge: true })
+        .then(function (docRef) {
+          that.clearPostData();
+          that.postMessageDisplayed = 'Posted succesfully!';
+          that.postMessageDisplay = true;
+          that.errorPostMessageDisplay = false;
+          that.countPosts();
+          console.log("De la user:");
+          // that.user.getMyPosts();
+        })
+        .catch(function (error) {
+          console.error("Error adding document: ", error);
+          that.postMessageDisplayed = 'Something went wrong. Try again!';
+          that.errorPostMessageDisplay = true;
+          that.clearPostData();
+        });
+    }
+  }
+
   setPrivacy(choose) {
     console.log(choose);
     this.privacyPost = choose;
     if (choose == "public") {
       this.isPrivatePrivacy = false;
+      this.postForm.patchValue({
+        buget: '',
+        otherToughts: ''
+      });
     } else if (choose == "private") {
       this.isPrivatePrivacy = true;
     }
@@ -176,11 +278,12 @@ export class PostComponent implements OnInit, AfterViewInit {
   }
 
   updateLocalStorage() {
-    this.db.collection("users").doc(this.authState.uid).ref
+    const unsubscribe = this.db.collection("users").doc(this.authState.uid).ref
       .onSnapshot(function (doc) {
         // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
         console.log(" data: ", doc.data());
         localStorage.setItem('User', JSON.stringify(doc.data()));
+        unsubscribe();
       }, function (error) {
         console.log("Eroor local storage");
       });
@@ -239,7 +342,7 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   clearPostData() {
     this.postForm.patchValue({
-      city: '' ,
+      city: '',
       location: '',
       postName: '',
       postDetails: '',
@@ -249,8 +352,8 @@ export class PostComponent implements OnInit, AfterViewInit {
     });
 
     // this.user.getMyPosts();
-    this.urlArray = null;
-    this.resizedUrlArray = null;
+    this.urlArray = [];
+    this.resizedUrlArray = [];
     this.privacyPost = 'public';
     this.isPrivatePrivacy = false;
   }
@@ -294,6 +397,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         privacy: this.privacyPost,
         buget: this.postForm.value.buget,
         otherToughts: this.postForm.value.otherToughts,
+        likedByUsers: [],
         // lat: this.lat,
         // long: this.lng,
         // city: '',
@@ -308,6 +412,8 @@ export class PostComponent implements OnInit, AfterViewInit {
           that.postMessageDisplay = true;
           that.errorPostMessageDisplay = false;
           that.countPosts();
+          console.log("De la user:");
+          // that.user.getMyPosts();
         })
         .catch(function (error) {
           console.error("Error adding document: ", error);
@@ -319,21 +425,9 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   }
 
-  countPosts(){
+  countPosts() {
     let that = this;
     console.log("Count post!");
-
-    // const unsubscribe = this.db.collection("posts").ref.where("aboutLocation.countryLong", "==", this.aboutLocation.countryLong)
-    // .onSnapshot(function(querySnapshot) {
-    //     querySnapshot.forEach(function(doc) {
-    //       console.log(doc.id, " => ", doc.data());
-    //       that.nrPeople = that.nrPeople + 1;
-    //     })
-    //     console.log(that.nrPeople);
-    //     that.addCountryToDatabase();
-    //   that.nrPeople = 0;
-    //     unsubscribe();
-    //   });
 
     const locationsSubscription = this.db.collection("posts").snapshotChanges().map(actions => {
       return actions.map(a => {
@@ -341,16 +435,16 @@ export class PostComponent implements OnInit, AfterViewInit {
         const id = a.payload.doc.id;
         console.log(data.aboutLocation);
         console.log(that.aboutLocation);
-          if (data.aboutLocation.countryLong === that.aboutLocation.countryLong) {
-            return { id };
-          }
+        if (data.aboutLocation.countryLong === that.aboutLocation.countryLong) {
+          return { id };
+        }
         // string.includes(substring);
       });
     }).subscribe((querySnapshot) => {
       // console.log(querySnapshot)
       querySnapshot.forEach((doc) => {
         if (doc) {
-         that.nrPeople = that.nrPeople + 1;
+          that.nrPeople = that.nrPeople + 1;
         }
       });
       console.log(that.nrPeople);
@@ -359,11 +453,11 @@ export class PostComponent implements OnInit, AfterViewInit {
       locationsSubscription.unsubscribe();
     });
 
-  
+
   }
 
 
-  getCountryData(){
+  getCountryData() {
     let that = this;
 
     const unsubscribe = this.db.collection("countries").doc(this.aboutLocation.countryShort).ref.onSnapshot(function (doc) {
@@ -374,7 +468,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         that.citiesInCountry.push(that.aboutLocation.city);
         that.addCountryToDatabase();
         unsubscribe();
-        
+
       } else {
         console.log("No such document!");
         that.citiesInCountry.push(that.aboutLocation.city);
@@ -387,46 +481,33 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   }
 
-  
-  addCountryToDatabase(){
+
+  addCountryToDatabase() {
     console.log("Country to database!");
     let that = this;
     let data = {
       short: this.aboutLocation.countryShort,
       long: this.aboutLocation.countryLong,
-      nrPeople: this.nrPeople ,
+      nrPeople: this.nrPeople,
       citiesInCountry: this.citiesInCountry
     };
     console.log(data);
 
     this.db.collection("countries").doc(this.aboutLocation.countryShort).set(data, { merge: true })
-    .then(function () {
-      that.nrPeople = 0;
-    })
-    .catch((error) => {
-      console.error("Error adding document: ", error);
-    });
-   
-    
+      .then(function () {
+        that.nrPeople = 0;
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error);
+      });
+
+
   }
 
   getTripsData() {
-    // !!!!!!!!!!Get id trips
+
     console.log('Here is uuid');
     console.log(this.authState.uid);
-
-    // this.db.collection('trips', ref => ref.where('idUser', '==', this.authState.uid) )
-    // .ref.get()
-    //   .then(function (querySnapshot) {
-    //     querySnapshot.forEach(function (doc) {
-    //       // doc.data() is never undefined for query doc snapshots
-    //       console.log(doc.id, " => ", doc.data());
-    //     });
-    //   })
-    //   .catch(function (error) {
-    //     console.log("Error getting documents: ", error);
-    //   });
-
 
     //This code is working! Down below!!
     // this.db.collection("posts").ref.where("idUser", "==", this.authState.uid).orderBy("creationDate", "desc").orderBy("creationHour", "desc").limit(3)
@@ -464,7 +545,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         console.log("Error getting documents: ", error);
       });
 
-    
+
   }
 
   chooseATrip(choise) {
@@ -507,7 +588,7 @@ export class PostComponent implements OnInit, AfterViewInit {
           // console.log(city);
           // // address_components[2].short_name
 
-          
+
 
           //Varianta mai buna din punct de vedere al rezultatului
           for (let i = 0; i < data.results.length; i++) {
@@ -525,13 +606,13 @@ export class PostComponent implements OnInit, AfterViewInit {
 
               }
             }
-            
+
             if (data.results[i].types[0] === "locality") {
               let city = data.results[i].address_components[0].long_name;
               that.postForm.patchValue({
                 city: city
               })
-              
+
               that.aboutLocation.city = city;
 
             }

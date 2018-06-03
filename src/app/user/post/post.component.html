@@ -126,8 +126,8 @@
             </div> -->
 
             <!-- <i class="fas fa-unlock-alt"></i> Privacy -->
-            <select class="selectpicker show-tick p-2 choose col-md-4" #selectElem (change)="setPrivacy(selectElem.value)">
-                <option selected>Privacy</option>
+            <select [(ngModel)]="object" class="selectpicker show-tick p-2 choose col-md-4" #selectElem (change)="setPrivacy(selectElem.value)">
+                <option value="privacy">Privacy</option>
                 <option value="public"> PUBLIC </option>
                 <option value="private"> PRIVATE </option>
             </select>
@@ -144,6 +144,8 @@
     </div>
 
     <div *ngIf="showNewPost">
-        <button type="button" class="btn btn-default create-button" (click)="createPost()">Post</button>
+
+        <button *ngIf = "!this.isSelectedPost" type="button" class="btn btn-default create-button" (click)="createPost()">Post</button>
+        <button *ngIf = " this.isSelectedPost" type="button" class="btn btn-default create-button" (click)="updatePost()">Update</button>
     </div>
 </div>
