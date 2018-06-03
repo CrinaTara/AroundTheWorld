@@ -44,9 +44,17 @@
     <br>
     <div>
         <div *ngFor="let post of userListPosts" class="post-container">
+            
+                <div class="d-flex justify-content-end">
+                        <a class="p-2 like-post">
+                                <i *ngIf="this.dublicate.includes(post?.id)" class="fas fa-heart" (click)="dislikeAPost(post.id)" title="Dislike"></i>
+                                <i *ngIf="!this.dublicate.includes(post?.id)" class="far fa-heart" (click)="likeAPost(post.id)"  title="Like"></i>
+                        </a>
+                </div>
+           
             <h3>{{post.postName}}</h3>
             <h5>{{post.tripName}}</h5>
-            <div>{{ post.creationDate | date }} </div>
+            <div>{{post.creationDate | date }} </div>
             <div>{{post.aboutLocation.countryLong}}</div>
             <div>{{post.postDetails}}</div>
                

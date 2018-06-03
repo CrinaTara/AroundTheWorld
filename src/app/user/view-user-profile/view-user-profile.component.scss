@@ -1,3 +1,13 @@
 @import '~scss/profile';
 @import '~scss/posts';
 @import '~scss/userProfile';
+
+
+.like-post{
+    color: pink!important;
+    border: solid 1px white;
+}
+
+.like-post:hover{
+    cursor: pointer;
+  }

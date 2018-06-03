@@ -36,8 +36,8 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   nrPeople = 0;
 
-  lat: number = 51.678418;
-  lng: number = 7.809007;
+  lat: number = 0;
+  lng: number = 0;
   locationChosen = false;
   aboutLocation = {
     city: '',
@@ -48,6 +48,7 @@ export class PostComponent implements OnInit, AfterViewInit {
     longitude: 0
   };
 
+  citiesInCountry = [];
   items: Observable<any[]>;
 
   // public searchControl: FormControl;
@@ -95,6 +96,8 @@ export class PostComponent implements OnInit, AfterViewInit {
     navigator.geolocation.getCurrentPosition( pos => {
         this.lng = +pos.coords.longitude;
         this.lat = +pos.coords.latitude;
+        this.locationChosen = true;
+        
       });
     }
 
@@ -123,6 +126,7 @@ export class PostComponent implements OnInit, AfterViewInit {
       this.postForm = this.fb.group({
         //trip id, id user, post id, date
         location: [''],
+        city: [''],
         postName: ['', Validators.required],
         postDetails: ['', Validators.required],
         privacy: ['', Validators.required],
@@ -235,6 +239,7 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   clearPostData() {
     this.postForm.patchValue({
+      city: '' ,
       location: '',
       postName: '',
       postDetails: '',
@@ -273,6 +278,10 @@ export class PostComponent implements OnInit, AfterViewInit {
 
       var that = this;
       let now = moment();
+
+      this.aboutLocation.city = this.postForm.value.city;
+      console.log("Valorile inainte sa le introduc: ");
+      console.log(this.aboutLocation);
 
       this.db.collection("posts").add({
         postName: this.postForm.value.postName,
@@ -345,12 +354,37 @@ export class PostComponent implements OnInit, AfterViewInit {
         }
       });
       console.log(that.nrPeople);
-      that.addCountryToDatabase();
-      that.nrPeople = 0;
+      that.getCountryData();
+
       locationsSubscription.unsubscribe();
     });
 
   
+  }
+
+
+  getCountryData(){
+    let that = this;
+
+    const unsubscribe = this.db.collection("countries").doc(this.aboutLocation.countryShort).ref.onSnapshot(function (doc) {
+      if (doc.exists) {
+        console.log(" data: ", doc.data());
+        that.citiesInCountry = doc.data().citiesInCountry;
+        console.log(that.citiesInCountry);
+        that.citiesInCountry.push(that.aboutLocation.city);
+        that.addCountryToDatabase();
+        unsubscribe();
+        
+      } else {
+        console.log("No such document!");
+        that.citiesInCountry.push(that.aboutLocation.city);
+        that.addCountryToDatabase();
+        unsubscribe();
+      }
+    }, function (error) {
+      console.log("Error receiving data");
+    });
+
   }
 
   
@@ -361,6 +395,7 @@ export class PostComponent implements OnInit, AfterViewInit {
       short: this.aboutLocation.countryShort,
       long: this.aboutLocation.countryLong,
       nrPeople: this.nrPeople ,
+      citiesInCountry: this.citiesInCountry
     };
     console.log(data);
 
@@ -464,12 +499,15 @@ export class PostComponent implements OnInit, AfterViewInit {
           that.postForm.patchValue({
             location: data.results[0].formatted_address
           })
-          console.log(data.results[0].formatted_address);
-          // let city = addressResult.address_components[addressResult.address_components.length-2].short_name;
-          // let country = data.results[data.results.length - 1].formatted_address;
-          // console.log(city);
-          // address_components[2].short_name
 
+
+          // console.log(data.results[0].formatted_address);
+          // let city = data.results[0].address_components[data.results[0].address_components.length-2].short_name;
+          // // let country = data.results[data.results.length - 1].formatted_address;
+          // console.log(city);
+          // // address_components[2].short_name
+
+          
 
           //Varianta mai buna din punct de vedere al rezultatului
           for (let i = 0; i < data.results.length; i++) {
@@ -487,6 +525,17 @@ export class PostComponent implements OnInit, AfterViewInit {
 
               }
             }
+            
+            if (data.results[i].types[0] === "locality") {
+              let city = data.results[i].address_components[0].long_name;
+              that.postForm.patchValue({
+                city: city
+              })
+              
+              that.aboutLocation.city = city;
+
+            }
+
           }
           console.log(that.aboutLocation);
         }

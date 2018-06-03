@@ -36,8 +36,6 @@ export class SearchDestinationsComponent implements OnInit {
 
   
 
-
-
   getPlaces(dataSearch){
     console.log("asdasda");
     this.searchPlaces= [];

@@ -22,6 +22,8 @@ export class ViewUserProfileComponent implements OnInit {
 
   currentFollowing = [];
   currentFollowers = [];
+  postsILiked = [];
+  dublicate = [];
 
   isFollowing: boolean = false;
 
@@ -44,9 +46,6 @@ export class ViewUserProfileComponent implements OnInit {
     this.getFollowersFromIdPerson();
   }
 
-  // ngAfterViewInit(){
-  //   console.log(this.viewPerson.searchMessageDisplayed);
-  // }
 
   getUserData() {
     let that = this;
@@ -65,16 +64,17 @@ export class ViewUserProfileComponent implements OnInit {
 
   getUserPosts() {
     let that = this;
-    this.db.collection("posts").ref.where("idUser", "==", this.params._value.id).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
+    const unsubscribe = this.db.collection("posts").ref.where("idUser", "==", this.params._value.id).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
       .onSnapshot(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
 
-          that.userListPosts.push(doc.data());
+          that.userListPosts.push({id: doc.id, ...doc.data()});
           that.weHavePosts = true;
+          
         })
         console.log(that.userListPosts);
-
+        unsubscribe();
       });
 
   }
@@ -87,10 +87,13 @@ export class ViewUserProfileComponent implements OnInit {
 
     const unsubscribe = this.db.collection("users").doc(this.authState.uid).ref
       .onSnapshot(function (doc) {
-        // console.log(" data: ", doc.data());
+        console.log(" data: ", doc.data());
         that.currentFollowing = doc.data().following;
         that.isFollowing = that.currentFollowing.includes(that.params._value.id);
+        that.postsILiked = doc.data().postsLiked;
+        that.dublicate = doc.data().postsLiked;
         console.log("Following: " + that.currentFollowing);
+        console.log("Liked posts: " + that.postsILiked);
         unsubscribe();
       }, function (error) {
         console.log("Error receiving data");
@@ -167,6 +170,56 @@ export class ViewUserProfileComponent implements OnInit {
       })
 
 
+  }
+
+  likeAPost(idPost){
+    console.log(idPost);
+    this.postsILiked.push(idPost);
+
+    let data = {
+      postsLiked:  this.postsILiked
+    }
+
+    let that = this;
+
+    const unsubscribe = this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
+      .then(function (docRef) {
+        console.log("Document following ok");
+        that.getTheFollowingPersons();
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  }
+
+
+  dislikeAPost(idPost){
+
+    // const index1: number = this.postsILiked.indexOf(idPost);
+    // this.dublicate = this.postsILiked;
+    // if (index1 !== -1) {
+    //   this.dublicate.splice(index1, 1);
+    // }
+
+    const index2: number = this.postsILiked.indexOf(idPost);
+    if (index2 !== -1) {
+      this.postsILiked.splice(index2, 1);
+    }
+
+    let data = {
+      postsLiked:  this.dublicate
+    }
+
+    let that = this;
+
+    const unsubscribe = this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
+      .then(function (docRef) {
+        console.log("Document following ok");
+        that.getTheFollowingPersons();
+      })
+      .catch((error) => {
+        console.log(error);
+      })
   }
 
 }

@@ -13,6 +13,8 @@ import { FindFriendsComponent } from './user/find-friends/find-friends.component
 import { SearchDestinationsComponent } from './user/search-destinations/search-destinations.component';
 import { NewsComponent } from './user/news/news.component';
 import { ViewUserProfileComponent } from './user/view-user-profile/view-user-profile.component';
+import { ViewCountryPostsComponent } from './user/view-country-posts/view-country-posts.component';
+
 
 
 
@@ -32,6 +34,7 @@ const routes: Routes = [
         {path: 'search-destinations', component: SearchDestinationsComponent, canActivateChild: [AuthGuard]},
     ]},
     {path: 'view-user-profile/:id', component: ViewUserProfileComponent,  canActivate: [AuthGuard]},
+    {path: 'view-country/:name', component: ViewCountryPostsComponent,  canActivate: [AuthGuard]},
     {path: '**', component: LandingComponent}
 ]
 
@@ -61,5 +64,6 @@ export const routingComponents = [LandingComponent,
                                   SearchDestinationsComponent,
                                   NewsComponent,
                                   ViewUserProfileComponent,
+                                  ViewCountryPostsComponent,
                                   ];
    

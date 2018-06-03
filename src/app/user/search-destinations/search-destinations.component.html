@@ -1,34 +1,47 @@
 <div class="container">
-    <div class="header profile-wrapper">
-      <h2 >DISCOVER NEW DESTINATIONS</h2>
-      <p class="text">Don't know where to go? What's your next travel destination? See where other people were!</p>
+  <div class="header profile-wrapper">
+    <h2>DISCOVER NEW DESTINATIONS</h2>
+    <p class="text">Don't know where to go? What's your next travel destination? See where other people were!</p>
+  </div>
+  <form [formGroup]='searchPlaceForm'>
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Search new destination" formControlName="search" />
     </div>
-    <form [formGroup]='searchPlaceForm'>
-      <div class="form-group">
-        <input type="text" class="form-control" placeholder="Search new destination" formControlName="search" />
-      </div>
-      <button type="button" class="btn btn-default create-button" (click)="getPlaces(searchPlaceForm.value)">Search</button>
-    </form>
-    
-    <div class="alert alert-danger alert-style" *ngIf="errorSearchMessageDisplay">{{searchMessageDisplayed}}</div>
+    <button type="button" class="btn btn-default create-button" (click)="getPlaces(searchPlaceForm.value)">Search</button>
+  </form>
 
-    <div *ngFor="let place of searchPlaces">
-      <div class="col-12 col-sm-10 col-md-6 col-lg-6 col-xl-6 mt-4">
-  
-        <div class="card ">
-          <div class="thumbnail-search">
-            <img *ngIf="place.profilePicture" class="card-img-top" [src]="place.picture" alt="Profile image">
-            <img *ngIf="!place.profilePicture" class="card-img-top" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqdxJbj2KAfhS0eExRnfaW_DvgbQO9pdT0LzJEIPV6ttqULVD7" alt="Profile image">
-          </div>
-          <div class="card-body">
-            <h5 class="card-title header">{{place.long}}</h5>
-            <div>
-              {{place.nrPeople}}
-            </div>
-          </div>
-  
+  <div class="alert alert-danger alert-style" *ngIf="errorSearchMessageDisplay">{{searchMessageDisplayed}}</div>
+
+  <div *ngFor="let place of searchPlaces">
+    <div class="col-12 col-sm-10 col-md-6 col-lg-6 col-xl-6 mt-4">
+
+      <div class="card ">
+        <div class="thumbnail-search">
+          <img *ngIf="place.profilePicture" class="card-img-top" [src]="place.picture" routerLink="/view-country/{{place.id}}">
+          <img *ngIf="!place.profilePicture" class="card-img-top" src="https://camo.githubusercontent.com/c1452b7c92c9cb31cdb5078287bebe51045bf041/687474703a2f2f692e696d6775722e636f6d2f31786b576e32762e706e67" routerLink="/view-country/{{place.id}}">
         </div>
-  
+        <div class="card-body">
+          <h5 class="card-title header" routerLink="/view-country/{{place.id}}">{{place.long}}</h5>
+          <div class="row">
+              <div class="col-sm-6">
+                  <div>Travelers at this place:</div>
+                  <div>
+                    {{place.nrPeople}}
+                  </div>
+              </div>
+              <div class="col-sm-6">
+                  <div> Top travel destinations:</div>
+                  <div>
+                    BUCHAREST
+                    UNGARIA
+                  </div>
+              </div>
+           
+          </div>
+        </div>
+
       </div>
+
     </div>
   </div>
+</div>

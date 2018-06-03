@@ -1,0 +1,52 @@
+<top-menu></top-menu>
+<div class="container">
+  <div class="name-wrapper d-flex justify-content-center">
+    <div class="">
+      <!-- <h3 (click)="searchCountry()" >{{this.searchedItem}}</h3> -->
+      <h3 >{{this.countryData?.long}}</h3>
+    </div>
+  </div>
+
+  <!-- Autocomplete search city! -->
+  <form [formGroup]='searchCityForm'>
+    <div class="form-group">
+      
+      <input type="text" class="form-control" 
+      [typeahead]="this.countryData?.citiesInCountry"
+      [typeaheadOptionsLimit]="7"
+      [typeaheadMinLength]="0" 
+      [typeaheadScrollable]="true"
+      [typeaheadOptionsInScrollableView]="5"
+      (typeaheadNoResults)="typeaheadNoResults($event)"
+       placeholder="Search by city"
+      formControlName="search" />
+      <div class="alert alert-danger" *ngIf="noResult">No Results Found</div>
+      <button type="button" class="btn btn-default create-button" (click)="searchCity(searchCityForm.value)">Search</button>
+    </div>
+  </form>
+
+  <!-- Here will be the country posts initialy and then => city posts -->
+  <div class="wrapper-post">
+    
+      <div *ngIf="!weHavePosts" class="profile-container " >
+          <div class="d-flex justify-content-center"> Sorry! There are no posts.</div>
+      </div>
+      <h5 >{{this.citySearchName}}</h5>
+      <br>
+      <div>
+          <div *ngFor="let post of countryListPosts" class="post-container">
+              <h3>{{post.postName}}</h3>
+              <h5>{{post.tripName}}</h5>
+              <div>{{ post.creationDate | date }} </div>
+              <div>{{post.aboutLocation.countryLong}}</div>
+              <div>{{post.postDetails}}</div>
+                 
+              <div *ngFor="let photo of post.photos" class="post-photo-display ">
+                  <img [src]="photo" alt="slide" class="style-photo" >
+              </div>
+          </div>
+      </div>
+  
+  </div>
+
+</div>

@@ -15,13 +15,12 @@ import { BsDropdownModule } from 'ngx-bootstrap';
 import { AmChartsModule } from "@amcharts/amcharts3-angular";
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CarouselModule } from 'ngx-bootstrap';
+import { TypeaheadModule } from 'ngx-bootstrap';
 
 import 'hammerjs';
 import 'mousetrap';
 import { ModalGalleryModule } from 'angular-modal-gallery';
-
 import { PostComponent } from './user/post/post.component';
-
 
 
 @NgModule({
@@ -29,7 +28,6 @@ import { PostComponent } from './user/post/post.component';
     AppComponent,
     routingComponents,
     PostComponent,
-
   ],
   imports: [
     BrowserModule,
@@ -47,7 +45,8 @@ import { PostComponent } from './user/post/post.component';
     AmChartsModule,
     ModalModule.forRoot(),
     CarouselModule.forRoot(),
-    ModalGalleryModule.forRoot()
+    ModalGalleryModule.forRoot(),
+    TypeaheadModule.forRoot(),
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent],
