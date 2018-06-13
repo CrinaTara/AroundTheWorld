@@ -37,6 +37,42 @@
 
 <div class="wrapper-post">
     <div class="profile-container ">
+       
+        <div class="row">
+            <div class="col-sm d-flex justify-content-center">
+                Countries
+            </div>
+            <div class="col-sm d-flex justify-content-center">
+                Trips
+            </div>
+            <div class="col-sm d-flex justify-content-center">
+                Following
+            </div>
+            <div class="col-sm d-flex justify-content-center">
+                Followers
+            </div>
+
+        </div>
+
+        <div class="row">
+                <div class="col-sm d-flex justify-content-center">
+                    0
+                </div>
+                <div class="col-sm d-flex justify-content-center">
+                    0
+                </div>
+                <div class="col-sm d-flex justify-content-center">
+                    0
+                </div>
+                <div class="col-sm d-flex justify-content-center">
+                    0
+                </div>
+    
+            </div>
+    </div>
+    <br>
+
+    <div class="profile-container ">
         <a class="btn yellow-button d-flex justify-content-center" (click)="openPostModalWithComponent()">
             MAKE A POST
         </a>
@@ -48,14 +84,14 @@
         <div *ngFor="let post of allMyPosts" class="post-container">
 
             <div class="d-flex justify-content-end">
-                <a class="p-2 edit-post"  title="Edit Post" (click) = "openEditModal(post.id)">
+                <a class="p-2 edit-post" title="Edit Post" (click)="openEditModal(post.id)">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
-                <a class="p-2 delete-post"  title="Delete Post" (click) = "openModal(template, post.id, post.aboutLocation.countryShort)">
-                        <i class="far fa-trash-alt"></i>
+                <a class="p-2 delete-post" title="Delete Post" (click)="openModal(template, post.id, post.aboutLocation.countryShort)">
+                    <i class="far fa-trash-alt"></i>
                 </a>
             </div>
-           
+
 
             <h3>{{post.postName}}</h3>
             <h5>{{post.tripName}}</h5>
@@ -67,10 +103,10 @@
                   <img [src]="photo" alt="slide" style="display: block; width: 100%;">
                 </slide>
             </carousel> -->
-                <div *ngFor="let photo of post.photos" class="post-photo-display ">
-                    <img [src]="photo" alt="slide" class="style-photo" >
-                </div>
-<!-- 
+            <div *ngFor="let photo of post.photos" class="post-photo-display ">
+                <img [src]="photo" alt="slide" class="style-photo">
+            </div>
+            <!-- 
                 <ks-modal-gallery [id]="5" [modalImages]="post.photos"
                 ></ks-modal-gallery> -->
         </div>
@@ -80,10 +116,9 @@
 
 
 <ng-template #template>
-        <div class="modal-body text-center">
-          <p>Are you sure you want to delete this post?</p>
-          <button type="button" class="btn btn-default" (click)="confirm()" >Yes</button>
-          <button type="button" class="btn btn-primary" (click)="decline()" >No</button>
-        </div>
-      </ng-template>
-      
+    <div class="modal-body text-center">
+        <p>Are you sure you want to delete this post?</p>
+        <button type="button" class="btn btn-default" (click)="confirm()">Yes</button>
+        <button type="button" class="btn btn-primary" (click)="decline()">No</button>
+    </div>
+</ng-template>

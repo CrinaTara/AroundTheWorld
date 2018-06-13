@@ -8,7 +8,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import * as moment from 'moment';
 import { BsDropdownModule } from 'ngx-bootstrap';
 import { MapsAPILoader } from '@agm/core';
-import { } from '@types/googlemaps';
+// import { } from '@types/googlemaps';
 import { } from 'geocoder';
 
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
@@ -319,6 +319,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         tripDetails: this.tripForm.value.tripDetails,
         idUser: this.authState.uid,
         creationDate: now.format('L'),
+        endDate: ''
       })
         .then(function (docRef) {
           console.log("Document successfully written!");
@@ -398,10 +399,6 @@ export class PostComponent implements OnInit, AfterViewInit {
         buget: this.postForm.value.buget,
         otherToughts: this.postForm.value.otherToughts,
         likedByUsers: [],
-        // lat: this.lat,
-        // long: this.lng,
-        // city: '',
-        // country: '',
         aboutLocation: this.aboutLocation,
         photos: this.resizedUrlArray
 
@@ -412,6 +409,7 @@ export class PostComponent implements OnInit, AfterViewInit {
           that.postMessageDisplay = true;
           that.errorPostMessageDisplay = false;
           that.countPosts();
+          that.updateTripDate(now.format('L'));
           console.log("De la user:");
           // that.user.getMyPosts();
         })
@@ -489,19 +487,35 @@ export class PostComponent implements OnInit, AfterViewInit {
       short: this.aboutLocation.countryShort,
       long: this.aboutLocation.countryLong,
       nrPeople: this.nrPeople,
-      citiesInCountry: this.citiesInCountry
+      citiesInCountry: this.citiesInCountry,
+      
     };
     console.log(data);
 
     this.db.collection("countries").doc(this.aboutLocation.countryShort).set(data, { merge: true })
       .then(function () {
         that.nrPeople = 0;
+        that.citiesInCountry = [];
       })
       .catch((error) => {
         console.error("Error adding document: ", error);
       });
 
 
+  }
+
+  updateTripDate(date){
+
+    let data = {
+      endDate: date
+    };  
+    this.db.collection("trips").doc(this.selectedTrip.idTRIP).set(data, { merge: true })
+      .then(function () {
+        console.log("Data Adaugata");
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error);
+      });
   }
 
   getTripsData() {
@@ -522,8 +536,6 @@ export class PostComponent implements OnInit, AfterViewInit {
     this.db.collection('trips').ref.orderBy("creationDate", "desc").limit(11).get()
       .then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
-          // doc.data() is never undefined for query doc snapshots
-          // console.log(doc.id, " => ", doc.data().tripName);
           arr.push({
             name: doc.data().tripName,
             IDUSER: doc.data().idUser,
@@ -659,7 +671,19 @@ export class PostComponent implements OnInit, AfterViewInit {
       var img = new Image();
       img.src = event.target.result;
       console.log(img);
-      var canvas = document.createElement('canvas');
+      if (img.complete) {
+        this.draw(img, file);
+      } else {
+        img.onload = () => { this.draw(img, file); };
+      }
+      
+      
+    }
+    reader.readAsDataURL(file);
+  }
+
+  draw(img, file){
+    var canvas = document.createElement('canvas');
       //var canvas = $("<canvas>", {"id":"testing"})[0];
       var ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0);
@@ -694,9 +718,6 @@ export class PostComponent implements OnInit, AfterViewInit {
       this.url = this.sanitizer.bypassSecurityTrustResourceUrl(dataurl);
 
       this.resizedUrlArray.push(this.url.changingThisBreaksApplicationSecurity);
-    }
-    reader.readAsDataURL(file);
   }
-
 
 }

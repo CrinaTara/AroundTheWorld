@@ -26,7 +26,7 @@ export class SignInComponent implements OnInit {
   constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private router: Router, private db: AngularFirestore) {
     this.userForm = this.fb.group({
       email: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required,  Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{6,30}$/)]]
     })
     this.resetPasswordForm = this.fb.group({
       email: ['', Validators.required]

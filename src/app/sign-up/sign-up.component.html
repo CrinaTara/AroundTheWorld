@@ -27,8 +27,8 @@
                             <div *ngIf="errorServer" class="alert alert-danger">{{errorMessage}}</div>
                             <div *ngIf="samePassword" class="alert alert-danger">
                                 <b>Error!</b> Passwords do not match.</div>
-                            <div *ngIf="userForm.controls['password'].hasError('minlength')" class="alert alert-danger">
-                                <b>Error!</b> Your password must be at least 6 characters.
+                            <div *ngIf="userForm.controls['password'].hasError('pattern')" class="alert alert-danger">
+                                <b>Error!</b> Minimum 6 characters, at least one uppercase letter, one lowercase letter, one number and one special character!
                             </div>
                             <div *ngIf="invalidEmail" class="alert alert-danger">
                                 <b>Error!</b> Invalid email address.</div>

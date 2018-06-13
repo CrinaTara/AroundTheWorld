@@ -54,12 +54,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         "autoZoom": true,
         "selectedColor": "#201E50"
       },
-      // "titles": [
-      //   {
-      //     "text": "Chart Title",
-      //     "size": 15
-      //   }
-      // ],
 
       "smallMap": {},
       "export": {

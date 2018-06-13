@@ -237,7 +237,19 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
       var img = new Image();
       img.src = event.target.result;
       console.log(img);
-      var canvas = document.createElement('canvas');
+      if (img.complete) {
+        this.draw(img, file);
+      } else {
+        img.onload = () => { this.draw(img, file); };
+      }
+      
+      
+    }
+    reader.readAsDataURL(file);
+  }
+
+  draw(img, file){
+    var canvas = document.createElement('canvas');
       //var canvas = $("<canvas>", {"id":"testing"})[0];
       var ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0);
@@ -270,8 +282,8 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
       var dataurl = canvas.toDataURL(file.type);
       console.log(dataurl);
       this.url = this.sanitizer.bypassSecurityTrustResourceUrl(dataurl);
-    }
-    reader.readAsDataURL(file);
+
+      // this.resizedUrlArray.push(this.url.changingThisBreaksApplicationSecurity);
   }
 
   saveUserProfilePicture() {
