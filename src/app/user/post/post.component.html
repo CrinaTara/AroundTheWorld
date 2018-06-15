@@ -85,7 +85,8 @@
 
                 <div *ngIf="isPrivatePrivacy">
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Buget" formControlName="buget" />
+                        EURO
+                        <input type="number" class="form-control" placeholder="Buget" formControlName="buget" /> 
                     </div>
                     <div class="form-group">
                         <textarea type="text" rows="2" class="form-control" placeholder="Other thoughts" formControlName="otherToughts"></textarea>
@@ -106,7 +107,7 @@
         <input id="file-input" class="inputPhotos" type="file" (change)="onSelectFile($event)" />
         <div class="d-flex justify-content-start about-post row">
             <label for="file-input">
-                <a class="p-2 choose">
+                <a [class.nr-photo]="this.addPhotoDisableButton" class="p-2 choose">
                     <i class="fas fa-plus"></i> Add photos (max. 4)
                 </a>
             </label>

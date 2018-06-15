@@ -21,6 +21,7 @@ import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/observable/combineLatest';
 
 import { UserProfileComponent } from '../user-profile/user-profile.component';
+import { HomeComponent } from '../home/home.component';
 
 @Component({
   selector: 'app-post',
@@ -29,7 +30,7 @@ import { UserProfileComponent } from '../user-profile/user-profile.component';
 })
 export class PostComponent implements OnInit, AfterViewInit {
 
-  // @ViewChild(forwardRef(() => UserProfileComponent)) user : UserProfileComponent;
+  // @ViewChild(forwardRef(() => HomeComponent)) homeComp : HomeComponent;
 
 
   tripForm: FormGroup;
@@ -53,6 +54,8 @@ export class PostComponent implements OnInit, AfterViewInit {
   items: Observable<any[]>;
 
   authState: any = null;
+
+  addPhotoDisableButton = false;
 
   // My list of trips. It will be a  request!
   relatedTrips: any;
@@ -99,6 +102,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         this.lng = +pos.coords.longitude;
         this.lat = +pos.coords.latitude;
         this.locationChosen = true;
+        this.onClickPost();
       });
     }
 
@@ -183,7 +187,7 @@ export class PostComponent implements OnInit, AfterViewInit {
     this.selectedTrip.idTRIP = this.postData.idTrip;
     this.selectedTrip.name = this.postData.tripName;
 
-    if (this.postData.photos.length != 0 ) {
+    if (this.postData.photos.length != 0) {
       this.urlArray = this.postData.photos;
       this.resizedUrlArray = this.postData.photos;
     } else {
@@ -281,6 +285,7 @@ export class PostComponent implements OnInit, AfterViewInit {
     const unsubscribe = this.db.collection("users").doc(this.authState.uid).ref
       .onSnapshot(function (doc) {
         // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+        console.log("UPDATE LOCAL")
         console.log(" data: ", doc.data());
         localStorage.setItem('User', JSON.stringify(doc.data()));
         unsubscribe();
@@ -290,18 +295,30 @@ export class PostComponent implements OnInit, AfterViewInit {
   }
 
   updateUserProfile() {
-    let data = {
-      nrTrips: 1
-    }
-    console.log(this.authState);
     var that = this;
-    this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
-      .then(function () {
-        that.updateLocalStorage();
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error);
+    let numbr = 0;
+    const unsubscribe = this.db.collection("trips").ref.where("idUser", "==", this.authState.uid)
+      .onSnapshot(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          numbr += 1;
+        })
+        console.log(numbr);
+        unsubscribe();
+        let data = {
+          nrTrips: numbr
+        }
+        console.log("NUMERB OF: " + data.nrTrips);
+        let th = that;
+        that.db.collection("users").doc(that.authState.uid).set(data, { merge: true })
+          .then(function () {
+            th.updateLocalStorage();
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error);
+          });
       });
+
   }
 
   //Create TRIP!
@@ -370,7 +387,7 @@ export class PostComponent implements OnInit, AfterViewInit {
   //Create POST!
   createPost() {
 
-    if (this.selectedTrip === '') {
+    if (this.selectedTrip.name === '') {
       this.postMessageDisplayed = 'Please select a related Trip for this post.';
       this.errorPostMessageDisplay = true;
     }
@@ -412,10 +429,12 @@ export class PostComponent implements OnInit, AfterViewInit {
           that.updateTripDate(now.format('L'));
           console.log("De la user:");
           // that.user.getMyPosts();
+          // that.homeComp.getAllPlaces();
         })
         .catch(function (error) {
           console.error("Error adding document: ", error);
           that.postMessageDisplayed = 'Something went wrong. Try again!';
+          that.postMessageDisplay = false;
           that.errorPostMessageDisplay = true;
           that.clearPostData();
         });
@@ -488,7 +507,7 @@ export class PostComponent implements OnInit, AfterViewInit {
       long: this.aboutLocation.countryLong,
       nrPeople: this.nrPeople,
       citiesInCountry: this.citiesInCountry,
-      
+
     };
     console.log(data);
 
@@ -504,11 +523,11 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   }
 
-  updateTripDate(date){
+  updateTripDate(date) {
 
     let data = {
       endDate: date
-    };  
+    };
     this.db.collection("trips").doc(this.selectedTrip.idTRIP).set(data, { merge: true })
       .then(function () {
         console.log("Data Adaugata");
@@ -637,6 +656,54 @@ export class PostComponent implements OnInit, AfterViewInit {
   }
 
 
+  onClickPost() {
+    let that = this;
+
+    this.geocoder.reverseGeocode(this.lat, this.lng, function (err, data) {
+      // do something with data
+      console.log(data);
+      if (data.status === 'OK') {
+
+        if (data.results[0]) {
+          that.postForm.patchValue({
+            location: data.results[0].formatted_address
+          })
+
+
+          for (let i = 0; i < data.results.length; i++) {
+            if (data.results[i].types[0] === "country") {
+
+              let country_short = data.results[i].address_components[0].short_name;
+              let country_long = data.results[i].address_components[0].long_name;
+              that.aboutLocation = {
+                city: '',
+                address: data.results[0].formatted_address,
+                countryLong: country_long,
+                countryShort: country_short,
+                latitude: that.lat,
+                longitude: that.lng
+
+              }
+            }
+
+            if (data.results[i].types[0] === "locality") {
+              let city = data.results[i].address_components[0].long_name;
+              that.postForm.patchValue({
+                city: city
+              })
+
+              that.aboutLocation.city = city;
+
+            }
+
+          }
+          console.log(that.aboutLocation);
+        }
+      }
+    }, { sensor: true });
+  }
+
+
   onSelectFile(event) {
     if (event.target.files && event.target.files[0]) {
       var reader = new FileReader();
@@ -646,6 +713,8 @@ export class PostComponent implements OnInit, AfterViewInit {
       reader.onload = (event: any) => { // called once readAsDataURL is completed
         this.urlDummy = event.target.result;
         this.urlArray.push(this.urlDummy);
+        if (this.urlArray.length >= 4) this.addPhotoDisableButton = true;
+        console.log(this.urlArray.length > 4);
       }
       this.resizeAuthomatical(event);
     }
@@ -656,6 +725,7 @@ export class PostComponent implements OnInit, AfterViewInit {
   removePhoto(index) {
     this.urlArray.splice(index, 1);
     this.resizedUrlArray.splice(index, 1);
+    if (this.urlArray.length < 4) this.addPhotoDisableButton = false;
   }
 
   resizeAuthomatical(event) {
@@ -676,48 +746,49 @@ export class PostComponent implements OnInit, AfterViewInit {
       } else {
         img.onload = () => { this.draw(img, file); };
       }
-      
-      
+
+
     }
     reader.readAsDataURL(file);
   }
 
-  draw(img, file){
+  draw(img, file) {
     var canvas = document.createElement('canvas');
-      //var canvas = $("<canvas>", {"id":"testing"})[0];
-      var ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
-      console.log(canvas);
-      console.log(ctx);
-      var MAX_WIDTH = 400;
-      var MAX_HEIGHT = 400;
-      var width = img.width;
-      var height = img.height;
+    //var canvas = $("<canvas>", {"id":"testing"})[0];
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    console.log(canvas);
+    console.log(ctx);
+    var MAX_WIDTH = 400;
+    var MAX_HEIGHT = 400;
+    var width = img.width;
+    var height = img.height;
 
-      if (width > height) {
-        if (width > MAX_WIDTH) {
-          height *= MAX_WIDTH / width;
-          width = MAX_WIDTH;
-        }
-      } else {
-        if (height > MAX_HEIGHT) {
-          width *= MAX_HEIGHT / height;
-          height = MAX_HEIGHT;
-        }
+    if (width > height) {
+      if (width > MAX_WIDTH) {
+        height *= MAX_WIDTH / width;
+        width = MAX_WIDTH;
       }
-      console.log(canvas);
-      canvas.width = width;
-      canvas.height = height;
-      console.log(canvas);
-      var ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, width, height);
-      console.log("AIICICIIDIIDIDI");
+    } else {
+      if (height > MAX_HEIGHT) {
+        width *= MAX_HEIGHT / height;
+        height = MAX_HEIGHT;
+      }
+    }
+    console.log(canvas);
+    canvas.width = width;
+    canvas.height = height;
+    console.log(canvas);
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, width, height);
+    console.log("AIICICIIDIIDIDI");
 
-      var dataurl = canvas.toDataURL(file.type);
-      console.log(dataurl);
-      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(dataurl);
+    var dataurl = canvas.toDataURL(file.type);
+    console.log(dataurl);
+    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(dataurl);
 
-      this.resizedUrlArray.push(this.url.changingThisBreaksApplicationSecurity);
+    this.resizedUrlArray.push(this.url.changingThisBreaksApplicationSecurity);
+    if (this.resizedUrlArray.length >= 4) this.addPhotoDisableButton = true;
   }
 
 }

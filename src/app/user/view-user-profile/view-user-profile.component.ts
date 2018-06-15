@@ -3,6 +3,8 @@ import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { moment } from 'ngx-bootstrap/chronos/test/chain';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-view-user-profile',
@@ -25,10 +27,16 @@ export class ViewUserProfileComponent implements OnInit {
   postsILiked = [];
   dublicate = [];
 
+  weHaveComments: boolean = false;
+  allComments: any = [];
+  writeComment: FormGroup;
+
   isFollowing: boolean = false;
+  public userObject: any;
+  public userObjectRetrived: any;
 
   // @ViewChild(FindFriendsComponent) viewPerson : FindFriendsComponent;
-  constructor(private afAuth: AngularFireAuth, private db: AngularFirestore, private route: ActivatedRoute, private router: Router) {
+  constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private db: AngularFirestore, private route: ActivatedRoute, private router: Router) {
     this.params = this.route.params;
 
     this.afAuth.authState.subscribe((auth) => {
@@ -39,8 +47,17 @@ export class ViewUserProfileComponent implements OnInit {
 
 
   ngOnInit() {
+
+    this.writeComment = this.fb.group({
+      commentText: ['', Validators.required],
+    })
+    
     this.getTheFollowingPersons();
     console.log(this.params._value.id);
+    this.getComments();
+    this.userObjectRetrived = localStorage.getItem('User');
+    this.userObject = JSON.parse(this.userObjectRetrived);
+    
     this.getUserData();
     this.getUserPosts();
     this.getFollowersFromIdPerson();
@@ -155,6 +172,65 @@ export class ViewUserProfileComponent implements OnInit {
     this.setDB();
   }
 
+  updateLocalStorage() {
+    const unsubscribe = this.db.collection("users").doc(this.authState.uid).ref
+      .onSnapshot(function (doc) {
+        // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+        console.log("UPDATE LOCAL")
+        console.log(" data: ", doc.data());
+        localStorage.setItem('User', JSON.stringify(doc.data()));
+        unsubscribe();
+      }, function (error) {
+        console.log("Eroor local storage");
+      });
+  }
+
+  addCommentToDB(valueData, IDPost){
+    console.log("ENTER KEY PRESS");
+    console.log(valueData);
+    var that = this;
+    let now = moment();
+    this.db.collection("comments").add({
+
+      idPost: IDPost,
+      commentText: valueData.commentText,
+      creationDate: now.format('L'),
+      creationHour: now.format('LT'),
+      by :{
+        idUser: this.authState.uid,
+        userName: this.userObject.firstName + " " + this.userObject.lastName
+      }
+
+    })
+      .then(function (docRef) {
+        console.log("Document successfully written!");
+        that.writeComment.patchValue({
+          commentText: '',
+        });
+        // that.allComments = [];
+        // that.getComments();
+      })
+      .catch(function (error) {
+        console.error("Error adding document: ", error);
+       
+      });
+  }
+
+  getComments(){
+    let that = this;
+
+    const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
+      .onSnapshot(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          that.allComments.push({ id: doc.id, ...doc.data() });
+          that.weHaveComments = true;
+        })
+        console.log(that.allComments);
+        unsubscribe();
+      });
+  }
+
 
   setDB() {
     let dataFollowers = {
@@ -170,6 +246,7 @@ export class ViewUserProfileComponent implements OnInit {
     const unsubscribe = that.db.collection("users").doc(that.authState.uid).set(dataFollowing, { merge: true })
       .then(function (docRef) {
         console.log("Document following ok");
+        that.updateLocalStorage();
       })
       .catch((error) => {
         console.log(error);
@@ -179,6 +256,7 @@ export class ViewUserProfileComponent implements OnInit {
       .then(function (docRef) {
         console.log("Document followers written ok");
         that.getTheFollowingPersons();
+        that.updateLocalStorage();
       })
       .catch((error) => {
         console.log(error);

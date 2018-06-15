@@ -1,65 +1,98 @@
 <top-menu></top-menu>
 <div class="name-wrapper d-flex justify-content-center">
-  <div class="">
-      <h3> {{this.userPersonalInformation?.firstName}} {{this.userPersonalInformation?.lastName}}</h3>
-  </div>
+    <div class="">
+        <h3> {{this.userPersonalInformation?.firstName}} {{this.userPersonalInformation?.lastName}}</h3>
+    </div>
 </div>
 
 <div class="wrapper-profile">
-  <div class="profile-container row d-flex justify-content-center">
-      <div class="thumbnail-me  d-flex justify-content-center ">
-          <img [src]="this.url" class=" profile profile-avatar">
-      </div>
-      <div *ngIf="this.userPersonalInformation?.bio; else messageInfo" class="info col-sm-6 ">
-          <div class="d-flex justify-content-end">
-              <b>Something about me</b>
-          </div>
-          <div class="text-description">
-              <div>{{this.userPersonalInformation?.bio}}</div>
+    <div class="profile-container row d-flex justify-content-center">
+        <div class="thumbnail-me  d-flex justify-content-center ">
+            <img [src]="this.url" class=" profile profile-avatar">
+        </div>
+        <div *ngIf="this.userPersonalInformation?.bio; else messageInfo" class="info col-sm-6 ">
+            <div class="d-flex justify-content-end">
+                <b>Something about me</b>
+            </div>
+            <div class="text-description">
+                <div>{{this.userPersonalInformation?.bio}}</div>
 
-              <div *ngIf="this.userPersonalInformation?.homeBase" class="">My Home Base: {{this.userPersonalInformation?.homeBase}} </div>
-          </div>
-      </div>
-      <ng-template #messageInfo>
-          <div class="info col-sm-6 ">
-              <div class="text-description">
-                  Tell us something about you.
-                  <div *ngIf="this.userPersonalInformation?.homeBase" class="">My Home Base: {{this.userPersonalInformation?.homeBase}} </div>
-              </div>
-          </div>
+                <div *ngIf="this.userPersonalInformation?.homeBase" class="">My Home Base: {{this.userPersonalInformation?.homeBase}} </div>
+            </div>
+        </div>
+        <ng-template #messageInfo>
+            <div class="info col-sm-6 ">
+                <div class="text-description">
+                    Tell us something about you.
+                    <div *ngIf="this.userPersonalInformation?.homeBase" class="">My Home Base: {{this.userPersonalInformation?.homeBase}} </div>
+                </div>
+            </div>
 
-      </ng-template>
-  </div>
+        </ng-template>
+    </div>
 
 </div>
 
 
 <div class="wrapper-post">
-    <a  *ngIf="isFollowing" class="btn btn-outline-dark" (click)="unfollowAPerson()">Unfollow</a>
-    <a  *ngIf="!isFollowing" class="btn btn-outline-dark" (click)="followPerson()">Follow</a>
-    <div *ngIf="!weHavePosts" class="profile-container " >
+    <a *ngIf="isFollowing" class="btn btn-outline-dark" (click)="unfollowAPerson()">Unfollow</a>
+    <a *ngIf="!isFollowing" class="btn btn-outline-dark" (click)="followPerson()">Follow</a>
+    <div *ngIf="!weHavePosts" class="profile-container ">
         <div class="d-flex justify-content-center"> Sorry! There are no posts.</div>
     </div>
 
     <br>
     <div>
         <div *ngFor="let post of userListPosts" class="post-container">
-            
+            <div>
                 <div class="d-flex justify-content-end">
-                        <a class="p-2 like-post">
-                                <i *ngIf="this.dublicate.includes(this.authState.uid)" class="fas fa-heart" (click)="dislikeAPost(post.id)" title="Dislike"></i>
-                                <i *ngIf="!this.dublicate.includes(this.authState.uid)" class="far fa-heart" (click)="likeAPost(post.id)"  title="Like"></i>
-                        </a>
+                    <a class="p-2 like-post">
+                        <i *ngIf="this.dublicate.includes(this.authState.uid)" class="fas fa-heart" (click)="dislikeAPost(post.id)" title="Dislike"></i>
+                        <i *ngIf="!this.dublicate.includes(this.authState.uid)" class="far fa-heart" (click)="likeAPost(post.id)" title="Like"></i>
+                    </a>
                 </div>
-           
-            <h3>{{post.postName}}</h3>
-            <h5>{{post.tripName}}</h5>
-            <div>{{post.creationDate | date }} </div>
-            <div>{{post.aboutLocation.countryLong}}</div>
-            <div>{{post.postDetails}}</div>
-               
-            <div *ngFor="let photo of post.photos" class="post-photo-display ">
-                <img [src]="photo" alt="slide" class="style-photo" >
+
+                <h3>{{post.postName}}</h3>
+                <h5>{{post.tripName}}</h5>
+                <div>{{post.creationDate | date }} </div>
+                <div>{{post.aboutLocation.countryLong}}</div>
+                <div>{{post.postDetails}}</div>
+
+                <div *ngFor="let photo of post.photos" class="post-photo-display ">
+                    <img [src]="photo" alt="slide" class="style-photo">
+                </div>
+            </div>
+            <div>
+                <div class="comment d-flex justify-content-end">
+                    COMMENTS
+                </div>
+                <div class="comm">
+                    <div *ngFor="let comment of allComments">
+                        <div *ngIf="comment.idPost == post.id" class="single-comment">
+                            <div class="row ">
+                                <div class="col-sm d-flex justify-content-start com-data">
+                                    by {{comment.by.userName}}
+                                </div>
+
+                                <div class="col-sm d-flex justify-content-end com-data">
+                                    {{comment.creationHour}} - {{comment.creationDate}}
+                                </div>
+                            </div>
+                            <div class="col-sm d-flex justify-content-start com-text">
+                                {{comment.commentText}}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <br>
+                <form [formGroup]='writeComment'>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Write a comment" formControlName="commentText" (keyup.enter)="addCommentToDB(writeComment.value, post.id)"
+                        />
+                    </div>
+                </form>
+
             </div>
         </div>
     </div>

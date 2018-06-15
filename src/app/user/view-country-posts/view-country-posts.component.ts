@@ -44,7 +44,10 @@ export class ViewCountryPostsComponent implements OnInit {
   ngOnInit() {
     this.searchCityForm = this.fb.group({
       search: ['', Validators.required],
-    })
+    });
+    this.postsILiked = [];
+    this.dublicate = [];
+    this.countryData = [];
     this.getCountryData();
     this.getCountryPosts();
   }

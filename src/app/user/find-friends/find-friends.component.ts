@@ -105,6 +105,20 @@ export class FindFriendsComponent implements OnInit {
 
   }
 
+  updateLocalStorage() {
+    const unsubscribe = this.db.collection("users").doc(this.authState.uid).ref
+      .onSnapshot(function (doc) {
+        // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+        console.log("UPDATE LOCAL")
+        console.log(" data: ", doc.data());
+        localStorage.setItem('User', JSON.stringify(doc.data()));
+        unsubscribe();
+      }, function (error) {
+        console.log("Eroor local storage");
+      });
+  }
+
+
   getTheFollowingPersons() {
 
     let that = this;
@@ -136,6 +150,7 @@ export class FindFriendsComponent implements OnInit {
       .then(function (docRef) {
         console.log("Document written ok");
         that.setFollowersInIdPersonDB(idPerson);
+        that.updateLocalStorage();
       })
       .catch((error) => {
         console.log(error);
@@ -165,6 +180,7 @@ export class FindFriendsComponent implements OnInit {
     that.db.collection("users").doc(idPerson).set(data, { merge: true })
       .then(function (docRef) {
         console.log("Document written ok");
+        that.updateLocalStorage();
       })
       .catch((error) => {
         console.log(error);

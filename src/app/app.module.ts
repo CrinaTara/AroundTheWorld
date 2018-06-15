@@ -21,6 +21,7 @@ import 'hammerjs';
 import 'mousetrap';
 import { ModalGalleryModule } from 'angular-modal-gallery';
 import { PostComponent } from './user/post/post.component';
+import { SharedDataService } from './shared-data.service';
 
 
 @NgModule({
@@ -48,7 +49,7 @@ import { PostComponent } from './user/post/post.component';
     ModalGalleryModule.forRoot(),
     TypeaheadModule.forRoot(),
   ],
-  providers: [AuthGuard],
+  providers: [AuthGuard, SharedDataService],
   bootstrap: [AppComponent],
   entryComponents: [
     PostComponent

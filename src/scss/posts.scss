@@ -51,3 +51,32 @@
 .like-post:hover{
   cursor: pointer;
 }
+
+.comment{
+  margin-top: 2%;
+  margin-bottom: 2%;
+  color: black;
+}
+
+.single-comment{
+  // max-width: 97%;
+  padding: 5px;
+  margin-top: 5px;
+  border: 1px solid black;
+  border-radius: 15px 5px 10px 5px;
+
+}
+
+.com-text{
+  font-size: 16px;
+}
+
+.com-data{
+  color: #919191;
+}
+
+.comm{
+  max-height: 400px;
+  overflow: auto;
+  overflow-x:hidden
+}

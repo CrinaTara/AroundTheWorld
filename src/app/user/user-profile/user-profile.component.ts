@@ -7,6 +7,9 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { PostComponent } from '../post/post.component';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { } from 'angular-modal-gallery';
+import { SharedDataService } from '../../shared-data.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { moment } from 'ngx-bootstrap/chronos/test/chain';
 
 @Component({
   selector: 'user-profile',
@@ -30,8 +33,16 @@ export class UserProfileComponent implements OnInit {
   currentPeopleInCountry: any;
 
   modalRef: BsModalRef;
+  writeComment: FormGroup;
+  weHaveComments: boolean = false;
+  allComments: any = [];
 
-  constructor(private db: AngularFirestore, private modalService: BsModalService, private afAuth: AngularFireAuth, private router: Router) {
+  constructor( public fb: FormBuilder, 
+               private dataService: SharedDataService, 
+               private db: AngularFirestore, 
+               private modalService: BsModalService, 
+               private afAuth: AngularFireAuth, 
+               private router: Router) {
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth
     });
@@ -40,13 +51,20 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit() {
 
+    this.writeComment = this.fb.group({
+      commentText: ['', Validators.required],
+    })
+
     this.getMyPosts();
+    this.getComments();
     this.userObjectRetrived = localStorage.getItem('User');
     this.userObject = JSON.parse(this.userObjectRetrived);
+    console.log("HERE?");
 
     this.url = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
   }
 
+ 
   openPostModalWithComponent() {
     this.postModal = this.modalService.show(PostComponent, {
       class: 'modal-style modal-md modal-dialog-centered',
@@ -65,6 +83,68 @@ export class UserProfileComponent implements OnInit {
       initialState 
     });
 
+  }
+
+  addCommentToDB(valueData, IDPost){
+    console.log("ENTER KEY PRESS");
+    console.log(valueData);
+    var that = this;
+    let now = moment();
+    this.db.collection("comments").add({
+
+      idPost: IDPost,
+      commentText: valueData.commentText,
+      creationDate: now.format('L'),
+      creationHour: now.format('LT'),
+      by :{
+        idUser: this.authState.uid,
+        userName: this.userObject.firstName + " " + this.userObject.lastName
+      }
+
+    })
+      .then(function (docRef) {
+        console.log("Document successfully written!");
+        that.writeComment.patchValue({
+          commentText: '',
+        });
+        // that.getComments
+        // that.allComments = [];
+        // that.getComments();
+      })
+      .catch(function (error) {
+        console.error("Error adding document: ", error);
+       
+      });
+  }
+
+  getComments(){
+    let that = this;
+    this.allMyPosts = [];
+    const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
+      .onSnapshot(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          that.allComments.push({ id: doc.id, ...doc.data() });
+          that.weHaveComments = true;
+        })
+        console.log(that.allComments);
+        unsubscribe();
+      });
+  }
+
+  getCommentsByID(){
+    let that = this;
+    this.allMyPosts = [];
+    const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
+      .onSnapshot(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          that.allComments.push({ id: doc.id, ...doc.data() });
+          that.weHaveComments = true;
+        })
+        console.log(that.allComments);
+        unsubscribe();
+      });
   }
 
   getMyPosts = function () {
@@ -89,10 +169,15 @@ export class UserProfileComponent implements OnInit {
     this.db.collection("posts").doc(this.idPostToDelete).delete().then(function () {
       console.log("Document successfully deleted!");
       that.updateCountryDB();
+      that.updateTripDB();
       that.getMyPosts();
     }).catch(function (error) {
       console.error("Error removing document: ", error);
     });
+  }
+
+  updateTripDB(){
+    
   }
 
   updateCountryDB() {
