@@ -37,12 +37,12 @@ export class UserProfileComponent implements OnInit {
   weHaveComments: boolean = false;
   allComments: any = [];
 
-  constructor( public fb: FormBuilder, 
-               private dataService: SharedDataService, 
-               private db: AngularFirestore, 
-               private modalService: BsModalService, 
-               private afAuth: AngularFireAuth, 
-               private router: Router) {
+  constructor(public fb: FormBuilder,
+    private dataService: SharedDataService,
+    private db: AngularFirestore,
+    private modalService: BsModalService,
+    private afAuth: AngularFireAuth,
+    private router: Router) {
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth
     });
@@ -64,7 +64,7 @@ export class UserProfileComponent implements OnInit {
     this.url = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
   }
 
- 
+
   openPostModalWithComponent() {
     this.postModal = this.modalService.show(PostComponent, {
       class: 'modal-style modal-md modal-dialog-centered',
@@ -73,19 +73,19 @@ export class UserProfileComponent implements OnInit {
 
   }
 
-  openEditModal(idPost){
+  openEditModal(idPost) {
 
-    const initialState = { isSelectedPost: idPost};
+    const initialState = { isSelectedPost: idPost };
     console.log(idPost);
     this.postModal = this.modalService.show(PostComponent, {
       class: 'modal-style modal-md modal-dialog-centered',
       backdrop: 'static',
-      initialState 
+      initialState
     });
 
   }
 
-  addCommentToDB(valueData, IDPost){
+  addCommentToDB(valueData, IDPost) {
     console.log("ENTER KEY PRESS");
     console.log(valueData);
     var that = this;
@@ -96,7 +96,7 @@ export class UserProfileComponent implements OnInit {
       commentText: valueData.commentText,
       creationDate: now.format('L'),
       creationHour: now.format('LT'),
-      by :{
+      by: {
         idUser: this.authState.uid,
         userName: this.userObject.firstName + " " + this.userObject.lastName
       }
@@ -113,52 +113,56 @@ export class UserProfileComponent implements OnInit {
       })
       .catch(function (error) {
         console.error("Error adding document: ", error);
-       
+
       });
   }
 
-  getComments(){
+  getComments() {
     let that = this;
     this.allMyPosts = [];
     const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
       .onSnapshot(function (querySnapshot) {
+        that.allComments = [];
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
           that.allComments.push({ id: doc.id, ...doc.data() });
           that.weHaveComments = true;
         })
         console.log(that.allComments);
-        unsubscribe();
+        
+        // unsubscribe();
       });
+     
   }
 
-  getCommentsByID(){
-    let that = this;
-    this.allMyPosts = [];
-    const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
-      .onSnapshot(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-          console.log(doc.id, " => ", doc.data());
-          that.allComments.push({ id: doc.id, ...doc.data() });
-          that.weHaveComments = true;
-        })
-        console.log(that.allComments);
-        unsubscribe();
-      });
-  }
+  // getCommentsByID() {
+  //   let that = this;
+  //   this.allMyPosts = [];
+  //   const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
+  //     .onSnapshot(function (querySnapshot) {
+  //       querySnapshot.forEach(function (doc) {
+  //         console.log(doc.id, " => ", doc.data());
+  //         that.allComments.push({ id: doc.id, ...doc.data() });
+  //         that.weHaveComments = true;
+  //       })
+  //       console.log(that.allComments);
+  //       unsubscribe();
+  //     });
+  // }
 
   getMyPosts = function () {
     let that = this;
     this.allMyPosts = [];
     const unsubscribe = this.db.collection("posts").ref.where("idUser", "==", this.authState.uid).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
       .onSnapshot(function (querySnapshot) {
+        that.allMyPosts = [];
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
           that.allMyPosts.push({ id: doc.id, ...doc.data() });
           that.weHavePosts = true;
         })
         console.log(that.allMyPosts);
-        unsubscribe();
+        // unsubscribe();
       });
 
   }
@@ -169,15 +173,40 @@ export class UserProfileComponent implements OnInit {
     this.db.collection("posts").doc(this.idPostToDelete).delete().then(function () {
       console.log("Document successfully deleted!");
       that.updateCountryDB();
+      that.deleteCommentPosts(that.idPostToDelete);
       that.updateTripDB();
-      that.getMyPosts();
+      // that.getMyPosts();
     }).catch(function (error) {
       console.error("Error removing document: ", error);
     });
   }
 
-  updateTripDB(){
-    
+  deleteCommentPosts(idToDeletePost) {
+    let that = this;
+
+    const unsubscribe = this.db.collection("comments").ref
+      .onSnapshot(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          if (doc.data().idPost == idToDeletePost) {
+            that.db.collection("comments").doc(doc.id).delete().then(function () {
+              console.log("Document successfully deleted!");
+            }).catch(function (error) {
+              console.error("Error removing document: ", error);
+            });
+          }
+
+        })
+
+        unsubscribe();
+      });
+
+
+
+  }
+
+  updateTripDB() {
+
   }
 
   updateCountryDB() {
@@ -213,7 +242,7 @@ export class UserProfileComponent implements OnInit {
           const uns = that.db.collection("countries").doc(that.shortNameCountry).delete().then(function () {
             console.log("Document successfully deleted!");
             unsubscribe();
-          
+
           }).catch(function (error) {
             console.error("Error removing document: ", error);
           });

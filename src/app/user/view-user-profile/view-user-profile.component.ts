@@ -221,13 +221,14 @@ export class ViewUserProfileComponent implements OnInit {
 
     const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
       .onSnapshot(function (querySnapshot) {
+        that.allComments = [];
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
           that.allComments.push({ id: doc.id, ...doc.data() });
           that.weHaveComments = true;
         })
         console.log(that.allComments);
-        unsubscribe();
+        // unsubscribe();
       });
   }
 

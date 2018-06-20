@@ -161,6 +161,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
       });
     }).subscribe((querySnapshot) => {
+      that.relevantCities = [];
       querySnapshot.forEach((doc) => {
         
         if (doc) {
@@ -184,7 +185,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
       });
-      locationsSubscription.unsubscribe();
+      // locationsSubscription.unsubscribe();
       that.another();
     });
     

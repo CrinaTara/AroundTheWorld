@@ -5,6 +5,7 @@ import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Valida
 import { AngularFireAuth } from 'angularfire2/auth';
 
 
+
 @Component({
   selector: 'app-search-destinations',
   templateUrl: './search-destinations.component.html',
@@ -22,7 +23,8 @@ export class SearchDestinationsComponent implements OnInit {
   searchMessageDisplayed: string = '';
   errorSearchMessageDisplay: boolean = false;
 
-  constructor(private db: AngularFirestore,  public fb: FormBuilder, private afAuth: AngularFireAuth) { 
+  constructor(private db: AngularFirestore,  public fb: FormBuilder, private afAuth: AngularFireAuth,
+              ) { 
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth
     });

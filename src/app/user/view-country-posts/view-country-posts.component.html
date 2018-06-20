@@ -4,8 +4,16 @@
     <div class="">
       <!-- <h3 (click)="searchCountry()" >{{this.searchedItem}}</h3> -->
       <h3>{{this.countryData?.long}}</h3>
+
     </div>
   </div>
+  <div class="name-wrapper d-flex justify-content-center">
+      <p>See below which period of the year attracts the most tourists</p>
+    <br>
+  </div>
+
+ 
+  <div id="chartdiv"></div>
 
   <!-- Autocomplete search city! -->
   <form [formGroup]='searchCityForm'>

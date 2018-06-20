@@ -91,8 +91,7 @@
                         <i class="far fa-trash-alt"></i>
                     </a>
                 </div>
-
-
+               
                 <h3>{{post.postName}}</h3>
                 <h5>{{post.tripName}}</h5>
                 <div>{{ post.creationDate | date }} </div>
@@ -109,7 +108,9 @@
                 <!-- 
                 <ks-modal-gallery [id]="5" [modalImages]="post.photos"
                 ></ks-modal-gallery> -->
+                <h1>{{post.likedByUsers.length}} like</h1> 
             </div>
+           
             <div>
                 <div class="comment d-flex justify-content-end">
                     COMMENTS
