@@ -23,12 +23,11 @@ import { ModalGalleryModule } from 'angular-modal-gallery';
 import { PostComponent } from './user/post/post.component';
 import { SharedDataService } from './shared-data.service';
 
-
 @NgModule({
   declarations: [
     AppComponent,
     routingComponents,
-    PostComponent,
+    PostComponent, 
   ],
   imports: [
     BrowserModule,

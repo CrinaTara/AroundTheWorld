@@ -5,6 +5,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AmChartsService, AmChart } from "@amcharts/amcharts3-angular";
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-view-country-posts',
@@ -31,6 +32,55 @@ export class ViewCountryPostsComponent implements OnInit {
 
   searchCityForm: FormGroup;
   monthsPeopleArr: any;
+  listOfMonthsAndPeople: any = [{
+    "month": "January",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "February",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "March",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "April",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "May",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "June",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "July",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "August",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "September",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "October",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "November",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }, {
+    "month": "December",
+    "numberOfPerople": 0,
+    "desc": "people"
+  }];
 
   constructor(private route: ActivatedRoute, private router: Router,
     private db: AngularFirestore, public fb: FormBuilder,
@@ -53,7 +103,37 @@ export class ViewCountryPostsComponent implements OnInit {
     this.countryData = [];
     this.getCountryData();
     this.getCountryPosts();
-    this.showChart();
+
+  }
+
+  showChart() {
+    const that = this;
+
+    this.chart = this.AmCharts.makeChart("chartdiv", {
+      "type": "pie",
+      "theme": "light",
+      "dataProvider": that.listOfMonthsAndPeople,
+      "valueField": "numberOfPerople",
+      "titleField": "month",
+      "descriptionField": 'desc',
+      // "balloon": {
+      //   "fixedPosition": true
+      // },
+      "balloon": {
+        "drop": true,
+        "adjustBorderColor": false,
+        "color": "#FFFFFF",
+        "fontSize": 13
+      },
+      "balloonText": "[[value]]\n[[description]]",
+      "export": {
+        "enabled": true
+      },
+      "responsive": {
+        "enabled": true,
+      }
+    });
+
   }
 
   getCountryData() {
@@ -85,6 +165,9 @@ export class ViewCountryPostsComponent implements OnInit {
 
           that.countryListPosts.push({ id: doc.id, ...doc.data() });
 
+          let  month: any = moment(doc.data().creationDate).format('M');
+          that.listOfMonthsAndPeople[month - 1].numberOfPerople += 1;
+
           that.postsILiked = doc.data().likedByUsers;
           that.dublicate = doc.data().likedByUsers;
 
@@ -92,6 +175,8 @@ export class ViewCountryPostsComponent implements OnInit {
           unsubscribe();
         })
         console.log(that.countryListPosts);
+        console.log(that.listOfMonthsAndPeople);
+        that.showChart();
 
       });
   }
@@ -177,52 +262,5 @@ export class ViewCountryPostsComponent implements OnInit {
         console.log(error);
       })
   }
-
-  showChart() {
-    const that = this;
-
-    this.chart = this.AmCharts.makeChart("chartdiv", {
-      "type": "pie",
-      "theme": "light",
-      "dataProvider": [{
-        "country": "Lithuania",
-        "litres": 501.9
-      }, {
-        "country": "Czech Republic",
-        "litres": 301.9
-      }, {
-        "country": "Ireland",
-        "litres": 201.1
-      }, {
-        "country": "Germany",
-        "litres": 165.8
-      }, {
-        "country": "Australia",
-        "litres": 139.9
-      }, {
-        "country": "Austria",
-        "litres": 128.3
-      }, {
-        "country": "UK",
-        "litres": 99
-      }, {
-        "country": "Belgium",
-        "litres": 60
-      }, {
-        "country": "The Netherlands",
-        "litres": 50
-      }],
-      "valueField": "litres",
-      "titleField": "country",
-      "balloon": {
-        "fixedPosition": true
-      },
-      "export": {
-        "enabled": true
-      }
-    });
-
-  }
-
 
 }

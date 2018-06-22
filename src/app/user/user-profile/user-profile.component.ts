@@ -23,6 +23,7 @@ export class UserProfileComponent implements OnInit {
 
   postModal: BsModalRef;
   weHavePosts = false;
+  countryToDelete;
 
   authState: any = null;
   public userObject: any;
@@ -31,6 +32,7 @@ export class UserProfileComponent implements OnInit {
   idPostToDelete: any;
   shortNameCountry: string;
   currentPeopleInCountry: any;
+  nonDublicateCountries = [];
 
   modalRef: BsModalRef;
   writeComment: FormGroup;
@@ -59,6 +61,12 @@ export class UserProfileComponent implements OnInit {
     this.getComments();
     this.userObjectRetrived = localStorage.getItem('User');
     this.userObject = JSON.parse(this.userObjectRetrived);
+
+    this.nonDublicateCountries = this.userObject.countriesVisited;
+    console.log(this.nonDublicateCountries);
+    this.nonDublicateCountries = Array.from(new Set(this.nonDublicateCountries));
+    console.log(this.nonDublicateCountries);
+
     console.log("HERE?");
 
     this.url = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
@@ -74,7 +82,6 @@ export class UserProfileComponent implements OnInit {
   }
 
   openEditModal(idPost) {
-
     const initialState = { isSelectedPost: idPost };
     console.log(idPost);
     this.postModal = this.modalService.show(PostComponent, {
@@ -82,6 +89,62 @@ export class UserProfileComponent implements OnInit {
       backdrop: 'static',
       initialState
     });
+
+  }
+
+  updateLocalStorage() {
+    let that = this;
+    const unsubscribe = this.db.collection("users").doc(this.authState.uid).ref
+      .onSnapshot(function (doc) {
+        console.log("Update Object");
+        localStorage.setItem('User', JSON.stringify(doc.data()));
+        that.userObjectRetrived = localStorage.getItem('User');
+        that.userObject = JSON.parse(that.userObjectRetrived);
+
+        that.nonDublicateCountries = that.userObject.countriesVisited;
+        console.log(that.nonDublicateCountries);
+        that.nonDublicateCountries = Array.from(new Set(that.nonDublicateCountries));
+        console.log(that.nonDublicateCountries);
+
+        unsubscribe();
+      }, function (error) {
+        console.log("Eroor local storage");
+      });
+  }
+
+  updateDeleteCountriesVisitedInUserDB() {
+    const removeArrayItem = (arr, itemToRemove) => {
+      return arr.filter(item => item !== itemToRemove)
+    }
+
+    console.log(this.userObject.countriesVisited);
+    console.log(this.shortNameCountry);
+    console.log(this.userObject.countriesVisited.includes(this.shortNameCountry));
+
+    let that = this;
+
+    if (this.userObject.countriesVisited.includes(this.shortNameCountry)) {
+      // let a = removeArrayItem(this.userObject.countriesVisited, this.shortNameCountry)
+      const index1: number = this.userObject.countriesVisited.indexOf(this.shortNameCountry);
+      if (index1 !== -1) {
+        var a = this.userObject.countriesVisited.splice(index1, 1);
+
+      }
+
+      console.log(a);
+      console.log(this.userObject.countriesVisited);
+
+      let data = {
+        countriesVisited: this.userObject.countriesVisited
+      }
+      this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
+        .then(function () {
+          that.updateLocalStorage();
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+        });
+    }
 
   }
 
@@ -129,26 +192,12 @@ export class UserProfileComponent implements OnInit {
           that.weHaveComments = true;
         })
         console.log(that.allComments);
-        
+
         // unsubscribe();
       });
-     
+
   }
 
-  // getCommentsByID() {
-  //   let that = this;
-  //   this.allMyPosts = [];
-  //   const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
-  //     .onSnapshot(function (querySnapshot) {
-  //       querySnapshot.forEach(function (doc) {
-  //         console.log(doc.id, " => ", doc.data());
-  //         that.allComments.push({ id: doc.id, ...doc.data() });
-  //         that.weHaveComments = true;
-  //       })
-  //       console.log(that.allComments);
-  //       unsubscribe();
-  //     });
-  // }
 
   getMyPosts = function () {
     let that = this;
@@ -175,6 +224,7 @@ export class UserProfileComponent implements OnInit {
       that.updateCountryDB();
       that.deleteCommentPosts(that.idPostToDelete);
       that.updateTripDB();
+      that.updateDeleteCountriesVisitedInUserDB();
       // that.getMyPosts();
     }).catch(function (error) {
       console.error("Error removing document: ", error);
@@ -257,6 +307,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   openModal(template: TemplateRef<any>, idPost, shortName) {
+
     this.modalRef = this.modalService.show(template, { class: 'modal-md modal-dialog-centered' });
     this.idPostToDelete = idPost;
     this.shortNameCountry = shortName;

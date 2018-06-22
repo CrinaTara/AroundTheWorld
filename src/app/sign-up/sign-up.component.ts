@@ -104,7 +104,8 @@ export class SignUpComponent implements OnInit {
             nrTrips: 0,
             following: [],
             followers: [],
-            postsLiked: []
+            postsLiked: [],
+            countriesVisited: [],
           }
           this.db.collection("users").doc(success.uid).set(data)
             .then(function (docRef) {

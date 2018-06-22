@@ -14,6 +14,8 @@ import { SearchDestinationsComponent } from './user/search-destinations/search-d
 import { NewsComponent } from './user/news/news.component';
 import { ViewUserProfileComponent } from './user/view-user-profile/view-user-profile.component';
 import { ViewCountryPostsComponent } from './user/view-country-posts/view-country-posts.component';
+import { MyTripsComponent } from './user/my-trips/my-trips.component';
+
 
 
 
@@ -32,6 +34,7 @@ const routes: Routes = [
         {path: 'edit-profile', component: EditProfileComponent, canActivateChild: [AuthGuard]},
         {path: 'find-friends', component: FindFriendsComponent, canActivateChild: [AuthGuard]},
         {path: 'search-destinations', component: SearchDestinationsComponent, canActivateChild: [AuthGuard]},
+        {path: 'my-trips', component: MyTripsComponent, canActivateChild: [AuthGuard]},
     ]},
     {path: 'view-user-profile/:id', component: ViewUserProfileComponent,  canActivate: [AuthGuard]},
     {path: 'view-country/:name', component: ViewCountryPostsComponent,  canActivate: [AuthGuard]},
@@ -65,5 +68,6 @@ export const routingComponents = [LandingComponent,
                                   NewsComponent,
                                   ViewUserProfileComponent,
                                   ViewCountryPostsComponent,
+                                  MyTripsComponent,
                                   ];
    

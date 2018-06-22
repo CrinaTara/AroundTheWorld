@@ -282,13 +282,17 @@ export class PostComponent implements OnInit, AfterViewInit {
   }
 
   updateLocalStorage() {
+    let that = this;
     const unsubscribe = this.db.collection("users").doc(this.authState.uid).ref
       .onSnapshot(function (doc) {
         // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
         console.log("UPDATE LOCAL")
         console.log(" data: ", doc.data());
         localStorage.setItem('User', JSON.stringify(doc.data()));
-        unsubscribe();
+
+        that.userObjectRetrived = localStorage.getItem('User');
+        that.userObject = JSON.parse(that.userObjectRetrived);
+        // unsubscribe();
       }, function (error) {
         console.log("Eroor local storage");
       });
@@ -321,6 +325,31 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   }
 
+  updateCountriesVisitedInUserDB(){
+    console.log(this.userObject.countriesVisited);
+    console.log(this.aboutLocation.countryShort);
+    console.log(this.userObject.countriesVisited.includes(this.aboutLocation.countryShort));
+    console.log(this.userObject.countriesVisited.concat(this.aboutLocation.countryShort));
+    // if(this.userObject.countriesVisited.includes(this.aboutLocation.countryShort)){
+    //   // deja este tara in array
+    //   console.log("This country is already visited by this user");
+    // }else{
+      // nu e, o adaugam
+      let th = this;
+      let a = this.userObject.countriesVisited.concat(this.aboutLocation.countryShort);
+      let data = {
+        countriesVisited: a
+      }
+      this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
+        .then(function () {
+          th.updateLocalStorage();
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+        });
+    // }
+  }
+
   //Create TRIP!
   createTrip() {
 
@@ -343,6 +372,7 @@ export class PostComponent implements OnInit, AfterViewInit {
           that.getTripsData();
           that.clearTripData();
           that.updateUserProfile();
+
           that.showNewPost = true;
           that.showNewTrip = false;
           that.errorTripMessageDisplay = false;
@@ -428,6 +458,7 @@ export class PostComponent implements OnInit, AfterViewInit {
           that.countPosts();
           that.updateTripDate(now.format('L'));
           console.log("De la user:");
+          that.updateCountriesVisitedInUserDB();
           // that.user.getMyPosts();
           // that.homeComp.getAllPlaces();
         })
