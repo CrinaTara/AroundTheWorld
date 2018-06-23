@@ -28,21 +28,25 @@ export class MyTripsComponent implements OnInit {
 
   getTrips(){
     let that = this;
-    // this.allMyTrips = [];
+    this.allMyTrips = [];
     console.log("I am here");
-    const unsubscribe = this.db.collection("trips").ref.where("idUser", "==", this.authState.uid).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
+    const unsubscribe = this.db.collection("trips").ref.where("idUser", "==", this.authState.uid).orderBy("creationDate", "desc")
       .onSnapshot(function (querySnapshot) {
         console.log("I am ajksd");
-        // that.allMyTrips = [];
+        that.allMyTrips = [];
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
-          // that.allMyTrips.push({ id: doc.id, ...doc.data() });
-          // that.weHaveTrips = true;
+          that.allMyTrips.push({ id: doc.id, ...doc.data() });
+          that.weHaveTrips = true;
         })
         // console.log(that.allMyTrips);
         unsubscribe();
       });
   
+  }
+
+  viewTripDetails(idTrip){
+    console.log(idTrip);
   }
 
 }

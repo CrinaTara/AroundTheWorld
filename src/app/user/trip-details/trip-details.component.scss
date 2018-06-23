@@ -1,0 +1,75 @@
+@import '~scss/profile';
+@import '~scss/posts';
+@import '~scss/colors';
+
+.info{
+    padding: 7%;
+  }
+  
+  .text-description{
+    font-size: 14px;
+  }
+  
+  .edit-profile-button{
+    margin: 2%;
+    font-size: 15px;
+  }
+  
+  .modal-style{
+    border-radius: 0px !important; 
+  }
+  
+  .yellow-button{
+    color: $main-yellow-color!important;
+    margin-bottom: 0px!important;
+  }
+  
+  
+  .post-photo-display{
+    display: inline-block!important;
+    margin: 10px;
+  }
+  
+  .style-photo{
+    height: 150px;
+    width: 150px;
+  }
+  
+  .edit-post{
+    // color: $main-yellow-color!important;
+    border: solid 1px white;
+    margin-right: 1%;
+  }
+  
+  .edit-post:hover{
+    cursor: pointer;
+  }
+  
+  .delete-post{
+    color: red!important;
+    border: solid 1px white;
+  }
+  
+  .delete-post:hover{
+    cursor: pointer;
+  }
+
+  .delete-trip{
+    color: red!important;
+    border: solid 1px white;
+    margin-bottom: 3px;
+  }
+  .delete-trip:hover{
+    cursor: pointer;
+  }
+
+  .trip-container{
+    border: 1px solid rgb(20, 20, 20);
+    padding: 3%;
+    margin-bottom: 2%;
+  }
+
+  #chartdiv {
+    width: 100%;
+    height: 500px;
+  }

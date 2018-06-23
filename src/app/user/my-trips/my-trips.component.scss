@@ -1,0 +1,12 @@
+@import '~scss/profile';
+@import '~scss/search';
+@import '~scss/colors';
+
+.trip-name{
+    margin-bottom: 0px!important;
+}
+
+.trip-name:hover{
+    cursor: pointer;
+    color: $main-yellow-color;
+}

@@ -27,7 +27,7 @@ import { SharedDataService } from './shared-data.service';
   declarations: [
     AppComponent,
     routingComponents,
-    PostComponent, 
+    PostComponent,
   ],
   imports: [
     BrowserModule,

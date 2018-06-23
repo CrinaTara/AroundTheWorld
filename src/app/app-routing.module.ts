@@ -15,9 +15,7 @@ import { NewsComponent } from './user/news/news.component';
 import { ViewUserProfileComponent } from './user/view-user-profile/view-user-profile.component';
 import { ViewCountryPostsComponent } from './user/view-country-posts/view-country-posts.component';
 import { MyTripsComponent } from './user/my-trips/my-trips.component';
-
-
-
+import { TripDetailsComponent } from './user/trip-details/trip-details.component';
 
 
 import { AuthGuard } from './auth-guard.service';
@@ -38,6 +36,7 @@ const routes: Routes = [
     ]},
     {path: 'view-user-profile/:id', component: ViewUserProfileComponent,  canActivate: [AuthGuard]},
     {path: 'view-country/:name', component: ViewCountryPostsComponent,  canActivate: [AuthGuard]},
+    {path: 'trip-details/:id', component: TripDetailsComponent,  canActivate: [AuthGuard]},
     {path: '**', component: LandingComponent}
 ]
 
@@ -69,5 +68,6 @@ export const routingComponents = [LandingComponent,
                                   ViewUserProfileComponent,
                                   ViewCountryPostsComponent,
                                   MyTripsComponent,
+                                  TripDetailsComponent,
                                   ];
    

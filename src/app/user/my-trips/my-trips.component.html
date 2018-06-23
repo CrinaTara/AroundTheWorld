@@ -1,3 +1,25 @@
-<p>
-  my-trips works!
-</p>
+<div class="container">
+  
+  <div class="header profile-wrapper">
+    <h2 >My Trips</h2>
+    <p class="text">Here you can see all the trips you've been to</p>
+  </div>
+
+  <div *ngIf="!weHaveTrips" class="d-flex justify-content-center">Sorry! There is no trips to show</div>
+  <div *ngFor="let trip of allMyTrips">
+
+      <div class="col-12 col-sm-10 col-md-6 col-lg-6 mt-4">
+
+          <div class="card ">
+            <div class="card-body">
+
+              <h5 class="d-flex justify-content-center trip-name"  routerLink="/trip-details/{{trip.id}}">{{trip.tripName}}</h5>
+
+            </div>
+          </div>
+    
+        </div>
+   
+  </div>
+  
+</div>
