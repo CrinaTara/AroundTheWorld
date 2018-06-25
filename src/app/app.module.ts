@@ -16,6 +16,7 @@ import { AmChartsModule } from "@amcharts/amcharts3-angular";
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CarouselModule } from 'ngx-bootstrap';
 import { TypeaheadModule } from 'ngx-bootstrap';
+import { SlickModule } from 'ngx-slick';
 
 import 'hammerjs';
 import 'mousetrap';
@@ -47,6 +48,7 @@ import { SharedDataService } from './shared-data.service';
     CarouselModule.forRoot(),
     ModalGalleryModule.forRoot(),
     TypeaheadModule.forRoot(),
+    SlickModule.forRoot(),
   ],
   providers: [AuthGuard, SharedDataService],
   bootstrap: [AppComponent],

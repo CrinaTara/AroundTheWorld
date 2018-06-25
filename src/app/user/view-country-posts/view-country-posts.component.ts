@@ -6,6 +6,8 @@ import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Valida
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AmChartsService, AmChart } from "@amcharts/amcharts3-angular";
 import * as moment from 'moment';
+import { AdvancedLayout, Image, PlainGalleryConfig, PlainGalleryStrategy } from 'angular-modal-gallery';
+
 
 @Component({
   selector: 'app-view-country-posts',
@@ -15,6 +17,8 @@ import * as moment from 'moment';
 export class ViewCountryPostsComponent implements OnInit {
 
   authState: any = null;
+
+  imagesToDisplay: Image[] = [];
 
   public params: any;
   public searchedItem: any;
@@ -30,7 +34,14 @@ export class ViewCountryPostsComponent implements OnInit {
   countryListPosts = [];
   citySearchName: any;
 
+  public userObject: any;
+  public userObjectRetrived: any;
+
+
   searchCityForm: FormGroup;
+  weHaveComments: boolean = false;
+  allComments: any = [];
+  writeComment: FormGroup;
   monthsPeopleArr: any;
   listOfMonthsAndPeople: any = [{
     "month": "January",
@@ -98,11 +109,20 @@ export class ViewCountryPostsComponent implements OnInit {
     this.searchCityForm = this.fb.group({
       search: ['', Validators.required],
     });
+
+    this.writeComment = this.fb.group({
+      commentText: ['', Validators.required],
+    });
+
+    this.userObjectRetrived = localStorage.getItem('User');
+    this.userObject = JSON.parse(this.userObjectRetrived);
+
     this.postsILiked = [];
     this.dublicate = [];
     this.countryData = [];
     this.getCountryData();
     this.getCountryPosts();
+    this.getComments();
 
   }
 
@@ -156,43 +176,59 @@ export class ViewCountryPostsComponent implements OnInit {
     this.noResult = event;
   }
 
+  customPlainGalleryRowConfig: PlainGalleryConfig = {
+    strategy: PlainGalleryStrategy.CUSTOM,
+    layout: new AdvancedLayout(-1, true)
+  };
+  
+  openImageModalRow(image: Image, images) {
+    this.imagesToDisplay = images;
+    console.log(this.imagesToDisplay);
+    console.log('Opening modal gallery from custom plain gallery row, with image: ', image);
+    const index: number = this.getCurrentIndexCustomLayout(image, this.imagesToDisplay);
+    this.customPlainGalleryRowConfig = Object.assign({}, this.customPlainGalleryRowConfig, { layout: new AdvancedLayout(index, true) });
+  }
+
+  private getCurrentIndexCustomLayout(image: Image, imagesToDisplay: Image[]): number {
+    return image ? imagesToDisplay.indexOf(image) : -1;
+  }
+
   getCountryPosts() {
     let that = this;
+    this.countryListPosts = [];
+    this.postsILiked = [];
     const unsubscribe = this.db.collection("posts").ref.where("aboutLocation.countryShort", "==", this.searchedItem).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
       .onSnapshot(function (querySnapshot) {
+        that.countryListPosts = [];
+        that.postsILiked = [];
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
+          that.postsILiked = [];
+          let images: Image[] = [];
 
-          that.countryListPosts.push({ id: doc.id, ...doc.data() });
+          for(let i= 0 ; i< doc.data().photos.length; i++){
+            images.push(new Image(i, {
+              img: doc.data().photos[i]
+            }))
+          }
+
+          for(let i in doc.data().likedByUsers){
+            that.postsILiked.push(doc.data().likedByUsers[i]) ;
+          }  
+          let th = that;
+
+          that.countryListPosts.push({id: doc.id, ...doc.data(), images: images, dublicate: th.postsILiked});
 
           let  month: any = moment(doc.data().creationDate).format('M');
           that.listOfMonthsAndPeople[month - 1].numberOfPerople += 1;
 
-          that.postsILiked = doc.data().likedByUsers;
-          that.dublicate = doc.data().likedByUsers;
-
           that.weHavePosts = true;
-          unsubscribe();
+          // unsubscribe();
         })
         console.log(that.countryListPosts);
         console.log(that.listOfMonthsAndPeople);
         that.showChart();
 
-      });
-  }
-
-  getLikedPosts() {
-    let that = this;
-    const unsubscribe = this.db.collection("posts").ref.where("aboutLocation.countryShort", "==", this.searchedItem).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
-      .onSnapshot(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-
-          that.postsILiked = doc.data().likedByUsers;
-          that.dublicate = doc.data().likedByUsers;
-
-          unsubscribe();
-        })
-        console.log(that.countryListPosts);
       });
   }
 
@@ -232,7 +268,6 @@ export class ViewCountryPostsComponent implements OnInit {
     const unsubscribe = this.db.collection("posts").doc(idPost).set(data, { merge: true })
       .then(function (docRef) {
         console.log("Document following ok");
-        that.getLikedPosts();
       })
       .catch((error) => {
         console.log(error);
@@ -256,11 +291,58 @@ export class ViewCountryPostsComponent implements OnInit {
     const unsubscribe = this.db.collection("posts").doc(idPost).set(data, { merge: true })
       .then(function (docRef) {
         console.log("Document following ok");
-        that.getLikedPosts();
       })
       .catch((error) => {
         console.log(error);
       })
   }
+
+  addCommentToDB(valueData, IDPost){
+    console.log("ENTER KEY PRESS");
+    console.log(valueData);
+    var that = this;
+    let now = moment();
+    this.db.collection("comments").add({
+
+      idPost: IDPost,
+      commentText: valueData.commentText,
+      creationDate: now.format('L'),
+      creationHour: now.format('LT'),
+      by :{
+        idUser: this.authState.uid,
+        userName: this.userObject.firstName + " " + this.userObject.lastName
+      }
+
+    })
+      .then(function (docRef) {
+        console.log("Document successfully written!");
+        that.writeComment.patchValue({
+          commentText: '',
+        });
+        // that.allComments = [];
+        // that.getComments();
+      })
+      .catch(function (error) {
+        console.error("Error adding document: ", error);
+       
+      });
+  }
+
+  getComments(){
+    let that = this;
+
+    const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
+      .onSnapshot(function (querySnapshot) {
+        that.allComments = [];
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          that.allComments.push({ id: doc.id, ...doc.data() });
+          that.weHaveComments = true;
+        })
+        console.log(that.allComments);
+        // unsubscribe();
+      });
+  }
+
 
 }

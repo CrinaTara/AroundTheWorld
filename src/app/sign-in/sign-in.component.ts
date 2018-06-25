@@ -57,7 +57,7 @@ export class SignInComponent implements OnInit {
       }
     }
 
-
+    const that = this;
     let email = data.email;
     let password = data.password;
     if (valid) {
@@ -73,6 +73,13 @@ export class SignInComponent implements OnInit {
             if (doc.exists) {
               console.log("Document data:", doc.data());
               localStorage.setItem('User',  JSON.stringify(doc.data()));
+
+              if(doc.data().role === "admin"){
+                that.router.navigate(['/list-of-users']);
+              }
+              else if(doc.data().role === "user"){
+                that.router.navigate(['/home']);
+              }
         
             } else {
               // doc.data() will be undefined in this case
@@ -82,7 +89,7 @@ export class SignInComponent implements OnInit {
             console.log("Error getting document:", error);
           });
 
-          this.router.navigate(['/home']);
+          
         })
         .catch(error => {
           console.log(error);

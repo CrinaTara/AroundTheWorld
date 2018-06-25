@@ -76,6 +76,8 @@ export class PostComponent implements OnInit, AfterViewInit {
   postMessageDisplay: boolean = false;
   errorPostMessageDisplay: boolean = false;
 
+
+
   selectedTrip: any = { name: '', idTRIP: '' };
 
   private url: any;
@@ -439,6 +441,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         tripName: this.selectedTrip.name,
         idTrip: this.selectedTrip.idTRIP,
         idUser: this.authState.uid,
+        byUser: this.userObject.firstName + " " + this.userObject.lastName,
         creationDate: now.format('L'),
         creationHour: now.format('LT'),
         postDetails: this.postForm.value.postDetails,
@@ -790,8 +793,8 @@ export class PostComponent implements OnInit, AfterViewInit {
     ctx.drawImage(img, 0, 0);
     console.log(canvas);
     console.log(ctx);
-    var MAX_WIDTH = 400;
-    var MAX_HEIGHT = 400;
+    var MAX_WIDTH = 800;
+    var MAX_HEIGHT = 800;
     var width = img.width;
     var height = img.height;
 

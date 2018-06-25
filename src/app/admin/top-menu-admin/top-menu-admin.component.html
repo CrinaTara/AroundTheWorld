@@ -1,0 +1,33 @@
+<body class="main-menu-design">
+  <div class="row">
+
+    <div class="col-sm-4">
+     
+        <div class="logo-container">
+          <div class="logo">
+            <a routerLink="../list-of-users">
+              <img src="assets/images/Circle.png" />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-4 d-flex align-items-center justify-content-center">
+          <a class="btn sing-button " routerLink="/list-of-users"  routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}">
+            USERS
+          </a>
+
+      </div>
+        
+        <div class="col-sm-4 d-flex align-items-center justify-content-end">
+
+          <div class="buttons ">
+            <a class="btn sing-button" (click)="signOut()" *ngIf="authState?.email">
+              LOG OUT
+            </a>
+          </div>
+
+        </div>
+
+    </div>
+</body>

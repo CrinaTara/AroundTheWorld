@@ -1,4 +1,65 @@
+@import '~scss/userProfile';
 @import '~scss/profile';
 @import '~scss/posts';
-@import '~scss/userProfile';
+@import '~scss/colors';
 
+.info{
+  padding: 7%;
+}
+
+.text-description{
+  font-size: 14px;
+}
+
+.edit-profile-button{
+  margin: 2%;
+  font-size: 15px;
+}
+
+.modal-style{
+  border-radius: 0px !important; 
+}
+
+.yellow-button{
+  color: $main-yellow-color!important;
+  margin-bottom: 0px!important;
+}
+
+
+.post-photo-display{
+  display: inline-block!important;
+  margin: 10px;
+}
+
+.style-photo{
+  height: 100%;
+  width:  100%;
+}
+
+.edit-post{
+  // color: $main-yellow-color!important;
+  border: solid 1px white;
+  margin-right: 1%;
+}
+
+.edit-post:hover{
+  cursor: pointer;
+}
+
+.delete-post{
+  color: red!important;
+  border: solid 1px white;
+}
+
+.delete-post:hover{
+  cursor: pointer;
+}
+
+.delete-user{
+  color: red!important;
+  border: solid 1px white;
+  margin-bottom: 3px;
+}
+.delete-user:hover{
+  cursor: pointer;
+}

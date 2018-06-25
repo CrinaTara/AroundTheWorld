@@ -1,0 +1,45 @@
+<top-menu-admin></top-menu-admin>
+<div class="container">
+  <div class="header profile-wrapper">
+    <h2>Users List</h2>
+  </div>
+  <form [formGroup]='searchFriendsForm'>
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Search a friend" formControlName="search" />
+    </div>
+    <button type="button" class="btn btn-default create-button" (click)="getUsersSpecific(searchFriendsForm.value)">Search</button>
+  </form>
+
+  <div class="alert alert-danger alert-style" *ngIf="errorSearchMessageDisplay">{{searchMessageDisplayed}}</div>
+  <div *ngFor="let person of searcFriendsResuls">
+    <div class="col-12 col-sm-10 col-md-6 col-lg-3 col-xl-3 mt-4">
+
+      <div class="card ">
+        <div class="thumbnail-search">
+          <img *ngIf="person.profilePicture" class="card-img-top" [src]="person.profilePicture" alt="Profile image" (click)="viewPersonPage(person.id)"
+            routerLink="/view-user-profile/{{person.id}}">
+          <img *ngIf="!person.profilePicture" class="card-img-top" src="assets/images/user.png" alt="Profile image" (click)="viewPersonPage(person.id)"
+            routerLink="/view-user-profile/{{person.id}}">
+        </div>
+        <div class="card-body">
+          <h5 class="card-title" (click)="viewPersonPage(person.id)" routerLink="/view-user-profile/{{person.id}}">{{person.firstName}} {{person.lastName}}</h5>
+        </div>
+        <div class="card-footer">
+          <a class="delete-user d-flex justify-content-center" title="Delete TRIP" (click)="openDeleteUserModal(deleteUser,person.id)">
+            <b>DELETE USER</b>
+            </a>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<ng-template #deleteUser>
+  <div class="modal-body text-center">
+    <p>Are you sure you want to delete this user?</p>
+    <button type="button" class="btn btn-default" (click)="confirm()">Yes</button>
+    <button type="button" class="btn btn-primary" (click)="decline()">No</button>
+  </div>
+</ng-template>

@@ -16,6 +16,8 @@ import { ViewUserProfileComponent } from './user/view-user-profile/view-user-pro
 import { ViewCountryPostsComponent } from './user/view-country-posts/view-country-posts.component';
 import { MyTripsComponent } from './user/my-trips/my-trips.component';
 import { TripDetailsComponent } from './user/trip-details/trip-details.component';
+import { TopMenuAdminComponent } from './admin/top-menu-admin/top-menu-admin.component';
+import { UsersListComponent } from './admin/users-list/users-list.component';
 
 
 import { AuthGuard } from './auth-guard.service';
@@ -24,6 +26,7 @@ const routes: Routes = [
     {path: '', component: LandingComponent},
     {path: 'sign-in', component: SignInComponent},
     {path: 'sign-up', component: SignUpComponent},
+    {path: 'list-of-users', component: UsersListComponent,  canActivate: [AuthGuard]},
     {path: 'home', component: DashboardComponent,  canActivate: [AuthGuard],
     children: [
         {path: '', component: HomeComponent, canActivateChild: [AuthGuard]},
@@ -69,5 +72,7 @@ export const routingComponents = [LandingComponent,
                                   ViewCountryPostsComponent,
                                   MyTripsComponent,
                                   TripDetailsComponent,
+                                  TopMenuAdminComponent,
+                                  UsersListComponent,
                                   ];
    

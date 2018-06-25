@@ -6,10 +6,11 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { PostComponent } from '../post/post.component';
 import { AngularFirestore } from 'angularfire2/firestore';
-import { } from 'angular-modal-gallery';
+import { AdvancedLayout, Image, PlainGalleryConfig, PlainGalleryStrategy } from 'angular-modal-gallery';
 import { SharedDataService } from '../../shared-data.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { moment } from 'ngx-bootstrap/chronos/test/chain';
+
 
 @Component({
   selector: 'user-profile',
@@ -25,6 +26,8 @@ export class UserProfileComponent implements OnInit {
   weHavePosts = false;
   countryToDelete;
 
+  imagesToDisplay: Image[] = [];
+  
   authState: any = null;
   public userObject: any;
   public userObjectRetrived: any;
@@ -38,6 +41,8 @@ export class UserProfileComponent implements OnInit {
   writeComment: FormGroup;
   weHaveComments: boolean = false;
   allComments: any = [];
+
+  toggleCard: boolean = false;
 
   constructor(public fb: FormBuilder,
     private dataService: SharedDataService,
@@ -71,6 +76,30 @@ export class UserProfileComponent implements OnInit {
 
     this.url = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
   }
+  
+    customPlainGalleryRowConfig: PlainGalleryConfig = {
+      strategy: PlainGalleryStrategy.CUSTOM,
+      layout: new AdvancedLayout(-1, true)
+    };
+    
+    openImageModalRow(image: Image, images) {
+      this.imagesToDisplay = images;
+      console.log(this.imagesToDisplay);
+      console.log('Opening modal gallery from custom plain gallery row, with image: ', image);
+      const index: number = this.getCurrentIndexCustomLayout(image, this.imagesToDisplay);
+      this.customPlainGalleryRowConfig = Object.assign({}, this.customPlainGalleryRowConfig, { layout: new AdvancedLayout(index, true) });
+    }
+
+    private getCurrentIndexCustomLayout(image: Image, imagesToDisplay: Image[]): number {
+      return image ? imagesToDisplay.indexOf(image) : -1;
+    }
+
+  toggleClass(){
+    console.log("Toggle classes");
+    console.log(this.toggleCard);
+    this.toggleCard = !this.toggleCard;
+    console.log(this.toggleCard);
+  }
 
 
   openPostModalWithComponent() {
@@ -92,6 +121,10 @@ export class UserProfileComponent implements OnInit {
 
   }
 
+  afterChange(e) {
+    console.log('afterChange');
+  }
+  
   updateLocalStorage() {
     let that = this;
     const unsubscribe = this.db.collection("users").doc(this.authState.uid).ref
@@ -206,9 +239,19 @@ export class UserProfileComponent implements OnInit {
       .onSnapshot(function (querySnapshot) {
         that.allMyPosts = [];
         querySnapshot.forEach(function (doc) {
+          let images: Image[] = [];
+
+          for(let i= 0 ; i< doc.data().photos.length; i++){
+            images.push(new Image(i, {
+              img: doc.data().photos[i]
+            }))
+          }
+
           console.log(doc.id, " => ", doc.data());
-          that.allMyPosts.push({ id: doc.id, ...doc.data() });
+          that.allMyPosts.push({ id: doc.id, ...doc.data(), images: images});
           that.weHavePosts = true;
+
+        
         })
         console.log(that.allMyPosts);
         // unsubscribe();

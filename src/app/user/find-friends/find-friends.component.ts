@@ -54,7 +54,7 @@ export class FindFriendsComponent implements OnInit {
         const id = a.payload.doc.id;
         console.log(data.email + " data si id-ul " + id);
         // console.log(a);
-        if (id != that.authState.uid) {
+        if (id != that.authState.uid && data.role != "admin") {
           if (data.firstName.toUpperCase().includes(valueToCompare) || data.lastName.toUpperCase().includes(valueToCompare)) {
             return { id, ...data };
           }

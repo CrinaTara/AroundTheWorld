@@ -1,10 +1,12 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef } from '@angular/core';
 // import { FindFriendsComponent } from '../find-friends/find-friends.component';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { moment } from 'ngx-bootstrap/chronos/test/chain';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { AdvancedLayout, Image, PlainGalleryConfig, PlainGalleryStrategy } from 'angular-modal-gallery';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 
 @Component({
   selector: 'app-view-user-profile',
@@ -15,12 +17,19 @@ export class ViewUserProfileComponent implements OnInit {
 
   authState: any = null;
 
+  imagesToDisplay: Image[] = [];
+  idPostToDelete: any;
+  
+  modalRef: BsModalRef;
+  userToDelete:any;
+  
   public params: any;
   userPersonalInformation: any;
   url: any;
 
   userListPosts = [];
   weHavePosts = false;
+  userDeletedMessage = false;
 
   currentFollowing = [];
   currentFollowers = [];
@@ -36,7 +45,8 @@ export class ViewUserProfileComponent implements OnInit {
   public userObjectRetrived: any;
 
   // @ViewChild(FindFriendsComponent) viewPerson : FindFriendsComponent;
-  constructor(public fb: FormBuilder, private afAuth: AngularFireAuth, private db: AngularFirestore, private route: ActivatedRoute, private router: Router) {
+  constructor(public fb: FormBuilder, 
+    private modalService: BsModalService, private afAuth: AngularFireAuth, private db: AngularFirestore, private route: ActivatedRoute, private router: Router) {
     this.params = this.route.params;
 
     this.afAuth.authState.subscribe((auth) => {
@@ -51,6 +61,7 @@ export class ViewUserProfileComponent implements OnInit {
     this.writeComment = this.fb.group({
       commentText: ['', Validators.required],
     })
+
     
     this.getTheFollowingPersons();
     console.log(this.params._value.id);
@@ -61,6 +72,7 @@ export class ViewUserProfileComponent implements OnInit {
     this.getUserData();
     this.getUserPosts();
     this.getFollowersFromIdPerson();
+    // this.getLikedPosts();
   }
 
 
@@ -80,36 +92,134 @@ export class ViewUserProfileComponent implements OnInit {
   }
 
   getUserPosts() {
+    this.userListPosts = [];
+    this.postsILiked = [];
     let that = this;
     const unsubscribe = this.db.collection("posts").ref.where("idUser", "==", this.params._value.id).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
       .onSnapshot(function (querySnapshot) {
+        that.userListPosts = [];
+        that.postsILiked = [];
         querySnapshot.forEach(function (doc) {
           console.log(doc.id, " => ", doc.data());
+          that.postsILiked = [];
+          let images: Image[] = [];
 
-          that.userListPosts.push({id: doc.id, ...doc.data()});
+          for(let i= 0 ; i< doc.data().photos.length; i++){
+            images.push(new Image(i, {
+              img: doc.data().photos[i]
+            }))
+          }
+
+          for(let i in doc.data().likedByUsers){
+            that.postsILiked.push(doc.data().likedByUsers[i]) ;
+          }    
+
+          let th = that;
+          that.userListPosts.push({id: doc.id, ...doc.data(), images: images, dublicate: th.postsILiked});
           that.weHavePosts = true; 
-          that.postsILiked = doc.data().likedByUsers;
-          that.dublicate = doc.data().likedByUsers;
           
         })
         console.log(that.userListPosts);
+        // unsubscribe();
+      });
+
+  }
+
+  
+  openModal(template: TemplateRef<any>, idPost, shortName) {
+
+    this.modalRef = this.modalService.show(template, { class: 'modal-md modal-dialog-centered' });
+    this.idPostToDelete = idPost;
+
+  }
+
+  confirm(): void {
+    this.deleteAPost();
+    this.modalRef.hide();
+  }
+
+  decline(): void {
+    this.modalRef.hide();
+  }
+
+  deleteAPost() {
+    console.log(this.idPostToDelete);
+    const that = this;
+    this.db.collection("posts").doc(this.idPostToDelete).delete().then(function () {
+      console.log("Document successfully deleted!");
+      that.deleteCommentPosts(that.idPostToDelete);
+     
+      // that.getMyPosts();
+    }).catch(function (error) {
+      console.error("Error removing document: ", error);
+    });
+  }
+
+  deleteCommentPosts(idToDeletePost) {
+    let that = this;
+
+    const unsubscribe = this.db.collection("comments").ref
+      .onSnapshot(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          if (doc.data().idPost == idToDeletePost) {
+            that.db.collection("comments").doc(doc.id).delete().then(function () {
+              console.log("Document successfully deleted!");
+            }).catch(function (error) {
+              console.error("Error removing document: ", error);
+            });
+          }
+
+        })
+
         unsubscribe();
       });
 
   }
 
-  getLikedPosts(){
-    let that = this;
-    const unsubscribe = this.db.collection("posts").ref.where("idUser", "==", this.params._value.id).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
-      .onSnapshot(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
 
-          that.postsILiked = doc.data().likedByUsers;
-          that.dublicate = doc.data().likedByUsers;  
-        })
-        console.log(that.userListPosts);
-        unsubscribe();
-      });
+  
+  openDeleteUserModal(deleteUser: TemplateRef<any>, idUser) {
+
+    this.userToDelete = idUser;
+    console.log(this.userToDelete);
+    this.modalRef = this.modalService.show(deleteUser, { class: 'modal-md modal-dialog-centered' });
+   
+  }
+
+  confirmDeleteUser(): void {
+    this.deleteAUser();
+    this.modalRef.hide();
+  }
+
+  deleteAUser(){
+    console.log("delete");
+    console.log(this.userToDelete);
+    const that = this;
+    this.db.collection("users").doc(that.params._value.id).delete().then(function () {
+      console.log("Document successfully deleted!");
+      that.userDeletedMessage = true;
+      // that.getAllUsers();
+    }).catch(function (error) {
+      console.error("Error removing document: ", error);
+    });
+  }
+
+  customPlainGalleryRowConfig: PlainGalleryConfig = {
+    strategy: PlainGalleryStrategy.CUSTOM,
+    layout: new AdvancedLayout(-1, true)
+  };
+  
+  openImageModalRow(image: Image, images) {
+    this.imagesToDisplay = images;
+    console.log(this.imagesToDisplay);
+    console.log('Opening modal gallery from custom plain gallery row, with image: ', image);
+    const index: number = this.getCurrentIndexCustomLayout(image, this.imagesToDisplay);
+    this.customPlainGalleryRowConfig = Object.assign({}, this.customPlainGalleryRowConfig, { layout: new AdvancedLayout(index, true) });
+  }
+
+  private getCurrentIndexCustomLayout(image: Image, imagesToDisplay: Image[]): number {
+    return image ? imagesToDisplay.indexOf(image) : -1;
   }
 
 
@@ -276,12 +386,12 @@ export class ViewUserProfileComponent implements OnInit {
     }
 
     let that = this;
-    
+    console.log("Post I like : " + data);
 
     const unsubscribe = this.db.collection("posts").doc(idPost).set(data, { merge: true })
       .then(function (docRef) {
         console.log("Document following ok");
-        that.getLikedPosts();
+        // that.getLikedPosts();
       })
       .catch((error) => {
         console.log(error);
@@ -302,10 +412,13 @@ export class ViewUserProfileComponent implements OnInit {
 
     let that = this;
 
+    console.log("Post I like : " + data);
+
+
     const unsubscribe = this.db.collection("posts").doc(idPost).set(data, { merge: true })
       .then(function (docRef) {
         console.log("Document following ok");
-        that.getLikedPosts();
+        // that.getLikedPosts();
       })
       .catch((error) => {
         console.log(error);
