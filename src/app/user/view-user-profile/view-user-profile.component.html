@@ -1,5 +1,12 @@
 <top-menu></top-menu>
 
+<!--Scroll to top-->
+<div *ngIf ="{'show-scroll': navIsFixed}" class="scroll-to-top" [ngClass]="{'show-scroll': navIsFixed}">
+    <button class = "scroll-top-button" (click)="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+</div>
+
 <div *ngIf="userDeletedMessage" class="name-wrapper d-flex justify-content-center"> User no longer available!</div>
 <div *ngIf="!userDeletedMessage">
 
@@ -175,7 +182,7 @@
                                                     <div class="col-sm d-flex justify-content-start com-text">
                                                         {{comment.commentText}}
                                                     </div>
-                                                    <a class="col-sm d-flex justify-content-end warning-post" title="Warning Comment" (click)="openModalWarning(warningModal, post.id, post.aboutLocation.countryShort)">
+                                                    <a *ngIf="userObject.role === 'admin'" class="col-sm d-flex justify-content-end warning-post" title="Warning Comment" (click)="openModalWarning(warningModal, post.id, post.aboutLocation.countryShort)">
                                                         <i class="fas fa-exclamation"></i>
                                                     </a>
                                                 </div>

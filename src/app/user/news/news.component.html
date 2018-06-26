@@ -1,10 +1,19 @@
 <!-- <div class="text-wrapp"> -->
 
-  <div class="header profile-wrapper">
-    <div class="text-wrapp"> Here are the posts from the people you followed.</div>
-  </div>
+<div class="header profile-wrapper">
+  <div class="text-wrapp"> Here are the posts from the people you followed.</div>
+</div>
 
 <!-- </div> -->
+
+<!--Scroll to top-->
+<div *ngIf="{'show-scroll': navIsFixed}" class="scroll-to-top" [ngClass]="{'show-scroll': navIsFixed}">
+  <button class="scroll-top-button" (click)="scrollToTop()">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+</div>
+
+<div *ngIf="loading" class="spinner"></div>
 
 <div class="wrapper-post">
 
@@ -12,10 +21,9 @@
     <div class="d-flex justify-content-center"> Sorry! There are no posts.</div>
   </div>
 
-  <br>
 
-  <!-- <ks-modal-gallery [id]="11" [modalImages]="imagesToDisplay" [plainGalleryConfig]="customPlainGalleryRowConfig"></ks-modal-gallery> -->
-  <div>
+  <ks-modal-gallery [id]="11" [modalImages]="imagesToDisplay" [plainGalleryConfig]="customPlainGalleryRowConfig"></ks-modal-gallery>
+  <div class="search-results" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
 
     <div *ngFor="let post of listPosts" class="post-container">
 

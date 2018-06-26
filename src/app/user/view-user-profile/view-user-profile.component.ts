@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef, Inject, HostListener } from '@angular/core';
 // import { FindFriendsComponent } from '../find-friends/find-friends.component';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -7,6 +7,7 @@ import { moment } from 'ngx-bootstrap/chronos/test/chain';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AdvancedLayout, Image, PlainGalleryConfig, PlainGalleryStrategy } from 'angular-modal-gallery';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
+import { DOCUMENT } from "@angular/platform-browser";
 
 @Component({
   selector: 'app-view-user-profile',
@@ -16,6 +17,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 export class ViewUserProfileComponent implements OnInit {
 
   authState: any = null;
+  navIsFixed: boolean;
 
   imagesToDisplay: Image[] = [];
   idPostToDelete: any;
@@ -45,7 +47,7 @@ export class ViewUserProfileComponent implements OnInit {
   public userObjectRetrived: any;
 
   // @ViewChild(FindFriendsComponent) viewPerson : FindFriendsComponent;
-  constructor(public fb: FormBuilder, 
+  constructor(public fb: FormBuilder,  @Inject(DOCUMENT) private document: Document,
     private modalService: BsModalService, private afAuth: AngularFireAuth, private db: AngularFirestore, private route: ActivatedRoute, private router: Router) {
     this.params = this.route.params;
 
@@ -73,6 +75,17 @@ export class ViewUserProfileComponent implements OnInit {
     this.getUserPosts();
     this.getFollowersFromIdPerson();
     // this.getLikedPosts();
+  }
+
+  @HostListener("window:scroll", [])
+  onWindowScroll() {
+      if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+          this.navIsFixed = true;
+      } else if (this.navIsFixed && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) { this.navIsFixed = false; } } scrollToTop() { (function smoothscroll() { var currentScroll = document.documentElement.scrollTop || document.body.scrollTop; if (currentScroll > 0) {
+              window.requestAnimationFrame(smoothscroll);
+              window.scrollTo(0, currentScroll - (currentScroll / 5));
+          }
+      })();
   }
 
 

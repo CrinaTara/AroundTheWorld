@@ -15,8 +15,9 @@ import { BsDropdownModule } from 'ngx-bootstrap';
 import { AmChartsModule } from "@amcharts/amcharts3-angular";
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CarouselModule } from 'ngx-bootstrap';
-import { TypeaheadModule } from 'ngx-bootstrap';
+import { TypeaheadModule, TabsModule } from 'ngx-bootstrap';
 import { SlickModule } from 'ngx-slick';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 import 'hammerjs';
 import 'mousetrap';
@@ -49,6 +50,8 @@ import { SharedDataService } from './shared-data.service';
     ModalGalleryModule.forRoot(),
     TypeaheadModule.forRoot(),
     SlickModule.forRoot(),
+    TabsModule.forRoot(),
+    InfiniteScrollModule
   ],
   providers: [AuthGuard, SharedDataService],
   bootstrap: [AppComponent],

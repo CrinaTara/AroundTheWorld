@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, HostListener, Inject  } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from "@angular/router";
 import * as firebase from 'firebase';
@@ -10,7 +10,7 @@ import { AdvancedLayout, Image, PlainGalleryConfig, PlainGalleryStrategy } from 
 import { SharedDataService } from '../../shared-data.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { moment } from 'ngx-bootstrap/chronos/test/chain';
-
+import { DOCUMENT } from "@angular/platform-browser";
 
 @Component({
   selector: 'user-profile',
@@ -22,16 +22,20 @@ export class UserProfileComponent implements OnInit {
   allMyPosts = [];
   @ViewChild(PostComponent) postComponent: PostComponent;
 
+  navIsFixed: boolean;
   postModal: BsModalRef;
   weHavePosts = false;
   countryToDelete;
+
+  weHavePublicPosts: boolean = false;
+  weHavePrivatePosts:boolean = false;
 
   imagesToDisplay: Image[] = [];
   
   authState: any = null;
   public userObject: any;
   public userObjectRetrived: any;
-  private url: any;
+  url: any;
   idPostToDelete: any;
   shortNameCountry: string;
   currentPeopleInCountry: any;
@@ -42,6 +46,9 @@ export class UserProfileComponent implements OnInit {
   weHaveComments: boolean = false;
   allComments: any = [];
 
+  allPrivatePosts = [];
+  allPublicPosts = [];
+
   toggleCard: boolean = false;
 
   constructor(public fb: FormBuilder,
@@ -49,6 +56,7 @@ export class UserProfileComponent implements OnInit {
     private db: AngularFirestore,
     private modalService: BsModalService,
     private afAuth: AngularFireAuth,
+    @Inject(DOCUMENT) private document: Document,
     private router: Router) {
     this.afAuth.authState.subscribe((auth) => {
       this.authState = auth
@@ -94,6 +102,18 @@ export class UserProfileComponent implements OnInit {
       return image ? imagesToDisplay.indexOf(image) : -1;
     }
 
+
+    @HostListener("window:scroll", [])
+    onWindowScroll() {
+        if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+            this.navIsFixed = true;
+        } else if (this.navIsFixed && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) { this.navIsFixed = false; } } scrollToTop() { (function smoothscroll() { var currentScroll = document.documentElement.scrollTop || document.body.scrollTop; if (currentScroll > 0) {
+                window.requestAnimationFrame(smoothscroll);
+                window.scrollTo(0, currentScroll - (currentScroll / 5));
+            }
+        })();
+    }
+    
   toggleClass(){
     console.log("Toggle classes");
     console.log(this.toggleCard);
@@ -216,6 +236,9 @@ export class UserProfileComponent implements OnInit {
   getComments() {
     let that = this;
     this.allMyPosts = [];
+    this.allPrivatePosts = [];
+    this.allPublicPosts = [];
+  
     const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
       .onSnapshot(function (querySnapshot) {
         that.allComments = [];
@@ -235,9 +258,14 @@ export class UserProfileComponent implements OnInit {
   getMyPosts = function () {
     let that = this;
     this.allMyPosts = [];
+    this.allPrivatePosts = [];
+    this.allPublicPosts = [];
+
     const unsubscribe = this.db.collection("posts").ref.where("idUser", "==", this.authState.uid).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
       .onSnapshot(function (querySnapshot) {
         that.allMyPosts = [];
+        that.allPrivatePosts = [];
+        that.allPublicPosts = [];
         querySnapshot.forEach(function (doc) {
           let images: Image[] = [];
 
@@ -248,12 +276,21 @@ export class UserProfileComponent implements OnInit {
           }
 
           console.log(doc.id, " => ", doc.data());
-          that.allMyPosts.push({ id: doc.id, ...doc.data(), images: images});
-          that.weHavePosts = true;
-
+          if(doc.data().privacy == "public")
+          {
+            that.allPublicPosts.push({ id: doc.id, ...doc.data(), images: images});
+            that.weHavePosts = true;
+            that.weHavePublicPosts = true;
+          }
+          else if(doc.data().privacy == "private"){
+            that.allPrivatePosts.push({ id: doc.id, ...doc.data(), images: images});
+            that.weHavePosts = true;
+            that.weHavePrivatePosts = true;
+          }
         
         })
-        console.log(that.allMyPosts);
+        console.log(that.allPrivatePosts);
+        console.log(that.allPublicPosts);
         // unsubscribe();
       });
 

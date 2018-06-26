@@ -12,8 +12,14 @@
         <br>
     </div>
 
-
-    <div id="chartdiv"></div>
+    <div >
+        <div  id="chartdiv"></div>
+    </div>
+   
+    <div *ngIf="!weHavePosts" class="">
+            <div class="d-flex justify-content-center"> No data to show.</div>
+    </div>
+    <br>
 
     <!-- Autocomplete search city! -->
     <form [formGroup]='searchCityForm'>
@@ -23,9 +29,17 @@
                 [typeaheadScrollable]="true" [typeaheadOptionsInScrollableView]="5" (typeaheadNoResults)="typeaheadNoResults($event)"
                 placeholder="Search by city" formControlName="search" />
             <div class="alert alert-danger" *ngIf="noResult">No City Found</div>
+            <br>
             <button type="button" class="btn btn-default create-button" (click)="searchCity(searchCityForm.value)">Search</button>
         </div>
     </form>
+
+    <!--Scroll to top-->
+    <div *ngIf="{'show-scroll': navIsFixed}" class="scroll-to-top" [ngClass]="{'show-scroll': navIsFixed}">
+        <button class="scroll-top-button" (click)="scrollToTop()">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
 
     <!-- Here will be the country posts initialy and then => city posts -->
     <div class="wrapper-post">
@@ -35,7 +49,7 @@
         </div>
         <h5>{{this.citySearchName}}</h5>
         <br>
-        
+
         <ks-modal-gallery [id]="11" [modalImages]="imagesToDisplay" [plainGalleryConfig]="customPlainGalleryRowConfig"></ks-modal-gallery>
         <div>
 

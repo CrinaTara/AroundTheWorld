@@ -9,199 +9,362 @@
         </div>
     </div>
     <a class="delete-trip d-flex justify-content-end" title="Delete TRIP" (click)="openDeleteTripModal(deleteTrip)">
-      DELETE TRIP
-      </a>
-    
+        DELETE TRIP
+    </a>
+
     <div class="trip-container">
         <h6 class="row d-flex justify-content-center">
-          TRIP DETAILS:
-            {{tripInformations?.tripDetails}}
+            TRIP DETAILS: {{tripInformations?.tripDetails}}
         </h6>
         <div class="row d-flex justify-content-between">
-          <div >
-            Start Date
-            <b>{{tripInformations?.creationDate}}</b>
-          </div>
-          <div >
-            End Date
-          <b>{{tripInformations?.endDate}}</b>
-          </div>
-        </div>
-        
-    
-    </div>
-
-    <div class="name-wrapper d-flex justify-content-center">
-        <p>Track down the buget you spent in every city in this trip.</p>
-      <br>
-    </div>
-  
-   <!-- Chart -->
-    <div *ngIf ="totalBugetThisTrip != 0" id="chartdiv"></div>
-
-    <div class="name-wrapper d-flex justify-content-center">
-        <p>In this trip you spent <b>{{totalBugetThisTrip}}</b> EURO.</p>
-    </div>
-    <div class="name-wrapper d-flex justify-content-center">
-        <p>OBSERVATION: The amount is calculated from the posts you wrote your budget.</p>
-      <br>
-    </div>
-  
-  
-    <br>
-
-  <div *ngIf="!weHavePosts" class="d-flex justify-content-center"> Here will be my posts!</div>
-
-  
-  <ks-modal-gallery [id]="11" [modalImages]="imagesToDisplay"
-  [plainGalleryConfig]="customPlainGalleryRowConfig"></ks-modal-gallery>
-  <div>
-
-    <div *ngFor="let post of tripListPosts" class="post-container">
-
-        <div class="container">
-            <!-- Card Flip -->
-            <div class="card-flip">
-                <div class="flip align-front">
-
-                    <div class="front">
-                        <!-- front content -->
-
-
-                        <div class="">
-                            <div class="d-flex">
-                                <div class="p-2 like mr-auto">
-                                    <i class="fas fa-heart" title="Likes"></i>
-                                    {{post.likedByUsers.length}}
-                                </div>
-                                <div class="p-2  ml-auto">
-                                    {{ post.creationHour}}
-                                </div>
-
-                            </div>
-                            <h3 class=" justify-content-center">{{post.postName}}</h3>
-                            <div>By: {{ post.byUser }} </div>
-                            <h6>Trip Name: {{post.tripName}}</h6>
-                            <br>
-                            <div>
-                                <h4 class="align-items-center"> {{ post.creationDate | date: 'dd' }} </h4>
-                                <h4 class="align-items-center"> {{ post.creationDate | date: 'MMM' }} {{ post.creationDate | date: 'y' }}</h4>
-                            </div>
-                            <br>
-
-                            <div>Location:
-                                <span class="location-displat">
-                                    {{post.aboutLocation.city}} - {{post.aboutLocation.countryLong}}
-                                </span>
-                            </div>
-                            <div class="logo-post">
-                                <div class="d-flex justify-content-center">
-                                    <img src="assets/images/Circle.png" />
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                    </div>
-
-                    <div class="back">
-
-                        <div class="d-flex ">
-                            <a class="p-2 edit-post" title="Edit Post" (click)="openEditModal(post.id)">
-                                <i class="fas fa-pencil-alt"></i>
-                            </a>
-                            <a class="p-2 delete-post" title="Delete Post" (click)="openModal(template, post.id, post.aboutLocation.countryShort)">
-                                <i class="far fa-trash-alt"></i>
-                            </a>
-                        </div>
-                        <!-- back content -->
-                        <br>
-                        <div>{{post.postDetails}}</div>
-                        <br>
-                        <!-- <div *ngFor="let photo of post.photos" class="post-photo-display ">
-                                <img [src]="photo" height="100%" alt="slide" class="style-photo">
-                            </div> -->
-
-                        <section class="d-flex justify-content-center">
-
-                            <div class="my-app-custom-plain-container-row">
-                                <ng-container *ngFor="let img of post.images; let i = index">
-                                    <div *ngIf="i <= 2">
-                                        <!-- 2 is a fixed value that I'm using to display only two images -->
-                                        <a class="more" *ngIf="i==2" (click)="openImageModalRow(img, post.images)"> + {{ post.photos.length - 2 - 1}} more </a>
-                                        <img *ngIf="img.modal && img.modal.img; else noThumb" class="my-app-custom-image-row" [src]="img.modal.img" (click)="openImageModalRow(img, post.images)"
-                                            [alt]="img.modal.description" />
-
-                                        <ng-template #noThumb>
-                                            <img class="my-app-custom-image-row" [src]="img.modal.img" (click)="openImageModalRow(img, post.images)" [alt]="img.modal.description"
-                                            />
-                                        </ng-template>
-                                    </div>
-                                </ng-container>
-                            </div>
-
-                        </section>
-
-                        <br>
-                        <div>
-                            <div class="comment d-flex justify-content-end">
-                                COMMENTS
-                            </div>
-                            <div class="comm">
-                                <div *ngFor="let comment of allComments">
-                                    <div *ngIf="comment.idPost == post.id" class="single-comment">
-                                        <div class="row ">
-                                            <div class="col-sm d-flex justify-content-start com-data">
-                                                by {{comment.by.userName}}
-                                            </div>
-
-                                            <div class="col-sm d-flex justify-content-end com-data">
-                                                {{comment.creationHour}} - {{comment.creationDate}}
-                                            </div>
-                                        </div>
-                                        <div class="col-sm d-flex justify-content-start com-text">
-                                            {{comment.commentText}}
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <br>
-                            <form [formGroup]='writeComment'>
-                                <div class="form-group">
-                                    <input type="text" class="form-control" placeholder="Write a comment" formControlName="commentText" (keyup.enter)="addCommentToDB(writeComment.value, post.id)"
-                                    />
-                                </div>
-                            </form>
-
-                        </div>
-                    </div>
-
-                </div>
-
+            <div>
+                Start Date
+                <b>{{tripInformations?.creationDate}}</b>
+            </div>
+            <div>
+                End Date
+                <b>{{tripInformations?.endDate}}</b>
             </div>
         </div>
 
 
     </div>
-</div>
+
+    <div class="name-wrapper d-flex justify-content-center">
+        <p>Track down the buget you spent in every city in this trip.</p>
+        <br>
+    </div>
+
+    <!-- Chart -->
+    <div *ngIf="totalBugetThisTrip != 0" id="chartdiv"></div>
+
+    <div class="name-wrapper d-flex justify-content-center">
+        <p>In this trip you spent
+            <b>{{totalBugetThisTrip}}</b> EURO.</p>
+    </div>
+    <div class="name-wrapper d-flex justify-content-center">
+        <p>OBSERVATION: The amount is calculated from the private posts, where you wrote your budget.</p>
+        <br>
+    </div>
+
+
+    <br>
+
+    <div *ngIf="!weHavePosts" class="d-flex justify-content-center"> Here will be my posts!</div>
+
+    <!--Scroll to top-->
+    <div *ngIf="{'show-scroll': navIsFixed}" class="scroll-to-top" [ngClass]="{'show-scroll': navIsFixed}">
+        <button class="scroll-top-button" (click)="scrollToTop()">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
+
+    <ks-modal-gallery [id]="11" [modalImages]="imagesToDisplay" [plainGalleryConfig]="customPlainGalleryRowConfig"></ks-modal-gallery>
+    <tabset *ngIf="weHavePosts" [justified]="true">
+            <!-- Public posts -->
+            <tab heading="PUBLIC POSTS">
+                <div class = "d-flex justify-content-center no-posts" *ngIf="!weHavePublicPosts">There are no public posts</div>
+                <div>
+    
+                    <div *ngFor="let post of allPublicTripPosts" class="post-container">
+    
+                        <div class="container">
+                            <!-- Card Flip -->
+                            <div class="card-flip">
+                                <div class="flip align-front">
+    
+                                    <div class="front">
+                                        <!-- front content -->
+    
+    
+                                        <div class="">
+                                            <div class="d-flex">
+                                                <div class="p-2 like mr-auto">
+                                                    <i class="fas fa-heart" title="Likes"></i>
+                                                    {{post.likedByUsers.length}}
+                                                </div>
+                                                <div class="p-2  ml-auto">
+                                                    {{ post.creationHour}}
+                                                </div>
+    
+                                            </div>
+                                            <h3 class=" justify-content-center">{{post.postName}}</h3>
+                                            <div>By: {{ post.byUser }} </div>
+                                            <h6>Trip Name: {{post.tripName}}</h6>
+                                            <br>
+                                            <div>
+                                                <h4 class="align-items-center"> {{ post.creationDate | date: 'dd' }} </h4>
+                                                <h4 class="align-items-center"> {{ post.creationDate | date: 'MMM' }} {{ post.creationDate | date: 'y' }}</h4>
+                                            </div>
+                                            <br>
+    
+                                            <div>Location:
+                                                <span class="location-displat">
+                                                    {{post.aboutLocation.city}} - {{post.aboutLocation.countryLong}}
+                                                </span>
+                                            </div>
+                                            <div class="logo-post">
+                                                <div class="d-flex justify-content-center">
+                                                    <img src="assets/images/Circle.png" />
+                                                </div>
+                                            </div>
+    
+                                        </div>
+    
+    
+                                    </div>
+    
+                                    <div class="back">
+    
+                                        <div class="d-flex ">
+                                            <a class="p-2 edit-post" title="Edit Post" (click)="openEditModal(post.id)">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </a>
+                                            <a class="p-2 delete-post" title="Delete Post" (click)="openModal(template, post.id, post.aboutLocation.countryShort)">
+                                                <i class="far fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                        <!-- back content -->
+                                        <br>
+                                        <div>{{post.postDetails}}</div>
+                                        <br>
+                                        <!-- <div *ngFor="let photo of post.photos" class="post-photo-display ">
+                                                    <img [src]="photo" height="100%" alt="slide" class="style-photo">
+                                                </div> -->
+    
+                                        <section class="d-flex justify-content-center">
+    
+                                            <div class="my-app-custom-plain-container-row">
+                                                <ng-container *ngFor="let img of post.images; let i = index">
+                                                    <div *ngIf="i <= 2">
+                                                        <!-- 2 is a fixed value that I'm using to display only two images -->
+                                                        <a class="more" *ngIf="i==2" (click)="openImageModalRow(img, post.images)"> +{{ post.photos.length - 2 }} more </a>
+                                                        <img *ngIf="img.modal && img.modal.img; else noThumb" class="my-app-custom-image-row" [src]="img.modal.img" (click)="openImageModalRow(img, post.images)"
+                                                            [alt]="img.modal.description" />
+    
+                                                        <ng-template #noThumb>
+                                                            <img class="my-app-custom-image-row" [src]="img.modal.img" (click)="openImageModalRow(img, post.images)" [alt]="img.modal.description"
+                                                            />
+                                                        </ng-template>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+    
+                                        </section>
+    
+                                        <br>
+                                        <div *ngIf="post.privacy === 'private'">
+                                            <div>
+                                                <b>Your buget:</b> {{post.buget}} EURO</div>
+                                            <div>
+                                                <b>Other thoughts:</b> {{post.otherToughts}}</div>
+                                        </div>
+    
+                                        <div>
+                                            <div class="comment d-flex justify-content-end">
+                                                COMMENTS
+                                            </div>
+                                            <div class="comm">
+                                                <div *ngFor="let comment of allComments">
+                                                    <div *ngIf="comment.idPost == post.id" class="single-comment">
+                                                        <div class="row ">
+                                                            <div class="col-sm d-flex justify-content-start com-data">
+                                                                by {{comment.by.userName}}
+                                                            </div>
+    
+                                                            <div class="col-sm d-flex justify-content-end com-data">
+                                                                {{comment.creationHour}} - {{comment.creationDate}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm d-flex justify-content-start com-text">
+                                                            {{comment.commentText}}
+                                                        </div>
+                                                    </div>
+    
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <form [formGroup]='writeComment'>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Write a comment" formControlName="commentText" (keyup.enter)="addCommentToDB(writeComment.value, post.id)"
+                                                    />
+                                                </div>
+                                            </form>
+    
+                                        </div>
+                                    </div>
+    
+                                </div>
+    
+                            </div>
+                        </div>
+    
+    
+                    </div>
+                </div>
+    
+            </tab>
+    
+            <!-- Private posts -->
+            <tab heading="PRIVATE POSTS">
+                <div *ngIf="!weHavePrivatePosts" class = "d-flex justify-content-center no-posts" >There are no private posts</div>
+                <div>
+    
+                    <div *ngFor="let post of allPrivateTripPosts" class="post-container">
+    
+                        <div class="container">
+                            <!-- Card Flip -->
+                            <div class="card-flip">
+                                <div class="flip align-front">
+    
+                                    <div class="front">
+                                        <!-- front content -->
+    
+    
+                                        <div class="">
+                                            <div class="d-flex">
+                                                <div class="p-2 like mr-auto">
+                                                    <i class="fas fa-heart" title="Likes"></i>
+                                                    {{post.likedByUsers.length}}
+                                                </div>
+                                                <div class="p-2  ml-auto">
+                                                    {{ post.creationHour}}
+                                                </div>
+    
+                                            </div>
+                                            <h3 class=" justify-content-center">{{post.postName}}</h3>
+                                            <div>By: {{ post.byUser }} </div>
+                                            <h6>Trip Name: {{post.tripName}}</h6>
+                                            <br>
+                                            <div>
+                                                <h4 class="align-items-center"> {{ post.creationDate | date: 'dd' }} </h4>
+                                                <h4 class="align-items-center"> {{ post.creationDate | date: 'MMM' }} {{ post.creationDate | date: 'y' }}</h4>
+                                            </div>
+                                            <br>
+    
+                                            <div>Location:
+                                                <span class="location-displat">
+                                                    {{post.aboutLocation.city}} - {{post.aboutLocation.countryLong}}
+                                                </span>
+                                            </div>
+                                            <div class="logo-post">
+                                                <div class="d-flex justify-content-center">
+                                                    <img src="assets/images/Circle.png" />
+                                                </div>
+                                            </div>
+    
+                                        </div>
+    
+    
+                                    </div>
+    
+                                    <div class="back">
+    
+                                        <div class="d-flex ">
+                                            <a class="p-2 edit-post" title="Edit Post" (click)="openEditModal(post.id)">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </a>
+                                            <a class="p-2 delete-post" title="Delete Post" (click)="openModal(template, post.id, post.aboutLocation.countryShort)">
+                                                <i class="far fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                        <!-- back content -->
+                                        <br>
+                                        <div>{{post.postDetails}}</div>
+                                        <br>
+                                        <!-- <div *ngFor="let photo of post.photos" class="post-photo-display ">
+                                                            <img [src]="photo" height="100%" alt="slide" class="style-photo">
+                                                        </div> -->
+    
+                                        <section class="d-flex justify-content-center">
+    
+                                            <div class="my-app-custom-plain-container-row">
+                                                <ng-container *ngFor="let img of post.images; let i = index">
+                                                    <div *ngIf="i <= 2">
+                                                        <!-- 2 is a fixed value that I'm using to display only two images -->
+                                                        <a class="more" *ngIf="i==2" (click)="openImageModalRow(img, post.images)"> +{{ post.photos.length - 2 }} more </a>
+                                                        <img *ngIf="img.modal && img.modal.img; else noThumb" class="my-app-custom-image-row" [src]="img.modal.img" (click)="openImageModalRow(img, post.images)"
+                                                            [alt]="img.modal.description" />
+    
+                                                        <ng-template #noThumb>
+                                                            <img class="my-app-custom-image-row" [src]="img.modal.img" (click)="openImageModalRow(img, post.images)" [alt]="img.modal.description"
+                                                            />
+                                                        </ng-template>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+    
+                                        </section>
+    
+                                        <br>
+                                        <div *ngIf="post.privacy === 'private'">
+                                            <div>
+                                                <b>Your buget:</b> {{post.buget}} EURO</div>
+                                            <div>
+                                                <b>Other thoughts:</b> {{post.otherToughts}}</div>
+                                        </div>
+    
+                                        <div>
+                                            <div class="comment d-flex justify-content-end">
+                                                COMMENTS
+                                            </div>
+                                            <div class="comm">
+                                                <div *ngFor="let comment of allComments">
+                                                    <div *ngIf="comment.idPost == post.id" class="single-comment">
+                                                        <div class="row ">
+                                                            <div class="col-sm d-flex justify-content-start com-data">
+                                                                by {{comment.by.userName}}
+                                                            </div>
+    
+                                                            <div class="col-sm d-flex justify-content-end com-data">
+                                                                {{comment.creationHour}} - {{comment.creationDate}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm d-flex justify-content-start com-text">
+                                                            {{comment.commentText}}
+                                                        </div>
+                                                    </div>
+    
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <form [formGroup]='writeComment'>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="Write a comment" formControlName="commentText" (keyup.enter)="addCommentToDB(writeComment.value, post.id)"
+                                                    />
+                                                </div>
+                                            </form>
+    
+                                        </div>
+                                    </div>
+    
+                                </div>
+    
+                            </div>
+                        </div>
+    
+    
+                    </div>
+                </div>
+            </tab>
+    
+        </tabset>
 
 
 </div>
 
 <ng-template #template>
-  <div class="modal-body text-center">
-    <p>Are you sure you want to delete this post?</p>
-    <button type="button" class="btn btn-default" (click)="confirm()">Yes</button>
-    <button type="button" class="btn btn-primary" (click)="decline()">No</button>
-  </div>
+    <div class="modal-body text-center">
+        <p>Are you sure you want to delete this post?</p>
+        <button type="button" class="btn btn-default" (click)="confirm()">Yes</button>
+        <button type="button" class="btn btn-primary" (click)="decline()">No</button>
+    </div>
 </ng-template>
 
 <ng-template #deleteTrip>
     <div class="modal-body text-center">
-      <p>Are you sure you want to delete this trip?</p>
-      <button type="button" class="btn btn-default" (click)="confirmDeleteTrip()">Yes</button>
-      <button type="button" class="btn btn-primary" (click)="decline()">No</button>
+        <p>Are you sure you want to delete this trip?</p>
+        <button type="button" class="btn btn-default" (click)="confirmDeleteTrip()">Yes</button>
+        <button type="button" class="btn btn-primary" (click)="decline()">No</button>
     </div>
-  </ng-template>
+</ng-template>

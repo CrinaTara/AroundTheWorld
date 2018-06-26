@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Inject } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -7,6 +7,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AmChartsService, AmChart } from "@amcharts/amcharts3-angular";
 import * as moment from 'moment';
 import { AdvancedLayout, Image, PlainGalleryConfig, PlainGalleryStrategy } from 'angular-modal-gallery';
+import { DOCUMENT } from "@angular/platform-browser";
 
 
 @Component({
@@ -27,6 +28,8 @@ export class ViewCountryPostsComponent implements OnInit {
 
   postsILiked = [];
   dublicate = [];
+
+  navIsFixed: boolean;
 
   private chart: AmChart;
 
@@ -94,7 +97,7 @@ export class ViewCountryPostsComponent implements OnInit {
   }];
 
   constructor(private route: ActivatedRoute, private router: Router,
-    private db: AngularFirestore, public fb: FormBuilder,
+    private db: AngularFirestore, public fb: FormBuilder, @Inject(DOCUMENT) private document: Document,
     private afAuth: AngularFireAuth, private AmCharts: AmChartsService,
   ) {
     this.params = this.route.params;
@@ -124,6 +127,20 @@ export class ViewCountryPostsComponent implements OnInit {
     this.getCountryPosts();
     this.getComments();
 
+  }
+
+  @HostListener("window:scroll", [])
+  onWindowScroll() {
+    if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+      this.navIsFixed = true;
+    } else if (this.navIsFixed && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) { this.navIsFixed = false; }
+  } scrollToTop() {
+    (function smoothscroll() {
+      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop; if (currentScroll > 0) {
+        window.requestAnimationFrame(smoothscroll);
+        window.scrollTo(0, currentScroll - (currentScroll / 5));
+      }
+    })();
   }
 
   showChart() {
@@ -180,7 +197,7 @@ export class ViewCountryPostsComponent implements OnInit {
     strategy: PlainGalleryStrategy.CUSTOM,
     layout: new AdvancedLayout(-1, true)
   };
-  
+
   openImageModalRow(image: Image, images) {
     this.imagesToDisplay = images;
     console.log(this.imagesToDisplay);
@@ -202,28 +219,32 @@ export class ViewCountryPostsComponent implements OnInit {
         that.countryListPosts = [];
         that.postsILiked = [];
         querySnapshot.forEach(function (doc) {
+
           console.log(doc.id, " => ", doc.data());
-          that.postsILiked = [];
-          let images: Image[] = [];
+          // if (doc.data().idUser != that.authState.uid) {
+            that.postsILiked = [];
+            let images: Image[] = [];
 
-          for(let i= 0 ; i< doc.data().photos.length; i++){
-            images.push(new Image(i, {
-              img: doc.data().photos[i]
-            }))
-          }
+            for (let i = 0; i < doc.data().photos.length; i++) {
+              images.push(new Image(i, {
+                img: doc.data().photos[i]
+              }))
+            }
 
-          for(let i in doc.data().likedByUsers){
-            that.postsILiked.push(doc.data().likedByUsers[i]) ;
-          }  
-          let th = that;
+            for (let i in doc.data().likedByUsers) {
+              that.postsILiked.push(doc.data().likedByUsers[i]);
+            }
+            let th = that;
 
-          that.countryListPosts.push({id: doc.id, ...doc.data(), images: images, dublicate: th.postsILiked});
+            that.countryListPosts.push({ id: doc.id, ...doc.data(), images: images, dublicate: th.postsILiked });
 
-          let  month: any = moment(doc.data().creationDate).format('M');
-          that.listOfMonthsAndPeople[month - 1].numberOfPerople += 1;
+            let month: any = moment(doc.data().creationDate).format('M');
+            that.listOfMonthsAndPeople[month - 1].numberOfPerople += 1;
 
-          that.weHavePosts = true;
-          // unsubscribe();
+            that.weHavePosts = true;
+          // }
+
+          unsubscribe();
         })
         console.log(that.countryListPosts);
         console.log(that.listOfMonthsAndPeople);
@@ -240,12 +261,34 @@ export class ViewCountryPostsComponent implements OnInit {
     let that = this;
     const unsubscribe = this.db.collection("posts").ref.where("aboutLocation.city", "==", data.search).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
       .onSnapshot(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-          console.log(doc.id, " => ", doc.data());
+        that.countryListPosts = [];
+        that.postsILiked = [];
 
-          that.countryListPosts.push(doc.data());
-          that.weHavePosts = true;
-          unsubscribe();
+        querySnapshot.forEach(function (doc) {
+
+          // if (doc.data().idUser != that.authState.uid) {
+            that.postsILiked = [];
+            let images: Image[] = [];
+
+            for (let i = 0; i < doc.data().photos.length; i++) {
+              images.push(new Image(i, {
+                img: doc.data().photos[i]
+              }))
+            }
+
+            for (let i in doc.data().likedByUsers) {
+              that.postsILiked.push(doc.data().likedByUsers[i]);
+            }
+            let th = that;
+
+            that.countryListPosts.push({ id: doc.id, ...doc.data(), images: images, dublicate: th.postsILiked });
+
+            let month: any = moment(doc.data().creationDate).format('M');
+            that.listOfMonthsAndPeople[month - 1].numberOfPerople += 1;
+
+            that.weHavePosts = true;
+          // }
+          // unsubscribe();
         })
         console.log(that.countryListPosts);
 
@@ -297,7 +340,7 @@ export class ViewCountryPostsComponent implements OnInit {
       })
   }
 
-  addCommentToDB(valueData, IDPost){
+  addCommentToDB(valueData, IDPost) {
     console.log("ENTER KEY PRESS");
     console.log(valueData);
     var that = this;
@@ -308,7 +351,7 @@ export class ViewCountryPostsComponent implements OnInit {
       commentText: valueData.commentText,
       creationDate: now.format('L'),
       creationHour: now.format('LT'),
-      by :{
+      by: {
         idUser: this.authState.uid,
         userName: this.userObject.firstName + " " + this.userObject.lastName
       }
@@ -324,11 +367,11 @@ export class ViewCountryPostsComponent implements OnInit {
       })
       .catch(function (error) {
         console.error("Error adding document: ", error);
-       
+
       });
   }
 
-  getComments(){
+  getComments() {
     let that = this;
 
     const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")

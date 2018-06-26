@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, Inject, HostListener } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -8,6 +8,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { AmChartsService, AmChart } from "@amcharts/amcharts3-angular";
 import { AdvancedLayout, Image, PlainGalleryConfig, PlainGalleryStrategy } from 'angular-modal-gallery';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { DOCUMENT } from "@angular/platform-browser";
 
 @Component({
   selector: 'app-trip-details',
@@ -17,6 +18,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 export class TripDetailsComponent implements OnInit {
   idPostToDelete: any;
 
+  navIsFixed: boolean;
   public params: any;
   tripInformations: any;
 
@@ -25,7 +27,13 @@ export class TripDetailsComponent implements OnInit {
   tripListPosts: any = [];
   weHavePosts: boolean = false;
   tripDeletedMessage: boolean = false;
+  weHavePublicPosts: boolean = false;
+  weHavePrivatePosts:boolean = false;
+
   imagesToDisplay: Image[] = [];
+
+  allPrivateTripPosts = [];
+  allPublicTripPosts = [];
 
   postsILiked = [];
   dublicate = [];
@@ -49,7 +57,8 @@ export class TripDetailsComponent implements OnInit {
 
   constructor(private afAuth: AngularFireAuth,
     private modalService: BsModalService, private db: AngularFirestore, private route: ActivatedRoute, private router: Router,
-    private AmCharts: AmChartsService, public fb: FormBuilder
+    private AmCharts: AmChartsService, public fb: FormBuilder,
+    @Inject(DOCUMENT) private document: Document,
   ) {
     this.params = this.route.params;
     this.afAuth.authState.subscribe((auth) => {
@@ -87,6 +96,19 @@ export class TripDetailsComponent implements OnInit {
     });
   }
 
+  
+  @HostListener("window:scroll", [])
+  onWindowScroll() {
+      if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+          this.navIsFixed = true;
+      } else if (this.navIsFixed && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) { this.navIsFixed = false; } } scrollToTop() { (function smoothscroll() { var currentScroll = document.documentElement.scrollTop || document.body.scrollTop; if (currentScroll > 0) {
+              window.requestAnimationFrame(smoothscroll);
+              window.scrollTo(0, currentScroll - (currentScroll / 5));
+          }
+      })();
+  }
+  
+  
   showChartD() {
     const that = this;
 
@@ -154,10 +176,14 @@ export class TripDetailsComponent implements OnInit {
     let that = this;
     this.postsILiked = [];
     this.tripListPosts = [];
+    this.allPrivateTripPosts = [];
+    this.allPublicTripPosts = [];
     const unsubscribe = this.db.collection("posts").ref.where("idTrip", "==", this.params._value.id).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
       .onSnapshot(function (querySnapshot) {
         that.tripListPosts = [];
         that.postsILiked = [];
+        that.allPrivateTripPosts = [];
+        that.allPublicTripPosts = [];
         that.listOfBugetAndCities = [];
         querySnapshot.forEach(function (doc) {
           that.postsILiked = [];
@@ -187,9 +213,22 @@ export class TripDetailsComponent implements OnInit {
 
           let th = that;
 
+          if(doc.data().privacy == "public")
+          {
+            that.allPublicTripPosts.push({ id: doc.id, ...doc.data(), images: images, dublicate: th.postsILiked});
+            that.weHavePosts = true;
+            that.weHavePublicPosts = true;
+
+          }
+          else if(doc.data().privacy == "private"){
+            that.allPrivateTripPosts.push({ id: doc.id, ...doc.data(), images: images, dublicate: th.postsILiked});
+            that.weHavePosts = true;
+            that.weHavePrivatePosts = true;
+          }
+
           that.tripListPosts.push({ id: doc.id, ...doc.data(), images: images, dublicate: th.postsILiked});
 
-          that.weHavePosts = true;
+          // that.weHavePosts = true;
 
         })
         console.log(that.tripListPosts);
