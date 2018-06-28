@@ -127,7 +127,7 @@
                                         </a>
                                     </div>
                                     <div *ngIf="userObject.role === 'admin'" class="d-flex justify-content-end">
-                                        <a class="p-2 warning-post" title="Warning Post" (click)="openModalPostWarning(warningPostModal, post)">
+                                        <a class="p-2 warning-post" title="Warning Post" (click)="openModalPostWarning(warningPostModal, post, post.id)">
                                             <i class="fas fa-exclamation"></i>
                                         </a>
                                         <a class="p-2 delete-post" title="Delete Post" (click)="openModal(template, post.id, post.aboutLocation.countryShort)">

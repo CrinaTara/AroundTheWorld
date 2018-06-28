@@ -26,7 +26,7 @@
     <form [formGroup]='searchCityForm'>
         <div class="form-group">
 
-            <input type="text" class="form-control" [typeahead]="this.countryData?.citiesInCountry" [typeaheadOptionsLimit]="7" [typeaheadMinLength]="0"
+            <input type="text" class="form-control" [typeahead]="this.countryData?.nonDublicate" [typeaheadOptionsLimit]="7" [typeaheadMinLength]="0"
                 [typeaheadScrollable]="true" [typeaheadOptionsInScrollableView]="5" (typeaheadNoResults)="typeaheadNoResults($event)"
                 placeholder="Search by city" formControlName="search" />
             <div class="alert alert-danger" *ngIf="noResult">No City Found</div>

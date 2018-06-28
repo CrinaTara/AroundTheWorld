@@ -2,59 +2,89 @@
   <div class="row">
 
     <div class="col-sm-4">
-     
-        <div class="logo-container">
-          <div class="logo">
-            <a routerLink="../home">
-              <img src="assets/images/Circle.png" />
-            </a>
-          </div>
+
+      <div class="logo-container">
+        <div class="logo">
+          <a routerLink="../home">
+            <img src="assets/images/Circle.png" />
+          </a>
         </div>
       </div>
+    </div>
 
-      <div class="col-sm-4 d-flex align-items-center justify-content-center">
-          <a class="btn sing-button " routerLink="/home"  routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}">
-            HOME
-          </a>
-          <a class="btn sing-button " routerLink="/home/news"  routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}">
-            NEWS
-          </a>
-          <a class="btn sing-button" routerLink="/home/user-profile"  routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}" >
-            PROFILE
-          </a>
-          <!-- <a class="btn sing-button "   routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}" >
+    <div class="col-sm-4 d-flex align-items-center justify-content-center">
+      <a class="btn sing-button " routerLink="/home" routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}">
+        HOME
+      </a>
+      <a class="btn sing-button " routerLink="/home/news" routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}">
+        NEWS
+      </a>
+      <a class="btn sing-button" routerLink="/home/user-profile" routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}">
+        PROFILE
+      </a>
+      <!-- <a class="btn sing-button "   routerLinkActive="active-page" [routerLinkActiveOptions]="{exact: true}" >
             MORE
           </a> -->
-          
-          <div  dropdown container="body">
-            <a  dropdownToggle class="btn sing-button "  >
-              MORE
-            </a>
-            <ul  *dropdownMenu class="dropdown-menu wrapper-drop"
-                role="menu" >
-              <li role="menuitem"><a class="menuItems dropdown-item" routerLink="/home/find-friends" routerLinkActive="active-option" [routerLinkActiveOptions]="{exact: true}">Search FRIENDS</a></li>
-              <li role="menuitem"><a class=" menuItems dropdown-item" routerLink="/home/search-destinations" routerLinkActive="active-option" [routerLinkActiveOptions]="{exact: true}" >Discover new DESTIATIONS</a></li>
-              <li role="menuitem"><a class=" menuItems dropdown-item" routerLink="/home/my-trips" routerLinkActive="active-option" [routerLinkActiveOptions]="{exact: true}" >My TRIPS</a></li>
-              <!-- <li role="menuitem"><a class="menuItems dropdown-item">Something else here</a></li> -->      
-            </ul>
-          </div>
 
+      <div dropdown container="body">
+        <a dropdownToggle class="btn sing-button ">
+          MORE
+        </a>
+        <ul *dropdownMenu class="dropdown-menu wrapper-drop" role="menu">
+          <li role="menuitem">
+            <a class="menuItems dropdown-item" routerLink="/home/find-friends" routerLinkActive="active-option" [routerLinkActiveOptions]="{exact: true}">Search FRIENDS</a>
+          </li>
+          <li role="menuitem">
+            <a class=" menuItems dropdown-item" routerLink="/home/search-destinations" routerLinkActive="active-option" [routerLinkActiveOptions]="{exact: true}">Discover new DESTIATIONS</a>
+          </li>
+          <li role="menuitem">
+            <a class=" menuItems dropdown-item" routerLink="/home/my-trips" routerLinkActive="active-option" [routerLinkActiveOptions]="{exact: true}">My TRIPS</a>
+          </li>
+          <!-- <li role="menuitem"><a class="menuItems dropdown-item">Something else here</a></li> -->
+        </ul>
       </div>
-        
-        <div class="col-sm-4 d-flex align-items-center justify-content-end">
-            <div class="buttons ">
-                <a class="btn yellow-button" (click)="openPostModalWithComponent()">
-                  NEW POST
-                </a>
-              </div>
-              
-          <div class="buttons ">
-            <a class="btn sing-button" (click)="signOut()" *ngIf="authState?.email">
-              LOG OUT
-            </a>
-          </div>
-
-        </div>
 
     </div>
+
+    <div class="col-sm-4 d-flex align-items-center justify-content-end">
+      <div dropdown container="body">
+        <a class="style-bell" dropdownToggle aria-expanded="false">
+          <i class="far fa-bell"></i>
+        </a>
+        <ul id="menu1" *dropdownMenu class="dropdown-menu list-unstyled msg_list" role="menu" style="height: auto; overflow: auto;"
+          infinite-scroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="5" (scrolled)="onScrollDown()" [scrollWindow]="false">
+          <li *ngFor="let n of warnings" class="dropdown-item" [class.clicked-notif]="n.seen === 'yes'">
+            <a (click)="seeWarning(n.id)">
+              <div>
+                <i> <b>{{n.postName}}</b> -> <b> {{n.tripPost}} </b></i>
+              </div>
+              
+              <div>
+                  <b>Message: </b>{{n.warningText}}, </div>
+
+              <div><b>by</b> {{n.by}}
+              </div>
+
+              
+
+            </a>
+          </li>
+        </ul>
+      </div>
+      <br>
+      <div class="buttons ">
+        <a class="btn yellow-button" (click)="openPostModalWithComponent()" style="margin-left: 15px;">
+          NEW POST
+        </a>
+      </div>
+
+      <div class="buttons ">
+        <a class="btn sing-button" (click)="signOut()" *ngIf="authState?.email">
+          LOG OUT
+        </a>
+      </div>
+
+    </div>
+
+  </div>
 </body>

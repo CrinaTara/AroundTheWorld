@@ -57,6 +57,9 @@ export class ViewUserProfileComponent implements OnInit {
   warnCommText: string;
   postCommWarn: any;
   idCommToDelete: any;
+  postIdToWarn: any;
+  shortNameCountry: any;
+  currentPeopleInCountry: any;
 
   // @ViewChild(FindFriendsComponent) viewPerson : FindFriendsComponent;
   constructor(public fb: FormBuilder,  @Inject(DOCUMENT) private document: Document,
@@ -166,16 +169,19 @@ export class ViewUserProfileComponent implements OnInit {
 
   }
 
-  openModalPostWarning(warningPostModal: TemplateRef<any>, post){
+  openModalPostWarning(warningPostModal: TemplateRef<any>, post, postId){
     this.modalRef = this.modalService.show(warningPostModal, { class: 'modal-md modal-dialog-centered' });
     this.idPostWarning = post;
+    this.postIdToWarn = postId;
   }
 
-  openModalCommentWarning(warningCommentModal: TemplateRef<any>, comm, post, commId){
+  openModalCommentWarning(warningCommentModal: TemplateRef<any>, comm, post,  commId){
+   
     this.modalRef = this.modalService.show(warningCommentModal, { class: 'modal-md modal-dialog-centered' });
     this.idCommWarning = comm;
     this.postCommWarn = post;
     this.idCommToDelete = commId;
+   
   }
 
   openDeleteComm(deleteCommentModal: TemplateRef<any>, commId){
@@ -208,17 +214,19 @@ export class ViewUserProfileComponent implements OnInit {
   confirmPostWarning(text){
     console.log(text);
     console.log(this.idPostWarning);
+    console.log(this.postIdToWarn);
     var that = this;
     let now = moment();
     this.db.collection("warnings").add({
 
       postName: that.idPostWarning.postName,
       tripPost: that.idPostWarning.tripName,
-      idPost: that.idPostWarning.idPost,
+      idPost: that.postIdToWarn,
       warningText: text.postWarnText,
       creationDate: now.format('L'),
       by : "ADMIN",
       idUser: that.params._value.id,
+      seen: "no",
       type: 'postwarning'
     })
       .then(function (docRef) {
@@ -253,6 +261,7 @@ export class ViewUserProfileComponent implements OnInit {
       by : "ADMIN",
       byThisUser: that.idCommWarning.by.userName,
       idUser: that.params._value.id,
+      seen: "no",
       type: 'commentwarning'
     })
       .then(function (docRef) {
@@ -329,9 +338,183 @@ export class ViewUserProfileComponent implements OnInit {
       console.log("Document successfully deleted!");
       that.userDeletedMessage = true;
       // that.getAllUsers();
+      that.deleteUserPosts();
+      that.deleteTrips();
     }).catch(function (error) {
       console.error("Error removing document: ", error);
     });
+  }
+
+  deleteUserPosts(){
+    let that = this;
+
+    const unsubscribe = this.db.collection("posts").ref.where("idUser" , "==" , this.params._value.id)
+      .onSnapshot(function (querySnapshot) {
+        that.allComments = [];
+        querySnapshot.forEach(function (doc) {
+         console.log(doc.id, " => ", doc.data());
+         that.idPostToDelete = doc.id;
+         that.deleteAllPost();
+         
+         that.shortNameCountry = doc.data().aboutLocation.countryShort;
+
+        })
+        console.log(that.allComments);
+        // unsubscribe();
+      });
+  }
+
+
+  deleteAllPost() {
+    console.log(this.idPostToDelete);
+    const that = this;
+    this.db.collection("posts").doc(this.idPostToDelete).delete().then(function () {
+      console.log("Document successfully deleted!");
+      // that.updateCountryDB();
+      that.deleteACommentPosts(that.idPostToDelete);
+      that.updateCountryDB();
+      that.updateDeleteCountriesVisitedInUserDB();
+      // that.getMyPosts();
+    }).catch(function (error) {
+      console.error("Error removing document: ", error);
+    });
+  }
+
+  deleteTrips(){
+    let that = this;
+
+    const unsubscribe = this.db.collection("trips").ref.where("idUser" , "==" , this.params._value.id)
+      .onSnapshot(function (querySnapshot) {
+        that.allComments = [];
+        querySnapshot.forEach(function (doc) {
+         console.log(doc.id, " => ", doc.data());
+        
+         that.deleteATrip(doc.id);
+         
+         that.shortNameCountry = doc.data().aboutLocation.countryShort;
+
+        })
+        console.log(that.allComments);
+        // unsubscribe();
+      });
+  }
+
+  deleteATrip(param){
+
+    const that = this;
+    this.db.collection("trips").doc(param).delete().then(function () {
+      console.log("Document successfully deleted!");
+     
+    }).catch(function (error) {
+      console.error("Error removing document: ", error);
+    });
+  }
+
+  deleteACommentPosts(idToDeletePost) {
+    let that = this;
+
+    const unsubscribe = this.db.collection("comments").ref
+      .onSnapshot(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          if (doc.data().idPost == idToDeletePost) {
+            that.db.collection("comments").doc(doc.id).delete().then(function () {
+              console.log("Document successfully deleted!");
+            }).catch(function (error) {
+              console.error("Error removing document: ", error);
+            });
+          }
+
+        })
+
+        unsubscribe();
+      });
+  }
+
+  updateDeleteCountriesVisitedInUserDB() {
+    const removeArrayItem = (arr, itemToRemove) => {
+      return arr.filter(item => item !== itemToRemove)
+    }
+
+    console.log(this.userObject.countriesVisited);
+    console.log(this.shortNameCountry);
+    console.log(this.userObject.countriesVisited.includes(this.shortNameCountry));
+
+    let that = this;
+
+    if (this.userObject.countriesVisited.includes(this.shortNameCountry)) {
+      // let a = removeArrayItem(this.userObject.countriesVisited, this.shortNameCountry)
+      const index1: number = this.userObject.countriesVisited.indexOf(this.shortNameCountry);
+      if (index1 !== -1) {
+        var a = this.userObject.countriesVisited.splice(index1, 1);
+
+      }
+
+      console.log(a);
+      console.log(this.userObject.countriesVisited);
+
+      let data = {
+        countriesVisited: this.userObject.countriesVisited
+      }
+      this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
+        .then(function () {
+          that.updateLocalStorage();
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+        });
+    }
+
+  }
+
+
+
+  
+  updateCountryDB() {
+    console.log("Country to database!");
+    console.log(this.shortNameCountry);
+    let that = this;
+
+    const unsubscribe = this.db.collection("countries").doc(this.shortNameCountry).ref
+      .onSnapshot(function (doc) {
+        console.log(" data: ", doc.data());
+        that.currentPeopleInCountry = doc.data().nrPeople;
+        console.log(that.currentPeopleInCountry);
+        unsubscribe();
+
+
+        that.currentPeopleInCountry = that.currentPeopleInCountry - 1;
+        console.log(that.currentPeopleInCountry);
+        if (that.currentPeopleInCountry > 0) {
+          let data = {
+            nrPeople: that.currentPeopleInCountry
+          }
+          that.db.collection("countries").doc(that.shortNameCountry).set(data, { merge: true })
+            .then(function () {
+              console.log("Ok document written!");
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error);
+            });
+
+        }
+        else {
+
+          const uns = that.db.collection("countries").doc(that.shortNameCountry).delete().then(function () {
+            console.log("Document successfully deleted!");
+            unsubscribe();
+
+          }).catch(function (error) {
+            console.error("Error removing document: ", error);
+          });
+        }
+
+      }, function (error) {
+        console.log("Error receiving data");
+      });
+
+
+
   }
 
   customPlainGalleryRowConfig: PlainGalleryConfig = {

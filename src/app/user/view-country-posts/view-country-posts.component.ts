@@ -181,7 +181,10 @@ export class ViewCountryPostsComponent implements OnInit {
     this.db.collection("countries").doc(this.searchedItem).ref.get().then(function (doc) {
       if (doc.exists) {
         console.log("Country data:", doc.data());
-        that.countryData = doc.data();
+
+        let nonDublicateCity = doc.data().citiesInCountry;
+        nonDublicateCity = Array.from(new Set(nonDublicateCity));
+        that.countryData = {...doc.data(), nonDublicate:nonDublicateCity};
 
       } else {
         console.log("No such document!");

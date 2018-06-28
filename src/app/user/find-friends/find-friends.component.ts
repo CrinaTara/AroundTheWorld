@@ -15,8 +15,13 @@ export class FindFriendsComponent implements OnInit {
 
   accesPersonPageID: any = "";
 
+  nonDublicateCountries = [];
+
   searchResponse: boolean = false;
   searcFriendsResuls = [];
+
+  public userObject: any;
+  public userObjectRetrived: any;
 
   searchFriendsForm: FormGroup;
 
@@ -36,6 +41,14 @@ export class FindFriendsComponent implements OnInit {
     this.searchFriendsForm = this.fb.group({
       search: ['', Validators.required],
     })
+
+    this.userObjectRetrived = localStorage.getItem('User');
+    this.userObject = JSON.parse(this.userObjectRetrived);
+
+    this.nonDublicateCountries = this.userObject.countriesVisited;
+    console.log(this.nonDublicateCountries);
+    this.nonDublicateCountries = Array.from(new Set(this.nonDublicateCountries));
+    console.log(this.nonDublicateCountries);
 
     // this.getFriends();
   }

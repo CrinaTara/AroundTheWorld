@@ -172,6 +172,7 @@ export class PostComponent implements OnInit, AfterViewInit {
   }
 
   patchEditData() {
+    this.loading = false;
     this.postForm.patchValue({
       city: this.postData.aboutLocation.city,
       location: this.postData.aboutLocation.countryLong,
@@ -192,8 +193,8 @@ export class PostComponent implements OnInit, AfterViewInit {
     this.selectedTrip.name = this.postData.tripName;
 
     if (this.postData.photos.length != 0) {
-      this.urlArray = this.postData.photos;
-      this.resizedUrlArray = this.postData.photos;
+      this.urlArray = [...this.postData.photos];
+      this.resizedUrlArray = [...this.postData.photos];
       console.log(this.urlArray);
     } else {
       this.urlArray = [];
@@ -217,6 +218,7 @@ export class PostComponent implements OnInit, AfterViewInit {
   }
 
   updatePost() {
+    console.log(this.urlArray);
     if (this.selectedTrip.name === '' || this.selectedTrip.idTRIP === '') {
       this.postMessageDisplayed = 'Please select a related Trip for this post.';
       this.errorPostMessageDisplay = true;
@@ -226,6 +228,7 @@ export class PostComponent implements OnInit, AfterViewInit {
       this.errorPostMessageDisplay = true;
     }
     else {
+     
 
       var that = this;
       let now = moment();
@@ -249,6 +252,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         aboutLocation: this.aboutLocation,
         photos: this.resizedUrlArray
       }
+      that.loading = true;
 
       const unsubscribe = that.db.collection("posts").doc(that.isSelectedPost).set(data, { merge: true })
         .then(function (docRef) {
@@ -745,27 +749,31 @@ export class PostComponent implements OnInit, AfterViewInit {
 
 
   onSelectFile(event) {
+    console.log(this.urlArray);
     if (event.target.files && event.target.files[0]) {
       var reader = new FileReader();
 
       reader.readAsDataURL(event.target.files[0]); // read file as data url
 
-      reader.onload = (event: any) => { // called once readAsDataURL is completed
-        this.urlDummy = event.target.result;
+      reader.onload = (event2: any) => { // called once readAsDataURL is completed
+        this.urlDummy = event2.target.result;
         console.log(this.urlDummy);
-        // console.log("Url inainte" + this.urlArray);
+        console.log(this.urlArray);
+        console.log("NUUUUUUUU M-AM APELAT");
         this.urlArray.push(this.urlDummy);
-        // console.log("Url dupa" + this.urlArray);
+        console.log(this.urlArray);
         if (this.urlArray.length >= 4) this.addPhotoDisableButton = true;
         console.log(this.urlArray.length > 4);
+        this.resizeAuthomatical(event);
       }
-      this.resizeAuthomatical(event);
+     
     }
 
     // console.log(this.url);
   }
 
   removePhoto(index) {
+    console.log("M-AM APELAT");
     this.urlArray.splice(index, 1);
     this.resizedUrlArray.splice(index, 1);
     if (this.urlArray.length < 4) this.addPhotoDisableButton = false;
