@@ -21,6 +21,8 @@ export class ViewCountryPostsComponent implements OnInit {
 
   imagesToDisplay: Image[] = [];
 
+  loading:boolean = false;
+
   public params: any;
   public searchedItem: any;
   weHavePosts: boolean = false;
@@ -145,7 +147,7 @@ export class ViewCountryPostsComponent implements OnInit {
 
   showChart() {
     const that = this;
-
+    this.loading = false;
     this.chart = this.AmCharts.makeChart("chartdiv", {
       "type": "pie",
       "theme": "light",
@@ -214,6 +216,7 @@ export class ViewCountryPostsComponent implements OnInit {
     let that = this;
     this.countryListPosts = [];
     this.postsILiked = [];
+    this.loading = true;
     const unsubscribe = this.db.collection("posts").ref.where("aboutLocation.countryShort", "==", this.searchedItem).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
       .onSnapshot(function (querySnapshot) {
         that.countryListPosts = [];

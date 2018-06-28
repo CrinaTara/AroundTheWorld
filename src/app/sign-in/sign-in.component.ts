@@ -15,6 +15,7 @@ export class SignInComponent implements OnInit {
   userForm: FormGroup;
   resetPasswordForm: FormGroup;
   authState: any = null;
+  loading:boolean = false;
 
   showMessage: boolean = false;
   errorPassword: any = false;
@@ -60,6 +61,7 @@ export class SignInComponent implements OnInit {
     const that = this;
     let email = data.email;
     let password = data.password;
+    this.loading = true;
     if (valid) {
       this.afAuth.auth.signInWithEmailAndPassword(email, password)
         .then((user) => {
@@ -80,13 +82,16 @@ export class SignInComponent implements OnInit {
               else if(doc.data().role === "user"){
                 that.router.navigate(['/home']);
               }
+              this.loading = false;
         
             } else {
               // doc.data() will be undefined in this case
               console.log("No such document!");
+              this.loading = false;
             }
           }).catch(function (error) {
             console.log("Error getting document:", error);
+            this.loading = false;
           });
 
           
@@ -95,6 +100,7 @@ export class SignInComponent implements OnInit {
           console.log(error);
           this.errorServer = true;
           this.errorMessage = error;
+          this.loading = false;
         }
         );
 

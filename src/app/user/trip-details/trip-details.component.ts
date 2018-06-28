@@ -18,6 +18,8 @@ import { DOCUMENT } from "@angular/platform-browser";
 export class TripDetailsComponent implements OnInit {
   idPostToDelete: any;
 
+  loading:boolean = false;
+
   navIsFixed: boolean;
   public params: any;
   tripInformations: any;
@@ -45,6 +47,10 @@ export class TripDetailsComponent implements OnInit {
   public userObjectRetrived: any;
   authState: any = null;
 
+  currentPeopleInCountry: any;
+  nonDublicateCountries = [];
+  shortNameCountry: string;
+
   private chart: AmChart;
 
   postModal: BsModalRef;
@@ -70,6 +76,11 @@ export class TripDetailsComponent implements OnInit {
     
     this.userObjectRetrived = localStorage.getItem('User');
     this.userObject = JSON.parse(this.userObjectRetrived);
+
+    this.nonDublicateCountries = this.userObject.countriesVisited;
+    console.log(this.nonDublicateCountries);
+    this.nonDublicateCountries = Array.from(new Set(this.nonDublicateCountries));
+    console.log(this.nonDublicateCountries);
     
     this.writeComment = this.fb.group({
       commentText: ['', Validators.required],
@@ -111,6 +122,8 @@ export class TripDetailsComponent implements OnInit {
   
   showChartD() {
     const that = this;
+
+    this.loading = false;
 
     this.chart = this.AmCharts.makeChart("chartdiv", {
       "theme": "light",
@@ -178,6 +191,7 @@ export class TripDetailsComponent implements OnInit {
     this.tripListPosts = [];
     this.allPrivateTripPosts = [];
     this.allPublicTripPosts = [];
+    this.loading = true;
     const unsubscribe = this.db.collection("posts").ref.where("idTrip", "==", this.params._value.id).orderBy("creationDate", "desc").orderBy("creationHour", "desc")
       .onSnapshot(function (querySnapshot) {
         that.tripListPosts = [];
@@ -266,6 +280,7 @@ export class TripDetailsComponent implements OnInit {
 
     this.modalRef = this.modalService.show(template, { class: 'modal-md modal-dialog-centered' });
     this.idPostToDelete = idPost;
+    this.shortNameCountry = shortName;
   }
 
   confirm(): void {
@@ -282,12 +297,149 @@ export class TripDetailsComponent implements OnInit {
     this.db.collection("trips").doc(this.params._value.id).delete().then(function () {
       console.log("Document successfully deleted!");
       that.tripDeletedMessage = true;
-      this.modalRef.hide();
+      that.modalRef.hide();
+      that.updateUserProfile();
+      that.deletePostsTrip();
     }).catch(function (error) {
       console.error("Error removing document: ", error);
     });
   }
 
+  updateCountryDB() {
+    console.log("Country to database!");
+    console.log(this.shortNameCountry);
+    let that = this;
+
+    const unsubscribe = this.db.collection("countries").doc(this.shortNameCountry).ref
+      .onSnapshot(function (doc) {
+        console.log(" data: ", doc.data());
+        that.currentPeopleInCountry = doc.data().nrPeople;
+        console.log(that.currentPeopleInCountry);
+        unsubscribe();
+
+
+        that.currentPeopleInCountry = that.currentPeopleInCountry - 1;
+        console.log(that.currentPeopleInCountry);
+        if (that.currentPeopleInCountry > 0) {
+          let data = {
+            nrPeople: that.currentPeopleInCountry
+          }
+          that.db.collection("countries").doc(that.shortNameCountry).set(data, { merge: true })
+            .then(function () {
+              console.log("Ok document written!");
+            })
+            .catch((error) => {
+              console.error("Error adding document: ", error);
+            });
+
+        }
+        else {
+
+          const uns = that.db.collection("countries").doc(that.shortNameCountry).delete().then(function () {
+            console.log("Document successfully deleted!");
+            unsubscribe();
+
+          }).catch(function (error) {
+            console.error("Error removing document: ", error);
+          });
+        }
+
+      }, function (error) {
+        console.log("Error receiving data");
+      });
+
+
+
+  }
+
+  updateUserProfile() {
+    var that = this;
+    let numbr = 0;
+    const unsubscribe = this.db.collection("trips").ref.where("idUser", "==", this.authState.uid)
+      .onSnapshot(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          numbr += 1;
+        })
+        console.log(numbr);
+        unsubscribe();
+        let data = {
+          nrTrips: numbr
+        }
+        console.log("NUMERB OF: " + data.nrTrips);
+        let th = that;
+        that.db.collection("users").doc(that.authState.uid).set(data, { merge: true })
+          .then(function () {
+            th.updateLocalStorage();
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error);
+          });
+      });
+
+  }
+
+  updateLocalStorage() {
+    let that = this;
+    const unsubscribe = this.db.collection("users").doc(this.authState.uid).ref
+      .onSnapshot(function (doc) {
+        // var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+        console.log("UPDATE LOCAL")
+        console.log(" data: ", doc.data());
+        localStorage.setItem('User', JSON.stringify(doc.data()));
+
+        that.userObjectRetrived = localStorage.getItem('User');
+        that.userObject = JSON.parse(that.userObjectRetrived);
+
+        
+        that.nonDublicateCountries = that.userObject.countriesVisited;
+        console.log(that.nonDublicateCountries);
+        that.nonDublicateCountries = Array.from(new Set(that.nonDublicateCountries));
+        console.log(that.nonDublicateCountries);
+        // unsubscribe();
+      }, function (error) {
+        console.log("Eroor local storage");
+      });
+  }
+
+
+  updateDeleteCountriesVisitedInUserDB() {
+    const removeArrayItem = (arr, itemToRemove) => {
+      return arr.filter(item => item !== itemToRemove)
+    }
+
+    console.log(this.userObject.countriesVisited);
+    console.log(this.shortNameCountry);
+    console.log(this.userObject.countriesVisited.includes(this.shortNameCountry));
+
+    let that = this;
+
+    if (this.userObject.countriesVisited.includes(this.shortNameCountry)) {
+      // let a = removeArrayItem(this.userObject.countriesVisited, this.shortNameCountry)
+      const index1: number = this.userObject.countriesVisited.indexOf(this.shortNameCountry);
+      if (index1 !== -1) {
+        var a = this.userObject.countriesVisited.splice(index1, 1);
+
+      }
+
+      console.log(a);
+      console.log(this.userObject.countriesVisited);
+
+      let data = {
+        countriesVisited: this.userObject.countriesVisited
+      }
+      this.db.collection("users").doc(this.authState.uid).set(data, { merge: true })
+        .then(function () {
+          that.updateLocalStorage();
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+        });
+    }
+
+  }
+
+  
   addCommentToDB(valueData, IDPost){
     console.log("ENTER KEY PRESS");
     console.log(valueData);
@@ -318,6 +470,26 @@ export class TripDetailsComponent implements OnInit {
       });
   }
 
+  deletePostsTrip(){
+    let that = this;
+
+    const unsubscribe = this.db.collection("posts").ref.where("idTrip" , "==" , this.params._value.id)
+      .onSnapshot(function (querySnapshot) {
+        that.allComments = [];
+        querySnapshot.forEach(function (doc) {
+         console.log(doc.id, " => ", doc.data());
+         that.idPostToDelete = doc.id;
+         that.deleteAPost();
+         
+         that.shortNameCountry = doc.data().aboutLocation.countryShort;
+
+        })
+        console.log(that.allComments);
+        // unsubscribe();
+      });
+  }
+
+
   deleteAPost() {
     console.log(this.idPostToDelete);
     const that = this;
@@ -325,7 +497,8 @@ export class TripDetailsComponent implements OnInit {
       console.log("Document successfully deleted!");
       // that.updateCountryDB();
       that.deleteCommentPosts(that.idPostToDelete);
-
+      that.updateCountryDB();
+      that.updateDeleteCountriesVisitedInUserDB();
       // that.getMyPosts();
     }).catch(function (error) {
       console.error("Error removing document: ", error);

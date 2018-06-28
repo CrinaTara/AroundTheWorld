@@ -93,7 +93,7 @@
     <tabset [justified]="true">
         <!-- Public posts -->
         <tab heading="PUBLIC POSTS">
-            <div class = "d-flex justify-content-center no-posts" *ngIf="!weHavePublicPosts">There are no public posts</div>
+            <div class="d-flex justify-content-center no-posts" *ngIf="!weHavePublicPosts">There are no public posts</div>
             <div>
 
                 <div *ngFor="let post of allPublicPosts" class="post-container">
@@ -237,7 +237,7 @@
 
         <!-- Private posts -->
         <tab heading="PRIVATE POSTS">
-            <div *ngIf="!weHavePrivatePosts" class = "d-flex justify-content-center no-posts">There are no private posts</div>
+            <div *ngIf="!weHavePrivatePosts" class="d-flex justify-content-center no-posts">There are no private posts</div>
             <div>
 
                 <div *ngFor="let post of allPrivatePosts" class="post-container">
@@ -353,6 +353,16 @@
                                                     <div class="col-sm d-flex justify-content-start com-text">
                                                         {{comment.commentText}}
                                                     </div>
+                                                    
+                                                    <div *ngIf="userObject.role === 'user'" class="col-sm d-flex justify-content-end">
+                                                        <a *ngIf="this.warningComments.includes(comment.id)" class="p-2 warning-post" title="Warning Comment">
+                                                            <i class="fas fa-exclamation"></i>
+                                                        </a>
+                                                        <a class="p-2 delete-post" title="Delete Comment" (click)="openDeleteComm(deleteCommentModal, comment.id)">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </a>
+                                                    </div>
+
                                                 </div>
 
                                             </div>
@@ -390,6 +400,14 @@
     <div class="modal-body text-center">
         <p>Are you sure you want to delete this post?</p>
         <button type="button" class="btn btn-default" (click)="confirm()">Yes</button>
+        <button type="button" class="btn btn-primary" (click)="decline()">No</button>
+    </div>
+</ng-template>
+
+<ng-template #deleteCommentModal>
+    <div class="modal-body text-center">
+        <p>Are you sure you want to delete this comment?</p>
+        <button type="button" class="btn btn-default" (click)="confirmDeleteComment()">Yes</button>
         <button type="button" class="btn btn-primary" (click)="decline()">No</button>
     </div>
 </ng-template>

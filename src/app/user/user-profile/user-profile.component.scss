@@ -1,6 +1,7 @@
 @import '~scss/profile';
 @import '~scss/posts';
 @import '~scss/colors';
+@import '~scss/userProfile';
 
 .info{
   padding: 7%;
@@ -54,5 +55,11 @@
   cursor: pointer;
 }
 
-
-
+.delete-user{
+  color: red!important;
+  border: solid 1px white;
+  margin-bottom: 3px;
+}
+.delete-user:hover{
+  cursor: pointer;
+}

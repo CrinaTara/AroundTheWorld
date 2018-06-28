@@ -1,156 +1,157 @@
 <!-- <div class="text-wrapp"> -->
-
-<div class="header profile-wrapper">
-  <div class="text-wrapp"> Here are the posts from the people you followed.</div>
-</div>
-
-<!-- </div> -->
-
-<!--Scroll to top-->
-<div *ngIf="{'show-scroll': navIsFixed}" class="scroll-to-top" [ngClass]="{'show-scroll': navIsFixed}">
-  <button class="scroll-top-button" (click)="scrollToTop()">
-    <i class="fas fa-arrow-up"></i>
-  </button>
-</div>
-
-<div *ngIf="loading" class="spinner"></div>
-
-<div class="wrapper-post">
-
-  <div *ngIf="!weHavePosts" class="profile-container ">
-    <div class="d-flex justify-content-center"> Sorry! There are no posts.</div>
+<div detect-scroll (onScroll)="handleScroll($event)" [bottomOffset]="50000" [topOffset]="0" >
+  <div class="header profile-wrapper">
+    <div class="text-wrapp"> Here are the posts from the people you are following.</div>
   </div>
 
+  <!-- </div> -->
 
-  <ks-modal-gallery [id]="11" [modalImages]="imagesToDisplay" [plainGalleryConfig]="customPlainGalleryRowConfig"></ks-modal-gallery>
-  <div class="search-results" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
+  <!--Scroll to top-->
+  <div *ngIf="{'show-scroll': navIsFixed}" class="scroll-to-top" [ngClass]="{'show-scroll': navIsFixed}">
+    <button class="scroll-top-button" (click)="scrollToTop()">
+      <i class="fas fa-arrow-up"></i>
+    </button>
+  </div>
 
-    <div *ngFor="let post of listPosts" class="post-container">
+  <div *ngIf="loading" class="spinner"></div>
 
-      <div class="container">
-        <!-- Card Flip -->
-        <div class="card-flip">
-          <div class="flip align-front">
+  <div class="wrapper-post">
 
-            <div class="front">
-              <!-- front content -->
+    <div *ngIf="!weHavePosts && !loading" class="profile-container ">
+      <div class="d-flex justify-content-center"> Sorry! There are no posts.</div>
+    </div>
 
 
-              <div class="">
-                <div class="d-flex">
-                  <div class="p-2 like mr-auto">
-                    <i class="fas fa-heart" title="Likes"></i>
-                    {{post.likedByUsers.length}}
+    <ks-modal-gallery [id]="11" [modalImages]="imagesToDisplay" [plainGalleryConfig]="customPlainGalleryRowConfig"></ks-modal-gallery>
+    <div class="search-results">
+
+      <div *ngFor="let post of listPosts" class="post-container">
+
+        <div class="container">
+          <!-- Card Flip -->
+          <div class="card-flip">
+            <div class="flip align-front">
+
+              <div class="front">
+                <!-- front content -->
+
+
+                <div class="">
+                  <div class="d-flex">
+                    <div class="p-2 like mr-auto">
+                      <i class="fas fa-heart" title="Likes"></i>
+                      {{post.likedByUsers.length}}
+                    </div>
+                    <div class="p-2  ml-auto">
+                      {{ post.creationHour}}
+                    </div>
+
                   </div>
-                  <div class="p-2  ml-auto">
-                    {{ post.creationHour}}
+                  <h3 class=" justify-content-center">{{post.postName}}</h3>
+                  <div>By: {{ post.byUser }} </div>
+                  <h6>Trip Name: {{post.tripName}}</h6>
+                  <br>
+                  <div>
+                    <h4 class="align-items-center"> {{ post.creationDate | date: 'dd' }} </h4>
+                    <h4 class="align-items-center"> {{ post.creationDate | date: 'MMM' }} {{ post.creationDate | date: 'y' }}</h4>
+                  </div>
+                  <br>
+
+                  <div>Location:
+                    <span class="location-displat">
+                      {{post.aboutLocation.city}} - {{post.aboutLocation.countryLong}}
+                    </span>
+                  </div>
+                  <div class="logo-post">
+                    <div class="d-flex justify-content-center">
+                      <img src="assets/images/Circle.png" />
+                    </div>
                   </div>
 
                 </div>
-                <h3 class=" justify-content-center">{{post.postName}}</h3>
-                <div>By: {{ post.byUser }} </div>
-                <h6>Trip Name: {{post.tripName}}</h6>
-                <br>
-                <div>
-                  <h4 class="align-items-center"> {{ post.creationDate | date: 'dd' }} </h4>
-                  <h4 class="align-items-center"> {{ post.creationDate | date: 'MMM' }} {{ post.creationDate | date: 'y' }}</h4>
-                </div>
-                <br>
 
-                <div>Location:
-                  <span class="location-displat">
-                    {{post.aboutLocation.city}} - {{post.aboutLocation.countryLong}}
-                  </span>
-                </div>
-                <div class="logo-post">
-                  <div class="d-flex justify-content-center">
-                    <img src="assets/images/Circle.png" />
-                  </div>
-                </div>
 
               </div>
 
+              <div class="back">
 
-            </div>
-
-            <div class="back">
-
-              <div class="d-flex justify-content-end">
-                <a class="p-2 like-post">
-                  <i *ngIf="post.dublicate.includes(this.authState.uid)" class="fas fa-heart" (click)="dislikeAPost(post.id)" title="Dislike"></i>
-                  <i *ngIf="!post.dublicate.includes(this.authState.uid)" class="far fa-heart" (click)="likeAPost(post.id)" title="Like"></i>
-                </a>
-              </div>
-              <!-- back content -->
-              <br>
-              <div>{{post.postDetails}}</div>
-              <br>
-              <!-- <div *ngFor="let photo of post.photos" class="post-photo-display ">
+                <div class="d-flex justify-content-end">
+                  <a class="p-2 like-post">
+                    <i *ngIf="post.dublicate.includes(this.authState.uid)" class="fas fa-heart" (click)="dislikeAPost(post.id)" title="Dislike"></i>
+                    <i *ngIf="!post.dublicate.includes(this.authState.uid)" class="far fa-heart" (click)="likeAPost(post.id)" title="Like"></i>
+                  </a>
+                </div>
+                <!-- back content -->
+                <br>
+                <div>{{post.postDetails}}</div>
+                <br>
+                <!-- <div *ngFor="let photo of post.photos" class="post-photo-display ">
                                         <img [src]="photo" height="100%" alt="slide" class="style-photo">
                                     </div> -->
 
-              <section class="d-flex justify-content-center">
+                <section class="d-flex justify-content-center">
 
-                <div class="my-app-custom-plain-container-row">
-                  <ng-container *ngFor="let img of post.images; let i = index">
-                    <div *ngIf="i <= 2">
-                      <!-- 2 is a fixed value that I'm using to display only two images -->
-                      <a class="more" *ngIf="i==2" (click)="openImageModalRow(img, post.images)"> + {{ post.photos.length - 2 - 1}} more </a>
-                      <img *ngIf="img.modal && img.modal.img; else noThumb" class="my-app-custom-image-row" [src]="img.modal.img" (click)="openImageModalRow(img, post.images)"
-                        [alt]="img.modal.description" />
+                  <div class="my-app-custom-plain-container-row">
+                    <ng-container *ngFor="let img of post.images; let i = index">
+                      <div *ngIf="i <= 2">
+                        <!-- 2 is a fixed value that I'm using to display only two images -->
+                        <a class="more" *ngIf="i==2" (click)="openImageModalRow(img, post.images)"> + {{ post.photos.length - 2 - 1}} more </a>
+                        <img *ngIf="img.modal && img.modal.img; else noThumb" class="my-app-custom-image-row" [src]="img.modal.img" (click)="openImageModalRow(img, post.images)"
+                          [alt]="img.modal.description" />
 
-                      <ng-template #noThumb>
-                        <img class="my-app-custom-image-row" [src]="img.modal.img" (click)="openImageModalRow(img, post.images)" [alt]="img.modal.description"
-                        />
-                      </ng-template>
-                    </div>
-                  </ng-container>
-                </div>
-
-              </section>
-
-              <br>
-              <div>
-                <div class="comment d-flex justify-content-end">
-                  COMMENTS
-                </div>
-                <div class="comm">
-                  <div *ngFor="let comment of allComments">
-                    <div *ngIf="comment.idPost == post.id" class="single-comment">
-                      <div class="row ">
-                        <div class="col-sm d-flex justify-content-start com-data">
-                          by {{comment.by.userName}}
-                        </div>
-
-                        <div class="col-sm d-flex justify-content-end com-data">
-                          {{comment.creationHour}} - {{comment.creationDate}}
-                        </div>
+                        <ng-template #noThumb>
+                          <img class="my-app-custom-image-row" [src]="img.modal.img" (click)="openImageModalRow(img, post.images)" [alt]="img.modal.description"
+                          />
+                        </ng-template>
                       </div>
-                      <div class="col-sm d-flex justify-content-start com-text">
-                        {{comment.commentText}}
-                      </div>
-                    </div>
-
+                    </ng-container>
                   </div>
-                </div>
+
+                </section>
+
                 <br>
-                <form [formGroup]='writeComment'>
-                  <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Write a comment" formControlName="commentText" (keyup.enter)="addCommentToDB(writeComment.value, post.id)"
-                    />
+                <div>
+                  <div class="comment d-flex justify-content-end">
+                    COMMENTS
                   </div>
-                </form>
+                  <div class="comm">
+                    <div *ngFor="let comment of allComments">
+                      <div *ngIf="comment.idPost == post.id" class="single-comment">
+                        <div class="row ">
+                          <div class="col-sm d-flex justify-content-start com-data">
+                            by {{comment.by.userName}}
+                          </div>
 
+                          <div class="col-sm d-flex justify-content-end com-data">
+                            {{comment.creationHour}} - {{comment.creationDate}}
+                          </div>
+                        </div>
+                        <div class="col-sm d-flex justify-content-start com-text">
+                          {{comment.commentText}}
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                  <br>
+                  <form [formGroup]='writeComment'>
+                    <div class="form-group">
+                      <input type="text" class="form-control" placeholder="Write a comment" formControlName="commentText" (keyup.enter)="addCommentToDB(writeComment.value, post.id)"
+                      />
+                    </div>
+                  </form>
+
+                </div>
               </div>
+
             </div>
 
           </div>
-
         </div>
+
+
       </div>
-
-
     </div>
-  </div>
 
+  </div>
 </div>

@@ -32,6 +32,7 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   // @ViewChild(forwardRef(() => HomeComponent)) homeComp : HomeComponent;
 
+  loading:boolean = false;
 
   tripForm: FormGroup;
   postForm: FormGroup;
@@ -112,6 +113,7 @@ export class PostComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
 
+    this.loading = false;
     this.userObjectRetrived = localStorage.getItem('User');
     this.userObject = JSON.parse(this.userObjectRetrived);
     if (this.userObject.nrTrips != 0) {
@@ -156,7 +158,7 @@ export class PostComponent implements OnInit, AfterViewInit {
   getPostData(idPost) {
 
     let that = this;
-
+    this.loading = false;
     const unsubscribe = this.db.collection("posts").doc(idPost).ref
       .onSnapshot(function (doc) {
 
@@ -192,6 +194,7 @@ export class PostComponent implements OnInit, AfterViewInit {
     if (this.postData.photos.length != 0) {
       this.urlArray = this.postData.photos;
       this.resizedUrlArray = this.postData.photos;
+      console.log(this.urlArray);
     } else {
       this.urlArray = [];
       this.resizedUrlArray = [];
@@ -401,6 +404,8 @@ export class PostComponent implements OnInit, AfterViewInit {
       otherToughts: ''
     });
 
+    this.loading = false;
+
     // this.user.getMyPosts();
     this.urlArray = [];
     this.resizedUrlArray = [];
@@ -435,7 +440,7 @@ export class PostComponent implements OnInit, AfterViewInit {
       this.aboutLocation.city = this.postForm.value.city;
       console.log("Valorile inainte sa le introduc: ");
       console.log(this.aboutLocation);
-
+      that.loading = true;
       this.db.collection("posts").add({
         postName: this.postForm.value.postName,
         tripName: this.selectedTrip.name,
@@ -521,6 +526,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         unsubscribe();
 
       } else {
+        that.citiesInCountry = [];
         console.log("No such document!");
         that.citiesInCountry.push(that.aboutLocation.city);
         that.addCountryToDatabase();
@@ -746,7 +752,10 @@ export class PostComponent implements OnInit, AfterViewInit {
 
       reader.onload = (event: any) => { // called once readAsDataURL is completed
         this.urlDummy = event.target.result;
+        console.log(this.urlDummy);
+        // console.log("Url inainte" + this.urlArray);
         this.urlArray.push(this.urlDummy);
+        // console.log("Url dupa" + this.urlArray);
         if (this.urlArray.length >= 4) this.addPhotoDisableButton = true;
         console.log(this.urlArray.length > 4);
       }

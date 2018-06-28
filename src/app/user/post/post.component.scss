@@ -1,4 +1,5 @@
 @import '~scss/profile';
+@import '~scss/spinner';
 
 $button-color: #0B8457;
 $primary-color: #AB535A;
@@ -48,7 +49,7 @@ $second-color:  rgb(44, 39, 40);
     color: #ff3d4f;
     position: absolute;
     top: -7px;
-    left: -7px;
+    // left: -7px;
     font-size: 20px;
     z-index: 200;
    
@@ -64,4 +65,8 @@ $second-color:  rgb(44, 39, 40);
 
 .nr-photo{
    display: none!important;
+}
+
+.selectpicker{
+    right: 9px;
 }

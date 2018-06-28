@@ -1,5 +1,7 @@
 @import '~scss/search';
 @import '~scss/profile';
+@import '~scss/colors';
+
 
 .card-title:hover{
     cursor: pointer;
@@ -9,3 +11,12 @@
     cursor: pointer;
 }
 
+.number-trav{
+    font-weight: bold;
+    font-size: 14px;
+}
+
+
+.little-color{
+    color: $main-yellow-color;
+}

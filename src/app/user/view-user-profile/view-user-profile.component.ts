@@ -40,11 +40,23 @@ export class ViewUserProfileComponent implements OnInit {
 
   weHaveComments: boolean = false;
   allComments: any = [];
+
   writeComment: FormGroup;
+  writePostWarnning: FormGroup;
+  writeCommentWarnning: FormGroup;
+
+  warnPostMess: boolean = false;
+  warnCommMess: boolean = false;
 
   isFollowing: boolean = false;
   public userObject: any;
   public userObjectRetrived: any;
+  idPostWarning: any;
+  idCommWarning: any;
+  warnPostText: string;
+  warnCommText: string;
+  postCommWarn: any;
+  idCommToDelete: any;
 
   // @ViewChild(FindFriendsComponent) viewPerson : FindFriendsComponent;
   constructor(public fb: FormBuilder,  @Inject(DOCUMENT) private document: Document,
@@ -62,6 +74,14 @@ export class ViewUserProfileComponent implements OnInit {
 
     this.writeComment = this.fb.group({
       commentText: ['', Validators.required],
+    }),
+
+    this.writePostWarnning = this.fb.group({
+      postWarnText: ['', Validators.required],
+    }),
+
+    this.writeCommentWarnning = this.fb.group({
+      commWarnText: ['', Validators.required],
     })
 
     
@@ -146,6 +166,23 @@ export class ViewUserProfileComponent implements OnInit {
 
   }
 
+  openModalPostWarning(warningPostModal: TemplateRef<any>, post){
+    this.modalRef = this.modalService.show(warningPostModal, { class: 'modal-md modal-dialog-centered' });
+    this.idPostWarning = post;
+  }
+
+  openModalCommentWarning(warningCommentModal: TemplateRef<any>, comm, post, commId){
+    this.modalRef = this.modalService.show(warningCommentModal, { class: 'modal-md modal-dialog-centered' });
+    this.idCommWarning = comm;
+    this.postCommWarn = post;
+    this.idCommToDelete = commId;
+  }
+
+  openDeleteComm(deleteCommentModal: TemplateRef<any>, commId){
+    this.modalRef = this.modalService.show(deleteCommentModal, { class: 'modal-md modal-dialog-centered' });
+    this.idCommToDelete = commId;
+  }
+
   confirm(): void {
     this.deleteAPost();
     this.modalRef.hide();
@@ -153,6 +190,85 @@ export class ViewUserProfileComponent implements OnInit {
 
   decline(): void {
     this.modalRef.hide();
+  }
+
+  confirmDeleteComment(){
+    console.log(this.idCommToDelete);
+    const that = this;
+    this.db.collection("comments").doc(this.idCommToDelete).delete().then(function () {
+      console.log("Document successfully deleted!");
+      // that.deleteCommentPosts(that.idPostToDelete);
+      that.modalRef.hide();
+      // that.getMyPosts();
+    }).catch(function (error) {
+      console.error("Error removing document: ", error);
+    });
+  }
+
+  confirmPostWarning(text){
+    console.log(text);
+    console.log(this.idPostWarning);
+    var that = this;
+    let now = moment();
+    this.db.collection("warnings").add({
+
+      postName: that.idPostWarning.postName,
+      tripPost: that.idPostWarning.tripName,
+      idPost: that.idPostWarning.idPost,
+      warningText: text.postWarnText,
+      creationDate: now.format('L'),
+      by : "ADMIN",
+      idUser: that.params._value.id,
+      type: 'postwarning'
+    })
+      .then(function (docRef) {
+        console.log("Document successfully written!");
+        that.writePostWarnning.patchValue({
+          postWarnText: '',
+        });
+        that.warnPostMess = true;
+        that.warnPostText = " Message succesfully sent!";
+        // that.modalRef.hide();
+      })
+      .catch(function (error) {
+        console.error("Error adding document: ", error);
+        that.warnPostMess = true;
+        that.warnPostText = "Error."
+      });
+  }
+
+  confirmCommentWarning(text, idComm){
+    console.log(text);
+    console.log(this.idCommWarning);
+    console.log(this.postCommWarn);
+    var that = this;
+    let now = moment();
+    this.db.collection("warnings").add({
+
+      commText: that.idCommWarning.commentText,
+      tripPostComm: that.postCommWarn.tripName,
+      warningText: text.commWarnText,
+      creationDate: now.format('L'),
+      idComment:  that.idCommToDelete,
+      by : "ADMIN",
+      byThisUser: that.idCommWarning.by.userName,
+      idUser: that.params._value.id,
+      type: 'commentwarning'
+    })
+      .then(function (docRef) {
+        console.log("Document successfully written!");
+        that.writeCommentWarnning.patchValue({
+          commWarnText: '',
+        });
+        that.warnCommMess = true;
+        that.warnCommText = " Message succesfully sent!";
+        // this.modalRef.hide();
+      })
+      .catch(function (error) {
+        console.error("Error adding document: ", error);
+        that.warnCommMess = true;
+        that.warnCommText = "Error."
+      });
   }
 
   deleteAPost() {
@@ -330,8 +446,7 @@ export class ViewUserProfileComponent implements OnInit {
         that.writeComment.patchValue({
           commentText: '',
         });
-        // that.allComments = [];
-        // that.getComments();
+        
       })
       .catch(function (error) {
         console.error("Error adding document: ", error);

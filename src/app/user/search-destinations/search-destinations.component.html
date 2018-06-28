@@ -23,13 +23,13 @@
         <div class="card-body">
           <h5 class="card-title header" routerLink="/view-country/{{place.id}}">{{place.long}}</h5>
           <div class="row">
-              <div class="col-sm-6">
-                  <div>Travelers at this place:</div>
-                  <div>
+              <div class="col-sm-12 d-flex justify-content-center little-color">
+                  <div class="p-2">Travelers at this place:</div>
+                  <div class="p-2 number-trav">
                     {{place.nrPeople}}
                   </div>
               </div>
-              <div class="col-sm-6">
+              <!-- <div class="col-sm-6">
                   <div> Top travel destinations:</div>
                   <div>
                     BUCHAREST
@@ -41,7 +41,7 @@
                     </div>
                    
                   </div>
-              </div>
+              </div> -->
            
           </div>
         </div>

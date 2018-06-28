@@ -17,7 +17,9 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { CarouselModule } from 'ngx-bootstrap';
 import { TypeaheadModule, TabsModule } from 'ngx-bootstrap';
 import { SlickModule } from 'ngx-slick';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+// import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { InfiniteScrollModule } from 'angular2-infinite-scroll';
+import { ScrollEventModule } from 'ngx-scroll-event';
 
 import 'hammerjs';
 import 'mousetrap';
@@ -51,7 +53,8 @@ import { SharedDataService } from './shared-data.service';
     TypeaheadModule.forRoot(),
     SlickModule.forRoot(),
     TabsModule.forRoot(),
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    ScrollEventModule
   ],
   providers: [AuthGuard, SharedDataService],
   bootstrap: [AppComponent],

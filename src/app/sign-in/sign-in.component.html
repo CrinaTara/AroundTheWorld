@@ -9,6 +9,7 @@
           <section class="login_content">
 
             <form [formGroup]='userForm'>
+              <div *ngIf="loading" class="spinner_login"></div>
               <h1>Sign in</h1>
               <div class="alert alert-danger" *ngIf='loginError'>
                 <p>Email or password incorrect!</p>
@@ -30,6 +31,7 @@
                   (click)="emailLogin(userForm.value)">Sign in</a>
               </div>
               <div class="clearfix"></div>
+             
               <!-- <div>
                 <a class="btn btn-primary btn-lg google-button" style="width:100%;" (click)="googleLogin()">Sign in with GOOGLE</a>
               </div> -->

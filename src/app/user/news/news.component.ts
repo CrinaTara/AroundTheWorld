@@ -7,6 +7,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import * as moment from 'moment';
 import { AdvancedLayout, Image, PlainGalleryConfig, PlainGalleryStrategy } from 'angular-modal-gallery';
 import { DOCUMENT } from "@angular/platform-browser";
+import { ScrollEvent } from 'ngx-scroll-event';
 
 @Component({
   selector: 'app-news',
@@ -16,7 +17,7 @@ import { DOCUMENT } from "@angular/platform-browser";
 export class NewsComponent implements OnInit {
 
   authState: any = null;
-  loading:boolean = true;
+  loading: boolean;
 
   navIsFixed: boolean;
 
@@ -79,55 +80,109 @@ export class NewsComponent implements OnInit {
 
   }
 
-  getNewestPosts(){
-   
+  getNewestPosts() {
+
     this.listPosts = [];
     let that = this;
 
+    that.loading = true;
+
     this.postsILiked = [];
-    const unsubscribe = this.db.collection("posts").ref.where("idUser", "==", "ihg7CJSAv1h9Ws9JvriBATBqqc42").orderBy("creationDate", "desc").orderBy("creationHour", "desc")
-      .onSnapshot(function (querySnapshot) {
-        that.listPosts = [];
-        that.postsILiked = [];
-        querySnapshot.forEach(function (doc) {
-          console.log(doc.id, " => ", doc.data());
-          that.postsILiked = [];
-          let images: Image[] = [];
+    // const unsubscribe = this.db.collection("posts").ref.where("idUser", "==", "ihg7CJSAv1h9Ws9JvriBATBqqc42").orderBy("creationDate", "desc").orderBy("creationHour", "desc")
 
-          for(let i= 0 ; i< doc.data().photos.length; i++){
-            images.push(new Image(i, {
-              img: doc.data().photos[i]
-            }))
-          }
+    //   });
 
-          for(let i in doc.data().likedByUsers){
-            that.postsILiked.push(doc.data().likedByUsers[i]) ;
-          }  
-          let th = that;
+    let locationsSubscription = this.db.collection("posts").snapshotChanges().map(actions => {
+      return actions.map(a => {
+        console.log("Am intart in Posts!");
+        const data = a.payload.doc.data();
+        const id = a.payload.doc.id;
+        let arr = [];
+        console.log(data);
+        arr = that.userObject.following;
+        console.log(arr);
+        console.log(arr.includes(data.idUser));
+        if (arr.includes(data.idUser)) {
+          return { id, data: data };
+        }
 
-          that.listPosts.push({id: doc.id, ...doc.data(), images: images, dublicate: th.postsILiked});
-
-          that.weHavePosts = true;
-          that.loading = false;
-          // unsubscribe();
-        })
-        console.log(that.listPosts);
       });
+    }).subscribe((querySnapshot) => {
+      console.log(querySnapshot);
+      that.listPosts = [];
+      that.postsILiked = [];
+      querySnapshot.forEach((doc) => {
+        console.log(doc);
+        if (doc) {
+          console.log(doc.data);
+          {
+
+            // console.log(doc.id, " => ", doc.data);
+            that.postsILiked = [];
+            let images: Image[] = [];
+
+            for (let i = 0; i < doc.data.photos.length; i++) {
+              images.push(new Image(i, {
+                img: doc.data.photos[i]
+              }))
+            }
+
+            for (let i in doc.data.likedByUsers) {
+              that.postsILiked.push(doc.data.likedByUsers[i]);
+            }
+            let th = that;
+
+            that.listPosts.push({ id: doc.id, ...doc.data, images: images, dublicate: th.postsILiked });
+
+            that.weHavePosts = true;
+            that.loading = false;
+
+          }
+         
+        }
+        else {
+          that.loading = false;
+          console.log("No posts");
+        }
+
+      });
+      that.loading = false;
+      console.log(that.listPosts);
+
+      // sort
+      that.listPosts.sort(function (left, right) {
+        return moment.utc(left.data.creationDate).diff(moment.utc(right.data.creationDate))
+    });
+
+      // locationsSubscription.unsubscribe();
+
+    });
   }
+
+  // public handleScroll(event: ScrollEvent) {
+  //   // console.log('scroll occurred', event.originalEvent);
+  //   if (event.isReachingBottom) {
+  //     console.log(`BOTTOM`);
+  //   }
+
+  // }
 
   onScroll() {
     console.log('scrolled!!');
   }
-  
+
   @HostListener("window:scroll", [])
   onWindowScroll() {
-      if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
-          this.navIsFixed = true;
-      } else if (this.navIsFixed && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) { this.navIsFixed = false; } } scrollToTop() { (function smoothscroll() { var currentScroll = document.documentElement.scrollTop || document.body.scrollTop; if (currentScroll > 0) {
-              window.requestAnimationFrame(smoothscroll);
-              window.scrollTo(0, currentScroll - (currentScroll / 5));
-          }
-      })();
+    if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+      this.navIsFixed = true;
+    } else if (this.navIsFixed && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) { this.navIsFixed = false; }
+  } scrollToTop() {
+    (function smoothscroll() {
+      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop; if (currentScroll > 0) {
+        window.requestAnimationFrame(smoothscroll);
+        window.scrollTo(0, currentScroll - (currentScroll / 5));
+      }
+    })();
   }
 
 
@@ -152,7 +207,7 @@ export class NewsComponent implements OnInit {
     strategy: PlainGalleryStrategy.CUSTOM,
     layout: new AdvancedLayout(-1, true)
   };
-  
+
   openImageModalRow(image: Image, images) {
     this.imagesToDisplay = images;
     console.log(this.imagesToDisplay);
@@ -230,7 +285,7 @@ export class NewsComponent implements OnInit {
       })
   }
 
-  addCommentToDB(valueData, IDPost){
+  addCommentToDB(valueData, IDPost) {
     console.log("ENTER KEY PRESS");
     console.log(valueData);
     var that = this;
@@ -241,7 +296,7 @@ export class NewsComponent implements OnInit {
       commentText: valueData.commentText,
       creationDate: now.format('L'),
       creationHour: now.format('LT'),
-      by :{
+      by: {
         idUser: this.authState.uid,
         userName: this.userObject.firstName + " " + this.userObject.lastName
       }
@@ -257,11 +312,11 @@ export class NewsComponent implements OnInit {
       })
       .catch(function (error) {
         console.error("Error adding document: ", error);
-       
+
       });
   }
 
-  getComments(){
+  getComments() {
     let that = this;
 
     const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")

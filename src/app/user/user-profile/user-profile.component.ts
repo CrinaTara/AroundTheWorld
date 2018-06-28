@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, HostListener, Inject  } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, HostListener, Inject } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Router } from "@angular/router";
 import * as firebase from 'firebase';
@@ -28,10 +28,10 @@ export class UserProfileComponent implements OnInit {
   countryToDelete;
 
   weHavePublicPosts: boolean = false;
-  weHavePrivatePosts:boolean = false;
+  weHavePrivatePosts: boolean = false;
 
   imagesToDisplay: Image[] = [];
-  
+
   authState: any = null;
   public userObject: any;
   public userObjectRetrived: any;
@@ -50,6 +50,10 @@ export class UserProfileComponent implements OnInit {
   allPublicPosts = [];
 
   toggleCard: boolean = false;
+  idCommToDelete: any;
+
+  warningPosts = [];
+  warningComments = [];
 
   constructor(public fb: FormBuilder,
     private dataService: SharedDataService,
@@ -72,6 +76,7 @@ export class UserProfileComponent implements OnInit {
 
     this.getMyPosts();
     this.getComments();
+    this.getWarnings();
     this.userObjectRetrived = localStorage.getItem('User');
     this.userObject = JSON.parse(this.userObjectRetrived);
 
@@ -84,37 +89,40 @@ export class UserProfileComponent implements OnInit {
 
     this.url = (this.userObject.profilePicture == '') ? 'assets/images/user.png' : this.userObject.profilePicture;
   }
-  
-    customPlainGalleryRowConfig: PlainGalleryConfig = {
-      strategy: PlainGalleryStrategy.CUSTOM,
-      layout: new AdvancedLayout(-1, true)
-    };
-    
-    openImageModalRow(image: Image, images) {
-      this.imagesToDisplay = images;
-      console.log(this.imagesToDisplay);
-      console.log('Opening modal gallery from custom plain gallery row, with image: ', image);
-      const index: number = this.getCurrentIndexCustomLayout(image, this.imagesToDisplay);
-      this.customPlainGalleryRowConfig = Object.assign({}, this.customPlainGalleryRowConfig, { layout: new AdvancedLayout(index, true) });
-    }
 
-    private getCurrentIndexCustomLayout(image: Image, imagesToDisplay: Image[]): number {
-      return image ? imagesToDisplay.indexOf(image) : -1;
-    }
+  customPlainGalleryRowConfig: PlainGalleryConfig = {
+    strategy: PlainGalleryStrategy.CUSTOM,
+    layout: new AdvancedLayout(-1, true)
+  };
+
+  openImageModalRow(image: Image, images) {
+    this.imagesToDisplay = images;
+    console.log(this.imagesToDisplay);
+    console.log('Opening modal gallery from custom plain gallery row, with image: ', image);
+    const index: number = this.getCurrentIndexCustomLayout(image, this.imagesToDisplay);
+    this.customPlainGalleryRowConfig = Object.assign({}, this.customPlainGalleryRowConfig, { layout: new AdvancedLayout(index, true) });
+  }
+
+  private getCurrentIndexCustomLayout(image: Image, imagesToDisplay: Image[]): number {
+    return image ? imagesToDisplay.indexOf(image) : -1;
+  }
 
 
-    @HostListener("window:scroll", [])
-    onWindowScroll() {
-        if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
-            this.navIsFixed = true;
-        } else if (this.navIsFixed && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) { this.navIsFixed = false; } } scrollToTop() { (function smoothscroll() { var currentScroll = document.documentElement.scrollTop || document.body.scrollTop; if (currentScroll > 0) {
-                window.requestAnimationFrame(smoothscroll);
-                window.scrollTo(0, currentScroll - (currentScroll / 5));
-            }
-        })();
-    }
-    
-  toggleClass(){
+  @HostListener("window:scroll", [])
+  onWindowScroll() {
+    if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop > 100) {
+      this.navIsFixed = true;
+    } else if (this.navIsFixed && window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop < 10) { this.navIsFixed = false; }
+  } scrollToTop() {
+    (function smoothscroll() {
+      var currentScroll = document.documentElement.scrollTop || document.body.scrollTop; if (currentScroll > 0) {
+        window.requestAnimationFrame(smoothscroll);
+        window.scrollTo(0, currentScroll - (currentScroll / 5));
+      }
+    })();
+  }
+
+  toggleClass() {
     console.log("Toggle classes");
     console.log(this.toggleCard);
     this.toggleCard = !this.toggleCard;
@@ -144,7 +152,7 @@ export class UserProfileComponent implements OnInit {
   afterChange(e) {
     console.log('afterChange');
   }
-  
+
   updateLocalStorage() {
     let that = this;
     const unsubscribe = this.db.collection("users").doc(this.authState.uid).ref
@@ -238,7 +246,7 @@ export class UserProfileComponent implements OnInit {
     this.allMyPosts = [];
     this.allPrivatePosts = [];
     this.allPublicPosts = [];
-  
+
     const unsubscribe = this.db.collection("comments").ref.orderBy("creationDate", "asc").orderBy("creationHour", "asc")
       .onSnapshot(function (querySnapshot) {
         that.allComments = [];
@@ -255,6 +263,7 @@ export class UserProfileComponent implements OnInit {
   }
 
 
+
   getMyPosts = function () {
     let that = this;
     this.allMyPosts = [];
@@ -269,31 +278,73 @@ export class UserProfileComponent implements OnInit {
         querySnapshot.forEach(function (doc) {
           let images: Image[] = [];
 
-          for(let i= 0 ; i< doc.data().photos.length; i++){
+          for (let i = 0; i < doc.data().photos.length; i++) {
             images.push(new Image(i, {
               img: doc.data().photos[i]
             }))
           }
 
           console.log(doc.id, " => ", doc.data());
-          if(doc.data().privacy == "public")
-          {
-            that.allPublicPosts.push({ id: doc.id, ...doc.data(), images: images});
+          if (doc.data().privacy == "public") {
+            that.allPublicPosts.push({ id: doc.id, ...doc.data(), images: images });
             that.weHavePosts = true;
             that.weHavePublicPosts = true;
           }
-          else if(doc.data().privacy == "private"){
-            that.allPrivatePosts.push({ id: doc.id, ...doc.data(), images: images});
+          else if (doc.data().privacy == "private") {
+            that.allPrivatePosts.push({ id: doc.id, ...doc.data(), images: images });
             that.weHavePosts = true;
             that.weHavePrivatePosts = true;
           }
-        
+
         })
         console.log(that.allPrivatePosts);
         console.log(that.allPublicPosts);
         // unsubscribe();
       });
 
+  }
+
+  getWarnings() {
+    let that = this;
+    this.warningComments = [];
+    this.warningPosts = [];
+
+    const unsubscribe = this.db.collection("warnings").ref
+      .onSnapshot(function (querySnapshot) {
+        that.warningComments = [];
+        that.warningPosts = [];
+        querySnapshot.forEach(function (doc) {
+          console.log(doc.id, " => ", doc.data());
+          if (doc.data().type === "commentwarning") {
+            that.warningComments.push(doc.data().idComment);
+          } else if (doc.data().type === "postwarning") {
+            that.warningPosts.push(doc.data().idPost);
+          }
+
+        })
+        console.log("Here are the warnngs");
+        console.log(that.warningComments);
+        console.log(that.warningPosts);
+        // unsubscribe();
+      });
+  }
+
+  openDeleteComm(deleteCommentModal: TemplateRef<any>, commId) {
+    this.modalRef = this.modalService.show(deleteCommentModal, { class: 'modal-md modal-dialog-centered' });
+    this.idCommToDelete = commId;
+  }
+
+  confirmDeleteComment() {
+    console.log(this.idCommToDelete);
+    const that = this;
+    this.db.collection("comments").doc(this.idCommToDelete).delete().then(function () {
+      console.log("Document successfully deleted!");
+      // that.deleteCommentPosts(that.idPostToDelete);
+      that.modalRef.hide();
+      // that.getMyPosts();
+    }).catch(function (error) {
+      console.error("Error removing document: ", error);
+    });
   }
 
   deleteAPost() {
