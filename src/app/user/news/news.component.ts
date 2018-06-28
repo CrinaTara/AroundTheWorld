@@ -32,6 +32,9 @@ export class NewsComponent implements OnInit {
   dublicate = [];
 
   listPosts = [];
+  miniListPosts = [];
+  newLimit: any = 0;
+  oldLimit: any = 0;
 
   countryData: any;
   countryListPosts = [];
@@ -61,6 +64,7 @@ export class NewsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getNewestPosts();
     this.searchCityForm = this.fb.group({
       search: ['', Validators.required],
     });
@@ -75,9 +79,10 @@ export class NewsComponent implements OnInit {
     this.postsILiked = [];
     this.dublicate = [];
     this.countryData = [];
-    this.getNewestPosts();
+    
     this.getComments();
-
+    // this.morePosts();
+    
   }
 
   getNewestPosts() {
@@ -136,9 +141,9 @@ export class NewsComponent implements OnInit {
 
             that.weHavePosts = true;
             that.loading = false;
-
+          
           }
-         
+
         }
         else {
           that.loading = false;
@@ -148,15 +153,27 @@ export class NewsComponent implements OnInit {
       });
       that.loading = false;
       console.log(that.listPosts);
+      that.morePosts();
 
       // sort
       that.listPosts.sort(function (left, right) {
         return moment.utc(left.data.creationDate).diff(moment.utc(right.data.creationDate))
-    });
+      });
 
+     
       // locationsSubscription.unsubscribe();
 
     });
+   
+  }
+
+  morePosts(){
+    console.log("HERE!");
+    this.oldLimit = this.newLimit;
+    this.newLimit += 2;
+    for (let i = this.oldLimit; i < this.newLimit ; i++) {
+      this.miniListPosts.push(this.listPosts[i]);
+    }
   }
 
   // public handleScroll(event: ScrollEvent) {

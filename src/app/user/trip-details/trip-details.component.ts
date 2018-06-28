@@ -51,7 +51,7 @@ export class TripDetailsComponent implements OnInit {
   nonDublicateCountries = [];
   shortNameCountry: string;
 
-  private chart: AmChart;
+  private chartBuget: AmChart;
 
   postModal: BsModalRef;
   modalRef: BsModalRef;
@@ -125,7 +125,7 @@ export class TripDetailsComponent implements OnInit {
 
     this.loading = false;
 
-    this.chart = this.AmCharts.makeChart("chartdiv", {
+    this.chartBuget = this.AmCharts.makeChart("chartdiv", {
       "theme": "light",
       "type": "serial",
       "startDuration": 2,

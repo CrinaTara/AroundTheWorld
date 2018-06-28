@@ -33,7 +33,7 @@ export class ViewCountryPostsComponent implements OnInit {
 
   navIsFixed: boolean;
 
-  private chart: AmChart;
+  private chartPie: AmChart;
 
   countryData: any;
   countryListPosts = [];
@@ -148,7 +148,7 @@ export class ViewCountryPostsComponent implements OnInit {
   showChart() {
     const that = this;
     this.loading = false;
-    this.chart = this.AmCharts.makeChart("chartdiv", {
+    this.chartPie = this.AmCharts.makeChart("chartdiv", {
       "type": "pie",
       "theme": "light",
       "dataProvider": that.listOfMonthsAndPeople,
