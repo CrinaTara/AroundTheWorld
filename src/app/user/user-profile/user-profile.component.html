@@ -48,35 +48,43 @@
     <div class="profile-container ">
 
         <div class="row">
-            <div class="col-sm d-flex justify-content-center">
-                Countries
+            <div class="col-sm-3 d-flex align-items-center justify-content-center flex-column">
+               <div class="p-2">Countries</div> 
+                <div class="p-2">{{nonDublicateCountries.length}}</div>
             </div>
 
-            <div class="col-sm d-flex justify-content-center">
-                Trips
+            <div class="col-sm-3 d-flex align-items-center justify-content-center flex-column">
+                
+                <div class="p-2">Trips</div> 
+                <div class="p-2"> {{userObject.nrTrips}}</div>
+     
             </div>
-            <div class="col-sm d-flex justify-content-center">
-                Following
+            <div class="col-sm-3   d-flex  align-items-center justify-content-center flex-column">
+                
+                <div class="p-2">Following</div> 
+                <div class="p-2">{{userObject.following.length}}</div>
+     
             </div>
-            <div class="col-sm d-flex justify-content-center">
-                Followers
+            <div class="col-sm-3 d-flex align-items-center justify-content-center flex-column">
+                
+                <div class="p-2">Followers</div> 
+                <div class="p-2">{{userObject.followers.length}}</div>
+     
             </div>
 
         </div>
 
         <div class="row">
-            <div class="col-sm d-flex justify-content-center">
-                {{nonDublicateCountries.length}}
-            </div>
-            <div class="col-sm d-flex justify-content-center">
+           
+            <!-- <div class="col-sm-3 d-flex justify-content-center">
                 {{userObject.nrTrips}}
             </div>
-            <div class="col-sm d-flex justify-content-center">
+            <div class="col-sm-3 d-flex justify-content-center">
                 {{userObject.following.length}}
             </div>
-            <div class="col-sm d-flex justify-content-center">
+            <div class="col-sm-3 d-flex justify-content-center">
                 {{userObject.followers.length}}
-            </div>
+            </div> -->
 
         </div>
     </div>

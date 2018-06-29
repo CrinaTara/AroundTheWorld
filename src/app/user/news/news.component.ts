@@ -79,10 +79,10 @@ export class NewsComponent implements OnInit {
     this.postsILiked = [];
     this.dublicate = [];
     this.countryData = [];
-    
+
     this.getComments();
     // this.morePosts();
-    
+
   }
 
   getNewestPosts() {
@@ -141,7 +141,7 @@ export class NewsComponent implements OnInit {
 
             that.weHavePosts = true;
             that.loading = false;
-          
+
           }
 
         }
@@ -160,20 +160,24 @@ export class NewsComponent implements OnInit {
         return moment.utc(left.data.creationDate).diff(moment.utc(right.data.creationDate))
       });
 
-     
+
       // locationsSubscription.unsubscribe();
 
     });
-   
+
   }
 
-  morePosts(){
+  morePosts() {
     console.log("HERE!");
-    this.oldLimit = this.newLimit;
-    this.newLimit += 2;
-    for (let i = this.oldLimit; i < this.newLimit ; i++) {
-      this.miniListPosts.push(this.listPosts[i]);
+
+    if (this.listPosts.length > 0) {
+      this.oldLimit = this.newLimit;
+      this.newLimit += 2;
+      for (let i = this.oldLimit; i < this.newLimit && i <  this.listPosts.length; i++) {
+        this.miniListPosts.push(this.listPosts[i]);
+      }
     }
+
   }
 
   // public handleScroll(event: ScrollEvent) {
